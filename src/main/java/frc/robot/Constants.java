@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.ejml.equation.Variable;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -20,6 +21,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,6 +32,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
@@ -57,15 +60,8 @@ public final class Constants {
         public static final double WHEEL_RADIUS = 3.0;
         public static final double POSITION_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10;
         public static final double VELOCITY_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10/60;
-        public static final double TRACK_WIDTH = Units.inchesToMeters(2.0);
-        public static final DifferentialDriveKinematics KINEMATICS = 
-        new DifferentialDriveKinematics(TRACK_WIDTH);
-        
-        public static final double KA = 0.0;
-        public static final double KS = 0.0;
-        public static final double KV = 0.0;
-        public static final double RAMSETE_ZETA = 0.0;
-        public static final double RAMSETE_B = 0.0;
+       
+    
 
         public static final int PIGEON_ID = 0;
         public static final double MOUNT_YAW = 0.0 ;
@@ -77,8 +73,28 @@ public final class Constants {
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
         public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
+        public static final double KA = 0.0;
+        public static final double KS = 0.0;
+        public static final double KV = 0.0;
+        public static final double RAMSETE_ZETA = 0.0;
+        public static final double RAMSETE_B = 0.0;
 
-        RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
+         
+        public static final RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
+     
+        public static final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV);
+
+
+        public static final double TRACK_WIDTH = Units.inchesToMeters(2.0);
+        public static final DifferentialDriveKinematics KINEMATICS = 
+        new DifferentialDriveKinematics(TRACK_WIDTH);
+       
+        public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
+        new DifferentialDriveVoltageConstraint(feedforward, KINEMATICS, 11.0);
+
+        public static final TrajectoryConfig TRAJECTORY_CONFIG = new TrajectoryConfig(BR_ID, BL_ID); 
+
+       
 
         
         
@@ -157,6 +173,7 @@ public final class Constants {
         public static final Transform3d BOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
      
     }
+  
   
    
 }
