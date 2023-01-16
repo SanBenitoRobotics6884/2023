@@ -11,6 +11,7 @@ import java.util.List;
 import org.ejml.equation.Variable;
 import org.photonvision.PhotonCamera;
 
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.auto.RamseteAutoBuilder;
@@ -92,8 +93,11 @@ public final class Constants {
         public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
         new DifferentialDriveVoltageConstraint(feedforward, KINEMATICS, 11.0);
 
-        public static final TrajectoryConfig TRAJECTORY_CONFIG = new TrajectoryConfig(BR_ID, BL_ID); 
+        public static final double MAX_VELOCTIY = 0.0; 
+        public static final double MAX_ACCELERATION = 0.0; 
 
+        public static final TrajectoryConfig TRAJECTORY_CONFIG =
+         new TrajectoryConfig(MAX_VELOCTIY, MAX_ACCELERATION).setKinematics(KINEMATICS).addConstraint(autoVoltageConstraint); 
        
 
         
@@ -103,6 +107,7 @@ public final class Constants {
     public static final class FiducialTracking{
 
         public static final String CAMERA_ONE_NAME = "";
+        public static final PhotonCamera CAMERA_ONE = new PhotonCamera(CAMERA_ONE_NAME);
         
         public static final Pose3d TAG_ONE_POSE = new Pose3d(
             Units.inchesToMeters(610.77),

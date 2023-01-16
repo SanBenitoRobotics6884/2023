@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.Drive.*;
 import static frc.robot.Constants.FiducialTracking.*;
 
-public class PoseEstimator extends SubsystemBase {
+public class PoseEstimatorSubsystem extends SubsystemBase {
   /** Creates a new poseEstimator. */
   DifferentialDrivePoseEstimator poseEstimator;
   double previousTimeStamp = 0.0;
@@ -54,7 +54,7 @@ public class PoseEstimator extends SubsystemBase {
   
    AllianceColor alliance = AllianceColor.BLUE_ALLIANCE;
 
-  public PoseEstimator(PhotonCamera camera, DriveSubsystem driveSubsystem) {
+  public PoseEstimatorSubsystem(PhotonCamera camera, DriveSubsystem driveSubsystem) {
     this.camera = camera;
     this.driveSubystem = driveSubsystem;
     new Rotation2d();

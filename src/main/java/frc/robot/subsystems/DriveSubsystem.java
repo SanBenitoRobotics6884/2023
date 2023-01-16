@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
@@ -78,6 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
     m_leftEncoder.setVelocityConversionFactor(BL_ID);
     
+    
     gyro = new WPI_Pigeon2(PIGEON_ID);
 
     Pigeon2Configuration config = new Pigeon2Configuration();
@@ -93,6 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
   }
 
   public void NormalDrive(Double foward, Double rotation){
@@ -124,11 +127,23 @@ public class DriveSubsystem extends SubsystemBase {
   public double getLeftVelocity(){
     return m_leftEncoder.getVelocity();
   }
+  public double getRightVelocity(){
+    return m_rightEncoder.getVelocity();
+  }
   public void SetMotorVoltage(double rightVoltage, double leftVoltage){
     rControllerGroup.setVoltage(rightVoltage);
     lControllerGroup.setVoltage(leftVoltage);
   }
-  
+  public double getRateAsRadians(){
+   return gyro.getRate() * Math.PI/180;
+  }
+  public double getVelocity(){
+    return (getLeftVelocity() + getRightVelocity())/2;
+  }
+  public ChassisSpeeds getChassisSpeeds(){
+    return new ChassisSpeeds(getVelocity(), 0, getRateAsRadians());
+  }
+
 
 
   @Override
