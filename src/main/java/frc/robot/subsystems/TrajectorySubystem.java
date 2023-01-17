@@ -76,7 +76,7 @@ public class TrajectorySubystem extends SubsystemBase {
       poseEstimator.getPose2d(), null,TAG_ONE_POSE.toPose2d() , TRAJECTORY_CONFIG);
     return trajectory;
   }
-  public Trajectory GetRedGridtwoTrajectory(){
+  public Trajectory GetRedGridTwoTrajectory(){
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       poseEstimator.getPose2d(), null,TAG_TWO_POSE.toPose2d() , TRAJECTORY_CONFIG);
     return trajectory;
@@ -98,9 +98,33 @@ public class TrajectorySubystem extends SubsystemBase {
     }
     else{
       return GetRedGridOneTrajectory();
+      }
     }
-   
-    
+    public Trajectory getGridTwoTrajectory(){
+      if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+        return GetBlueGridTwoTrajectory();
+      }
+      else{
+        return GetRedGridTwoTrajectory();
+      }
+
   }
-  
-}
+  public Trajectory getGridThreeTrajectory(){
+    if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+      return GetBlueGridThreeTrajectory();
+    }
+    else{
+      return GetRedGridThreeTrajectory();
+    }
+
+    }
+    public Trajectory getLoadingZoneTrajectory(){
+      if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+        return GetBlueLoadingTrajectory();
+      }
+      else{
+        return GetRedLoadingTrajectory();
+      }
+        
+      }
+ }

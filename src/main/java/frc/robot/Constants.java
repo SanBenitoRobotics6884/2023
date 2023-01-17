@@ -59,6 +59,7 @@ public final class Constants {
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 4.10;
         public static final double WHEEL_RADIUS = 3.0;
+      
         public static final double POSITION_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10;
         public static final double VELOCITY_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10/60;
 
@@ -86,6 +87,7 @@ public final class Constants {
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
         public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
+        
         public static final double KA = 0.0;
         public static final double KS = 0.0;
         public static final double KV = 0.0;
@@ -95,25 +97,21 @@ public final class Constants {
          
         public static final RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
      
-        public static final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV);
+        public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV);
 
 
         public static final double TRACK_WIDTH = Units.inchesToMeters(2.0);
         public static final DifferentialDriveKinematics KINEMATICS = 
         new DifferentialDriveKinematics(TRACK_WIDTH);
        
-        public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = 
-        new DifferentialDriveVoltageConstraint(feedforward, KINEMATICS, 11.0);
+        public static final DifferentialDriveVoltageConstraint AUTO_VOLTAGE_CONSTRAINT = 
+        new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
 
         public static final double MAX_VELOCTIY = 0.0; 
         public static final double MAX_ACCELERATION = 0.0; 
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =
-         new TrajectoryConfig(MAX_VELOCTIY, MAX_ACCELERATION).setKinematics(KINEMATICS).addConstraint(autoVoltageConstraint); 
-       
-
-        
-        
+         new TrajectoryConfig(MAX_VELOCTIY, MAX_ACCELERATION).setKinematics(KINEMATICS).addConstraint(AUTO_VOLTAGE_CONSTRAINT); 
 
     }
     public static final class FiducialTracking{
@@ -123,9 +121,6 @@ public final class Constants {
         public static final double CAMERA_ONE_HEIGHT = Units.inchesToMeters(0.0);
         public static final double CAMERA_ONE_PITCH_RADIANS = Units.degreesToRadians(0.0);
 
-
-      
-        
         public static final Pose3d TAG_ONE_POSE = new Pose3d(
             Units.inchesToMeters(610.77),
             Units.inchesToMeters(42.19),
