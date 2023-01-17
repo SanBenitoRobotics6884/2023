@@ -61,9 +61,21 @@ public final class Constants {
         public static final double WHEEL_RADIUS = 3.0;
         public static final double POSITION_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10;
         public static final double VELOCITY_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10/60;
-       
-    
 
+        public static final double TURN_TO_TARGET_KP = 0.0;
+        public static final double TURN_TO_TARGET_KI = 0.0;
+        public static final double TURN_TO_TARGET_KD = 0.0;
+        public static final PIDController TURN_TO_TARGET_CONTROLLER = 
+        new PIDController(TURN_TO_TARGET_KP, TURN_TO_TARGET_KI, TURN_TO_TARGET_KD);
+        public static final double TURN_TO_TARGET_FF = 0.0;
+       
+        public enum AllianceColor{
+            BLUE_ALLIANCE, 
+            RED_ALLIANCE
+
+        }
+        public static  AllianceColor ALLIANCE_COLOR = AllianceColor.BLUE_ALLIANCE;
+    
         public static final int PIGEON_ID = 0;
         public static final double MOUNT_YAW = 0.0 ;
         public static final double MOUNT_PITCH = 0.0 ;
@@ -108,6 +120,11 @@ public final class Constants {
 
         public static final String CAMERA_ONE_NAME = "";
         public static final PhotonCamera CAMERA_ONE = new PhotonCamera(CAMERA_ONE_NAME);
+        public static final double CAMERA_ONE_HEIGHT = Units.inchesToMeters(0.0);
+        public static final double CAMERA_ONE_PITCH_RADIANS = Units.degreesToRadians(0.0);
+
+
+      
         
         public static final Pose3d TAG_ONE_POSE = new Pose3d(
             Units.inchesToMeters(610.77),

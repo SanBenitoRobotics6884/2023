@@ -91,5 +91,16 @@ public class TrajectorySubystem extends SubsystemBase {
       poseEstimator.getPose2d(), null,TAG_FIVE_POSE.toPose2d() , TRAJECTORY_CONFIG);
     return trajectory;
   }
+
+  public Trajectory getGridOneTrajectory(){
+    if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+      return GetBlueGridOneTrajectory();
+    }
+    else{
+      return GetRedGridOneTrajectory();
+    }
+   
+    
+  }
   
 }

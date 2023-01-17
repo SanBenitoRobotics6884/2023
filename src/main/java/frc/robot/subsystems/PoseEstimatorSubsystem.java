@@ -33,26 +33,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   double previousTimeStamp = 0.0;
   DriveSubsystem driveSubystem;
   PhotonCamera camera;
-  List<Pose3d> TagPoses = Collections.unmodifiableList(
-    List.of(TAG_ONE_POSE, TAG_TWO_POSE, TAG_THREE_POSE,TAG_FOUR_POSE,
-     TAG_FIVE_POSE, TAG_SIX_POSE, TAG_SEVEN_POSE, TAG_EIGHT_POSE));
-
-  
- 
-  
-
-  
-  
-  List<Pose3d> blueAllianceTagPoses = Collections.unmodifiableList(
-    List.of());
-
-    public enum AllianceColor{
-      BLUE_ALLIANCE,
-      RED_ALLIANCE
-
-    }
-  
-   AllianceColor alliance = AllianceColor.BLUE_ALLIANCE;
 
   public PoseEstimatorSubsystem(PhotonCamera camera, DriveSubsystem driveSubsystem) {
     this.camera = camera;
@@ -82,30 +62,26 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     if(result.hasTargets() && resultTimeStamp!= previousTimeStamp){
       var target = result.getBestTarget();
       var previousTimeStamp = resultTimeStamp;
+      
+      
       if(target.getPoseAmbiguity() <= .2 && target.getFiducialId()>= 6 || target.getFiducialId() == 4
-       && alliance == AllianceColor.BLUE_ALLIANCE ){
+       && ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE ){
         TAG_POSES.setOrigin(TAG_EIGHT_POSE);;
         var targetId = target.getFiducialId();
-        Optional<Pose3d> targetPos = TAG_POSES.getTagPose(BL_ID);
-        var targetPose = TagPoses.get(targetId);
+        Pose3d targetPose = TAG_POSES.getTagPose(targetId).get();
         Transform3d cameraToTarget = target.getBestCameraToTarget();
         Pose3d cameraPose = targetPose.transformBy(cameraToTarget.inverse());  
 
         Pose3d Robotpose = cameraPose.transformBy(CAMERA_TO_ROBOT);
 
         poseEstimator.addVisionMeasurement(Robotpose.toPose2d(), resultTimeStamp);
-
-        
-
       }
       
    
       else if(target.getPoseAmbiguity() <= .2 && target.getFiducialId()<= 4 || target.getFiducialId() == 5
-       && alliance == AllianceColor.RED_ALLIANCE ){
+       && ALLIANCE_COLOR == AllianceColor.RED_ALLIANCE ){
         var targetId = target.getFiducialId();
-        Optional<Pose3d> targetPos = TAG_POSES.getTagPose(BL_ID);
-        var targetPose = TagPoses.get(targetId);
-        
+        Pose3d targetPose = TAG_POSES.getTagPose(targetId).get();
         Transform3d cameraToTarget = target.getBestCameraToTarget();
         Pose3d cameraPose = targetPose.transformBy(cameraToTarget.inverse());  
 
@@ -124,11 +100,11 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   }
   public void setBlueAllianceColor(){
-    alliance = AllianceColor.BLUE_ALLIANCE;
+    ALLIANCE_COLOR = AllianceColor.BLUE_ALLIANCE;
   }
 
   public void setRedAllianceColor(){
-    alliance = AllianceColor.RED_ALLIANCE;
+    ALLIANCE_COLOR = AllianceColor.RED_ALLIANCE;
   }
   public Pose2d getPose2d(){
    return poseEstimator.getEstimatedPosition();

@@ -42,12 +42,13 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax m_FRMotor;
   private CANSparkMax m_BRMotor;
   private CANSparkMax m_BLMotor;
+
   private MotorControllerGroup rControllerGroup;
   private MotorControllerGroup lControllerGroup;
   private DifferentialDrive drive;
+
   RelativeEncoder m_rightEncoder;
   RelativeEncoder m_leftEncoder;
-  
   
   WPI_Pigeon2 gyro;
 
@@ -58,10 +59,13 @@ public class DriveSubsystem extends SubsystemBase {
     m_BRMotor = new CANSparkMax(BL_ID, MotorType.kBrushless);
     m_BLMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
     
-
-    
     rControllerGroup = new MotorControllerGroup(m_FRMotor, m_BRMotor);
     lControllerGroup = new MotorControllerGroup(m_FlMotor, m_BLMotor);
+  
+    m_FlMotor.restoreFactoryDefaults();    
+    m_FRMotor.restoreFactoryDefaults();
+    m_BRMotor.restoreFactoryDefaults(); 
+    m_BLMotor.restoreFactoryDefaults();
 
     rControllerGroup.setInverted(true);
     lControllerGroup.setInverted(false);
@@ -70,12 +74,12 @@ public class DriveSubsystem extends SubsystemBase {
     
     m_rightEncoder = m_FRMotor.getAlternateEncoder(
       SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
-      
-     m_leftEncoder = m_FRMotor.getAlternateEncoder(
+    m_leftEncoder = m_FRMotor.getAlternateEncoder(
         SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
 
     m_rightEncoder.setPositionConversionFactor(POSITION_CONVERSION);
     m_leftEncoder.setPositionConversionFactor(POSITION_CONVERSION);
+    
     m_rightEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
     m_leftEncoder.setVelocityConversionFactor(BL_ID);
     
@@ -86,8 +90,7 @@ public class DriveSubsystem extends SubsystemBase {
     config.MountPosePitch= MOUNT_PITCH;
     config.MountPoseRoll= MOUNT_ROLL;
     config.MountPoseYaw = MOUNT_YAW;
-    
-    
+  
     gyro.configAllSettings(config);
      
   }
@@ -133,6 +136,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void SetMotorVoltage(double rightVoltage, double leftVoltage){
     rControllerGroup.setVoltage(rightVoltage);
     lControllerGroup.setVoltage(leftVoltage);
+    drive.feed();
   }
   public double getRateAsRadians(){
    return gyro.getRate() * Math.PI/180;
@@ -142,6 +146,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
   public ChassisSpeeds getChassisSpeeds(){
     return new ChassisSpeeds(getVelocity(), 0, getRateAsRadians());
+  }
+
+  public void TurnToTarget(double yaw, double setpoint){
+    if(yaw >=5){
+    drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint));
+    }
+    else{
+      drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint) + TURN_TO_TARGET_FF);
+    }
   }
 
 
