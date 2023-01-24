@@ -109,10 +109,13 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   public Pose2d getPose2d(){
    return poseEstimator.getEstimatedPosition();
   }
-  public void ResetPose2d(){
+  public void ResetPose2d(Pose2d pose2d){
     poseEstimator.resetPosition(
-      driveSubystem.getRotation2D(), driveSubystem.getLeftDistance(), driveSubystem.getRightDistance(), new Pose2d());
+      driveSubystem.getRotation2D(), driveSubystem.getLeftDistance(), driveSubystem.getRightDistance(), pose2d);
       
+  }
+  public void AutoBalance(){
+    
   }
  
 }

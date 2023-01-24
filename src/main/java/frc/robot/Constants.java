@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 import org.ejml.equation.Variable;
 import org.photonvision.PhotonCamera;
 
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
@@ -33,7 +35,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
@@ -81,12 +85,17 @@ public final class Constants {
         public static final double MOUNT_YAW = 0.0 ;
         public static final double MOUNT_PITCH = 0.0 ;
         public static final double MOUNT_ROLL = 0.0 ;
+        public static final double GRAVITY_VECTOR[] = new double[3];
 
         public static final double DRIVE_KP = 0.0;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
         public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
+        public static final double AUTO_BALANCE_P = 0.0;
+        public static final double AUTO_BALANCE_I = 0.0;
+        public static final double AUTO_BALANCE_D = 0.0;
+        public static final PIDController AUTO_BALANCE_CONTROLLER = new PIDController(AUTO_BALANCE_P, AUTO_BALANCE_I, AUTO_BALANCE_D);
         
         public static final double KA = 0.0;
         public static final double KS = 0.0;
@@ -106,9 +115,11 @@ public final class Constants {
        
         public static final DifferentialDriveVoltageConstraint AUTO_VOLTAGE_CONSTRAINT = 
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
+        
 
         public static final double MAX_VELOCTIY = 0.0; 
         public static final double MAX_ACCELERATION = 0.0; 
+        public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =
          new TrajectoryConfig(MAX_VELOCTIY, MAX_ACCELERATION).setKinematics(KINEMATICS).addConstraint(AUTO_VOLTAGE_CONSTRAINT); 

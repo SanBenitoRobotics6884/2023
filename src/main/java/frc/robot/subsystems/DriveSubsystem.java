@@ -133,7 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
   public double getRightVelocity(){
     return m_rightEncoder.getVelocity();
   }
-  public void SetMotorVoltage(double rightVoltage, double leftVoltage){
+  public void SetMotorVoltage(Double rightVoltage, Double leftVoltage){
     rControllerGroup.setVoltage(rightVoltage);
     lControllerGroup.setVoltage(leftVoltage);
     drive.feed();
@@ -155,6 +155,15 @@ public class DriveSubsystem extends SubsystemBase {
     else{
       drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint) + TURN_TO_TARGET_FF);
     }
+  }
+  public void ChargeStationAlign(){
+    gyro.getGravityVector(GRAVITY_VECTOR);
+     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
+     //might have to negative this
+     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
+     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
+     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
+     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
   }
 
 
