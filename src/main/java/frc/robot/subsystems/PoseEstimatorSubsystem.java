@@ -44,12 +44,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
      new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.5, 0.5, Units.degreesToRadians(5)), 
      //Vision Measurement Standard Deviations X, Y, Theta
      new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02,Units.degreesToRadians(5) ));
-    
-     
-    
-
-
-
   }
 
   @Override
@@ -84,15 +78,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         Pose3d targetPose = TAG_POSES.getTagPose(targetId).get();
         Transform3d cameraToTarget = target.getBestCameraToTarget();
         Pose3d cameraPose = targetPose.transformBy(cameraToTarget.inverse());  
-
         Pose3d Robotpose = cameraPose.transformBy(CAMERA_TO_ROBOT);
-
         poseEstimator.addVisionMeasurement(Robotpose.toPose2d(), resultTimeStamp);
-
-
-
-        
-
       }
       poseEstimator.update(driveSubystem.getRotation2D(), driveSubystem.getLeftDistance(), driveSubystem.getRightDistance());
     }
@@ -113,9 +100,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     poseEstimator.resetPosition(
       driveSubystem.getRotation2D(), driveSubystem.getLeftDistance(), driveSubystem.getRightDistance(), pose2d);
       
-  }
-  public void AutoBalance(){
-    
   }
  
 }

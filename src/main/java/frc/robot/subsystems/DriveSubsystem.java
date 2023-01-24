@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -102,14 +103,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void NormalDrive(Double foward, Double rotation){
-    drive.arcadeDrive(foward*NORMAL_FF, rotation*NORMAL_FF);
-
+    //maybe add gyro assist?
+    drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TELE_ROTATION_CONTROLLER.calculate(0, rotation * NORMAL_TURN_FF ));
   }
   
   public void TurboJoystickDrive(Double foward, Double rotation){
-    drive.arcadeDrive(foward*TURBO_FF, rotation*TURBO_FF);
+    drive.arcadeDrive(foward * TURBO_FOWARD_FF, TELE_ROTATION_CONTROLLER.calculate(0, rotation * TURBO_TURN_FF));
 
   }
+
   public void ResetEncoder(){
     m_rightEncoder.setPosition(0);
     m_leftEncoder.setPosition(0);
@@ -133,19 +135,35 @@ public class DriveSubsystem extends SubsystemBase {
   public double getRightVelocity(){
     return m_rightEncoder.getVelocity();
   }
+
   public void SetMotorVoltage(Double rightVoltage, Double leftVoltage){
     rControllerGroup.setVoltage(rightVoltage);
     lControllerGroup.setVoltage(leftVoltage);
     drive.feed();
   }
+
   public double getRateAsRadians(){
    return gyro.getRate() * Math.PI/180;
   }
+
   public double getVelocity(){
     return (getLeftVelocity() + getRightVelocity())/2;
   }
+
   public ChassisSpeeds getChassisSpeeds(){
     return new ChassisSpeeds(getVelocity(), 0, getRateAsRadians());
+  }
+
+  public DifferentialDriveWheelSpeeds getWheelSpeeds(){
+    return KINEMATICS.toWheelSpeeds(this.getChassisSpeeds());
+  }
+
+  public void ResetGyro(){
+    gyro.reset();
+  }
+
+  public void SetGyroYaw(double angle){
+    gyro.setYaw(angle);
   }
 
   public void TurnToTarget(double yaw, double setpoint){
@@ -156,6 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
       drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint) + TURN_TO_TARGET_FF);
     }
   }
+
   public void ChargeStationAlign(){
     gyro.getGravityVector(GRAVITY_VECTOR);
      AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));

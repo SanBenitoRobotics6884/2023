@@ -57,8 +57,10 @@ public final class Constants {
         public static final int BR_ID = 0;
         public static final int BL_ID = 0;
 
-        public static final double NORMAL_FF = 0.0;
-        public static final double TURBO_FF = 0.0;
+        public static final double NORMAL_FOWARD_FF = 0.0;
+        public static final double NORMAL_TURN_FF = 0.0;
+        public static final double TURBO_FOWARD_FF = 0.0;
+        public static final double TURBO_TURN_FF = 0.0;
 
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 4.10;
@@ -92,10 +94,21 @@ public final class Constants {
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
         public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
+
         public static final double AUTO_BALANCE_P = 0.0;
         public static final double AUTO_BALANCE_I = 0.0;
         public static final double AUTO_BALANCE_D = 0.0;
         public static final PIDController AUTO_BALANCE_CONTROLLER = new PIDController(AUTO_BALANCE_P, AUTO_BALANCE_I, AUTO_BALANCE_D);
+
+        /*public static final double TELE_FOWARD_P = 0.0;
+        public static final double TELE_FOWARD_I = 0.0;
+        public static final double TELE_FOWARD_D = 0.0;
+        public static final PIDController TELE_FOWARD_CONTROLLER = new PIDController(TELE_FOWARD_P, TELE_FOWARD_I, TELE_FOWARD_D);
+*/
+        public static final double TELE_ROTATION_P = 0.0;
+        public static final double TELE_ROTATION_I = 0.0;
+        public static final double TELE_ROTATION_D = 0.0;
+        public static final PIDController TELE_ROTATION_CONTROLLER = new PIDController(TELE_ROTATION_P, TELE_ROTATION_I, TELE_ROTATION_D);
         
         public static final double KA = 0.0;
         public static final double KS = 0.0;
