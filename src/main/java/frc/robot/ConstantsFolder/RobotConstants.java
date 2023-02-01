@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.ConstantsFolder;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {
+public final class RobotConstants {
 
     public static final class Drive {
         public static final int FR_ID = 0;
@@ -76,13 +76,6 @@ public final class Constants {
         new PIDController(TURN_TO_TARGET_KP, TURN_TO_TARGET_KI, TURN_TO_TARGET_KD);
         public static final double TURN_TO_TARGET_FF = 0.0;
        
-        public enum AllianceColor{
-            BLUE_ALLIANCE, 
-            RED_ALLIANCE
-
-        }
-        public static  AllianceColor ALLIANCE_COLOR = AllianceColor.BLUE_ALLIANCE;
-    
         public static final int PIGEON_ID = 0;
         public static final double MOUNT_YAW = 0.0 ;
         public static final double MOUNT_PITCH = 0.0 ;

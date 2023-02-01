@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
+import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -15,13 +18,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.spline.Spline.ControlVector;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.Drive.*;
-import static frc.robot.Constants.FiducialTracking.*;
 
 public class TrajectorySubystem extends SubsystemBase {
   List<PathPoint> m_BlueGridOnePoints;
@@ -115,7 +118,7 @@ public class TrajectorySubystem extends SubsystemBase {
   }
 
   public Trajectory getGridOneTrajectory(){
-    if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+    if( DriverStation.getAlliance() == Alliance.Blue){
       return GetBlueGridOneTrajectory();
     }
     else{
@@ -123,7 +126,7 @@ public class TrajectorySubystem extends SubsystemBase {
       }
     }
     public Trajectory getGridTwoTrajectory(){
-      if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+      if( DriverStation.getAlliance() == Alliance.Blue){
         return GetBlueGridTwoTrajectory();
       }
       else{
@@ -132,7 +135,7 @@ public class TrajectorySubystem extends SubsystemBase {
 
   }
   public Trajectory getGridThreeTrajectory(){
-    if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+    if( DriverStation.getAlliance() == Alliance.Blue){
       return GetBlueGridThreeTrajectory();
     }
     else{
@@ -141,7 +144,7 @@ public class TrajectorySubystem extends SubsystemBase {
 
     }
     public Trajectory getLoadingZoneTrajectory(){
-      if(ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE){
+      if( DriverStation.getAlliance() == Alliance.Blue){
         return GetBlueLoadingTrajectory();
       }
       else{

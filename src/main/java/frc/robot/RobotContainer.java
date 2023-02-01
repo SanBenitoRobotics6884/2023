@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -18,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import static frc.robot.Constants.FiducialTracking.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

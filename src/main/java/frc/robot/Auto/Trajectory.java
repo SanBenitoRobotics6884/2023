@@ -1,5 +1,7 @@
 package frc.robot.Auto;
 
+import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
@@ -8,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-import static frc.robot.Constants.Drive.*;
 
 
 public class Trajectory {

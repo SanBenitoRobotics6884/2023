@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
+import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +25,9 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.Drive.*;
-import static frc.robot.Constants.FiducialTracking.*;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
   /** Creates a new poseEstimator. */
@@ -59,7 +61,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       
       
       if(target.getPoseAmbiguity() <= .2 && target.getFiducialId()>= 6 || target.getFiducialId() == 4
-       && ALLIANCE_COLOR == AllianceColor.BLUE_ALLIANCE ){
+       && DriverStation.getAlliance() == Alliance.Blue ){
         TAG_POSES.setOrigin(TAG_EIGHT_POSE);;
         var targetId = target.getFiducialId();
         Pose3d targetPose = TAG_POSES.getTagPose(targetId).get();
@@ -73,7 +75,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       
    
       else if(target.getPoseAmbiguity() <= .2 && target.getFiducialId()<= 4 || target.getFiducialId() == 5
-       && ALLIANCE_COLOR == AllianceColor.RED_ALLIANCE ){
+       && DriverStation.getAlliance() == Alliance.Red ){
         var targetId = target.getFiducialId();
         Pose3d targetPose = TAG_POSES.getTagPose(targetId).get();
         Transform3d cameraToTarget = target.getBestCameraToTarget();
@@ -86,13 +88,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       
 
   }
-  public void setBlueAllianceColor(){
-    ALLIANCE_COLOR = AllianceColor.BLUE_ALLIANCE;
-  }
-
-  public void setRedAllianceColor(){
-    ALLIANCE_COLOR = AllianceColor.RED_ALLIANCE;
-  }
+ 
   public Pose2d getPose2d(){
    return poseEstimator.getEstimatedPosition();
   }

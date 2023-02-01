@@ -11,8 +11,11 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.FiducialTracking.*;
+
+import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
 
 import java.util.Optional;
 
@@ -27,6 +30,7 @@ public class VisionSubsystem extends SubsystemBase {
   DriveSubsystem m_driveSubsystem;
   double m_targetHeight;
   Pose3d m_tagPose3d;
+  Transform3d cameraToTarget;
   
   public VisionSubsystem(PhotonCamera camera, DriveSubsystem driveSubsystem) {
     m_camera = camera;
@@ -50,6 +54,7 @@ public class VisionSubsystem extends SubsystemBase {
         m_tagPose3d = TAG_POSES.getTagPose(m_fiducialID).get();
        m_distance = PhotonUtils.calculateDistanceToTargetMeters(
         CAMERA_ONE_HEIGHT, m_tagPose3d.getZ(), CAMERA_ONE_PITCH_RADIANS, GetPitchRadians());
+         cameraToTarget = target.getBestCameraToTarget();
         
         
       }
@@ -67,4 +72,5 @@ public class VisionSubsystem extends SubsystemBase {
   public double GetPitchRadians(){
     return m_pitch * Math.PI /180;
   }
+
 }
