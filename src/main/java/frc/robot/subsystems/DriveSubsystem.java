@@ -7,11 +7,14 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.EncoderType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxRelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -40,39 +43,39 @@ import java.util.function.DoubleSupplier;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private CANSparkMax m_FlMotor;
+  private CANSparkMax m_FLMotor;
   private CANSparkMax m_FRMotor;
   private CANSparkMax m_BRMotor;
   private CANSparkMax m_BLMotor;
 
-  private MotorControllerGroup rControllerGroup;
-  private MotorControllerGroup lControllerGroup;
-  private DifferentialDrive drive;
+  private MotorControllerGroup m_rControllerGroup;
+  private MotorControllerGroup m_lControllerGroup;
+  private DifferentialDrive m_drive;
 
   RelativeEncoder m_rightEncoder;
   RelativeEncoder m_leftEncoder;
   
-  WPI_Pigeon2 gyro;
+  WPI_Pigeon2 m_gyro;
 
   ChassisSpeeds chassisSpeeds;
   public DriveSubsystem() {
-    m_FlMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
+    m_FLMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
     m_FRMotor = new CANSparkMax(FR_ID, MotorType.kBrushless);
     m_BRMotor = new CANSparkMax(BL_ID, MotorType.kBrushless);
     m_BLMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
     
-    rControllerGroup = new MotorControllerGroup(m_FRMotor, m_BRMotor);
-    lControllerGroup = new MotorControllerGroup(m_FlMotor, m_BLMotor);
+    m_rControllerGroup = new MotorControllerGroup(m_FRMotor, m_BRMotor);
+    m_lControllerGroup = new MotorControllerGroup(m_FLMotor, m_BLMotor);
   
-    m_FlMotor.restoreFactoryDefaults();    
+    m_FLMotor.restoreFactoryDefaults();    
     m_FRMotor.restoreFactoryDefaults();
     m_BRMotor.restoreFactoryDefaults(); 
     m_BLMotor.restoreFactoryDefaults();
 
-    rControllerGroup.setInverted(true);
-    lControllerGroup.setInverted(false);
+    m_rControllerGroup.setInverted(true);
+    m_lControllerGroup.setInverted(false);
 
-    drive = new DifferentialDrive(rControllerGroup, lControllerGroup);
+    m_drive = new DifferentialDrive(m_rControllerGroup, m_lControllerGroup);
     
     m_rightEncoder = m_FRMotor.getAlternateEncoder(
       SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
@@ -86,14 +89,15 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftEncoder.setVelocityConversionFactor(BL_ID);
     
     
-    gyro = new WPI_Pigeon2(PIGEON_ID);
+    m_gyro = new WPI_Pigeon2(PIGEON_ID);
 
     Pigeon2Configuration config = new Pigeon2Configuration();
     config.MountPosePitch= MOUNT_PITCH;
     config.MountPoseRoll= MOUNT_ROLL;
     config.MountPoseYaw = MOUNT_YAW;
   
-    gyro.configAllSettings(config);
+    m_gyro.configAllSettings(config);
+
      
   }
 
@@ -105,11 +109,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void NormalDrive(Double foward, Double rotation){
     //maybe add gyro assist?
-    drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TELE_ROTATION_CONTROLLER.calculate(0, rotation * NORMAL_TURN_FF ));
+    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TELE_ROTATION_CONTROLLER.calculate(0, rotation * NORMAL_TURN_FF ));
   }
   
   public void TurboJoystickDrive(Double foward, Double rotation){
-    drive.arcadeDrive(foward * TURBO_FOWARD_FF, TELE_ROTATION_CONTROLLER.calculate(0, rotation * TURBO_TURN_FF));
+    m_drive.arcadeDrive(foward * TURBO_FOWARD_FF, TELE_ROTATION_CONTROLLER.calculate(0, rotation * TURBO_TURN_FF));
 
   }
 
@@ -119,7 +123,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
   
   public Rotation2d getRotation2D(){
-    return gyro.getRotation2d();
+    return m_gyro.getRotation2d();
   }
   
   public double getLeftDistance(){
@@ -138,13 +142,18 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void SetMotorVoltage(Double rightVoltage, Double leftVoltage){
-    rControllerGroup.setVoltage(rightVoltage);
-    lControllerGroup.setVoltage(leftVoltage);
-    drive.feed();
+    m_rControllerGroup.setVoltage(rightVoltage);
+    m_lControllerGroup.setVoltage(leftVoltage);
+    m_drive.feed();
+  }
+
+  public void StopMotors(){
+    m_rControllerGroup.setVoltage(0);
+    m_lControllerGroup.setVoltage(0);
   }
 
   public double getRateAsRadians(){
-   return gyro.getRate() * Math.PI/180;
+   return m_gyro.getRate() * Math.PI/180;
   }
 
   public double getVelocity(){
@@ -160,32 +169,58 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void ResetGyro(){
-    gyro.reset();
+    m_gyro.reset();
   }
 
   public void SetGyroYaw(double angle){
-    gyro.setYaw(angle);
+    m_gyro.setYaw(angle);
   }
 
   public void TurnToTarget(double yaw, double setpoint){
     if(yaw >=5){
-    drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint));
+    m_drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint));
     }
     else{
-      drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint) + TURN_TO_TARGET_FF);
+      m_drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint) + TURN_TO_TARGET_FF);
     }
   }
 
   public void ChargeStationAlign(){
-    gyro.getGravityVector(GRAVITY_VECTOR);
-     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
+    m_gyro.getGravityVector(GRAVITY_VECTOR);
+     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      //might have to negative this
-     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
-     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
-     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
-     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(gyro.getPitch()));
+     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
+     m_BRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
+     m_FRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
+     m_FLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
   }
 
+  public void SetBreakMode(){
+    m_BLMotor.setIdleMode(IdleMode.kBrake);
+    m_BRMotor.setIdleMode(IdleMode.kBrake);
+    m_FRMotor.setIdleMode(IdleMode.kBrake);
+    m_FLMotor.setIdleMode(IdleMode.kBrake);    
+  }
+
+  public void SetCoastMode(){
+    m_BLMotor.setIdleMode(IdleMode.kCoast);
+    m_BRMotor.setIdleMode(IdleMode.kCoast);
+    m_FRMotor.setIdleMode(IdleMode.kCoast);
+    m_FLMotor.setIdleMode(IdleMode.kCoast);    
+    
+  }
+  
+  public static PPRamseteCommand followTrajCommand(DriveSubsystem driveSubsystem,
+   PoseEstimatorSubsystem poseEstimatorSubsystem,
+    PathPlannerTrajectory trajectory ){
+
+      return new PPRamseteCommand(
+        trajectory, poseEstimatorSubsystem::getPose2d, RAMSETE_CONTROLLER, KINEMATICS,
+         driveSubsystem::SetMotorVoltage, false);
+
+  }
+  
+  
 
 
   @Override

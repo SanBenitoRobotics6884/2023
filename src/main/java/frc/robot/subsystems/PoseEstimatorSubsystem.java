@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -27,7 +29,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
   /** Creates a new poseEstimator. */
@@ -35,7 +40,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   double previousTimeStamp = 0.0;
   DriveSubsystem driveSubystem;
   PhotonCamera camera;
-
+  Field2d m_Field2d;
   public PoseEstimatorSubsystem(PhotonCamera camera, DriveSubsystem driveSubsystem) {
     this.camera = camera;
     this.driveSubystem = driveSubsystem;
@@ -46,6 +51,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
      new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.5, 0.5, Units.degreesToRadians(5)), 
      //Vision Measurement Standard Deviations X, Y, Theta
      new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02,Units.degreesToRadians(5) ));
+
+     m_Field2d = new Field2d();
+     SmartDashboard.putData("field", m_Field2d );
   }
 
   @Override
@@ -84,8 +92,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         poseEstimator.addVisionMeasurement(Robotpose.toPose2d(), resultTimeStamp);
       }
       poseEstimator.update(driveSubystem.getRotation2D(), driveSubystem.getLeftDistance(), driveSubystem.getRightDistance());
+
     }
-      
+      m_Field2d.setRobotPose(this.getPose2d());
 
   }
  
@@ -96,6 +105,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     poseEstimator.resetPosition(
       driveSubystem.getRotation2D(), driveSubystem.getLeftDistance(), driveSubystem.getRightDistance(), pose2d);
       
+  }
+  public void AddTrajectory(PathPlannerTrajectory trajectory){
+    m_Field2d.getObject("traj").setTrajectory(trajectory);
   }
  
 }

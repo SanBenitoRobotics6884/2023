@@ -39,6 +39,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 /**
@@ -113,7 +114,6 @@ public final class RobotConstants {
         public static final RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
      
         public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV);
-
 
         public static final double TRACK_WIDTH = Units.inchesToMeters(2.0);
         public static final DifferentialDriveKinematics KINEMATICS = 
