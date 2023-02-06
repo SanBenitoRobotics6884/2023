@@ -6,12 +6,23 @@ package frc.robot;
 
 import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
 
+import java.util.List;
+
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.AStar.Edge;
+import frc.robot.AStar.Node;
+import frc.robot.AStar.Obstacle;
+import frc.robot.AStar.VisGraph;
+import frc.robot.ConstantsFolder.FieldConstants;
+import frc.robot.commands.AStar;
 import frc.robot.commands.DriveCmd;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
@@ -19,6 +30,7 @@ import frc.robot.subsystems.TrajectorySubystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -35,6 +47,13 @@ public class RobotContainer {
   Joystick joystick = new Joystick(0);
   JoystickButton aButton = new JoystickButton(joystick, 0);
 
+CommandXboxController controller = new CommandXboxController(0);
+
+  VisGraph AStarMap = new VisGraph();
+
+  // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
+  final List<Obstacle> obstacles = FieldConstants.obstacles;
+
 
   
 
@@ -45,6 +64,20 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(new RunCommand(
       ()->driveSubsystem.NormalDrive(joystick.getY(), joystick.getX()), driveSubsystem));
     configureButtonBindings();
+
+    AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
+    AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
+    AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
+    AStarMap.addNode(new Node(2.48 - 0.1, 1.07 - 0.1));
+    // Divider
+    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1));
+
+    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+      Node startNode = AStarMap.getNode(i);
+      for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
+        AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
+      }
+    }
 
   }
 
@@ -57,6 +90,16 @@ public class RobotContainer {
   private void configureButtonBindings() {
     aButton.toggleOnTrue(new RunCommand(
       ()->driveSubsystem.TurboJoystickDrive(joystick.getY(), joystick.getX()), driveSubsystem));
+
+      controller.x().whileTrue(new AStar(
+        driveSubsystem, poseEstimatorSubsystem,
+        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
+        AStarMap));
+
+    controller.y().whileTrue(new AStar(
+        driveSubsystem, poseEstimatorSubsystem,
+        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
+        AStarMap));
       
   }
 
