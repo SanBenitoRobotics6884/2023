@@ -23,7 +23,7 @@ import frc.robot.AStar.Obstacle;
 import frc.robot.AStar.VisGraph;
 import frc.robot.ConstantsFolder.FieldConstants;
 import frc.robot.commands.AStar;
-import frc.robot.commands.DriveCmd;
+import frc.robot.commands.DriveCmmd;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.TrajectorySubystem;
@@ -61,9 +61,10 @@ CommandXboxController controller = new CommandXboxController(0);
   public RobotContainer() {
     
     // Configure the button bindings
-    driveSubsystem.setDefaultCommand(new RunCommand(
-      ()->driveSubsystem.NormalDrive(joystick.getY(), joystick.getX()), driveSubsystem));
-    configureButtonBindings();
+    driveSubsystem.setDefaultCommand(new DriveCmmd(driveSubsystem,
+     ()->controller.getLeftY(), ()->controller.getRightX(), false));
+   
+     configureButtonBindings();
 
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
@@ -88,8 +89,7 @@ CommandXboxController controller = new CommandXboxController(0);
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    aButton.toggleOnTrue(new RunCommand(
-      ()->driveSubsystem.TurboJoystickDrive(joystick.getY(), joystick.getX()), driveSubsystem));
+   controller.leftTrigger().whileTrue(new DriveCmmd(driveSubsystem, ()->controller.getLeftY(), ()->controller.getRightX(), true));
 
       controller.x().whileTrue(new AStar(
         driveSubsystem, poseEstimatorSubsystem,
