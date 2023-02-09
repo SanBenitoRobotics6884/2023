@@ -50,15 +50,12 @@ public class VisGraph
   {
     if (!containsEdge(edge))
     {
-      // Why not use the Line2D class' static method of .linesIntersect() ? I am just hold on
       for (Obstacle obstacle : obstacles)
       {
         PolygonDouble polygon = obstacle.polygon;
         for (int i = 0; i < polygon.npoints; i++)
         {
           int    j  = (i + 1) % polygon.npoints;
-          // Couldn't the mod be eliminated by starting the index i at 1 and manually checking the segment between the
-          // last vertex and first one before this? Well
           double x1 = polygon.xpoints[i];
           double y1 = polygon.ypoints[i];
           double x2 = polygon.xpoints[j];
@@ -115,7 +112,6 @@ public class VisGraph
             cameFrom.put(neighbor, current);
             gScore.put(neighbor, tentativeGScore);
             fScore.put(neighbor, gScore.get(neighbor) + distance(neighbor, goal));
-            // No check needed, .add is a noop if it contains it. Sets don't allow duplicates
             openSet.add(neighbor);
           }
         }
