@@ -23,6 +23,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
@@ -54,11 +56,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   RelativeEncoder m_rightEncoder;
   RelativeEncoder m_leftEncoder;
+  //make sure to output degrees as negative!!!!!!!!!
+ // WPI_Pigeon2 m_gyro;
+
+  ADIS16470_IMU m_gyro;
   
-  WPI_Pigeon2 m_gyro;
 
   ChassisSpeeds chassisSpeeds;
-  public DriveSubsystem() {
+  public DriveSubsystem(ADIS16470_IMU gyro) {
     m_FLMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
     m_FRMotor = new CANSparkMax(FR_ID, MotorType.kBrushless);
     m_BRMotor = new CANSparkMax(BL_ID, MotorType.kBrushless);
@@ -87,16 +92,18 @@ public class DriveSubsystem extends SubsystemBase {
     
     m_rightEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
     m_leftEncoder.setVelocityConversionFactor(BL_ID);
-    
-    
-    m_gyro = new WPI_Pigeon2(PIGEON_ID);
 
-    Pigeon2Configuration config = new Pigeon2Configuration();
+  
+    m_gyro = gyro;
+    
+  // m_gyro = new WPI_Pigeon2(PIGEON_ID);
+
+     Pigeon2Configuration config = new Pigeon2Configuration();
     config.MountPosePitch= MOUNT_PITCH;
     config.MountPoseRoll= MOUNT_ROLL;
     config.MountPoseYaw = MOUNT_YAW;
   
-    m_gyro.configAllSettings(config);
+   // m_gyro.configAllSettings(config);
 
      
   }
@@ -123,7 +130,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
   
   public Rotation2d getRotation2D(){
-    return m_gyro.getRotation2d();
+   // return m_gyro.getRotation2d();
+   return Rotation2d.fromDegrees(-m_gyro.getAngle());
   }
   
   public double getLeftDistance(){
@@ -171,10 +179,12 @@ public class DriveSubsystem extends SubsystemBase {
   public void ResetGyro(){
     m_gyro.reset();
   }
-
-  public void SetGyroYaw(double angle){
-    m_gyro.setYaw(angle);
+  public void CalibrateGyro(){
+    if(DriverStation.isDisabled()){
+      m_gyro.calibrate();
+    }
   }
+
 
   public void TurnToTarget(double yaw, double setpoint){
     if(yaw >=5){
@@ -186,13 +196,17 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void ChargeStationAlign(){
-    m_gyro.getGravityVector(GRAVITY_VECTOR);
+    /*m_gyro.getGravityVector(GRAVITY_VECTOR);
      AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      //might have to negative this
      m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      m_BRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      m_FRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
-     m_FLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
+     m_FLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));*/
+    /* 
+     double GRAVITY_VECTOR = m_gyro.getAccelZ();
+     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR * Math.sin(0),KA * GRAVITY_VECTOR * Math.sin(m_gyro.));
+     */
   }
 
   public void SetBreakMode(){
