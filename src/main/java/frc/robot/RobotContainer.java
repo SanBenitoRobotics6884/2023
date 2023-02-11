@@ -23,12 +23,15 @@ import frc.robot.AStar.Obstacle;
 import frc.robot.AStar.VisGraph;
 import frc.robot.ConstantsFolder.FieldConstants;
 import frc.robot.commands.AStar;
+import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
+import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.TrajectorySubystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -44,18 +47,25 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);
   private final TrajectorySubystem trajectorySubystem = new TrajectorySubystem(driveSubsystem, poseEstimatorSubsystem);
+  private final ClawSubsystem clawSubsystem = new ClawSubsystem();
+ 
   Joystick joystick = new Joystick(0);
   JoystickButton aButton = new JoystickButton(joystick, 0);
 
-CommandXboxController controller = new CommandXboxController(0);
+  CommandXboxController controller = new CommandXboxController(0);
 
   VisGraph AStarMap = new VisGraph();
+
+  ClawCmmd clawCommand = new ClawCmmd(
+    clawSubsystem,
+    () -> joystick.getTrigger(),
+    () -> joystick.getRawButton(3),
+    () -> joystick.getRawButton(4));
 
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
 
 
-  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -80,6 +90,7 @@ CommandXboxController controller = new CommandXboxController(0);
       }
     }
 
+    clawSubsystem.setDefaultCommand(clawCommand);
   }
 
   /**
@@ -101,6 +112,9 @@ CommandXboxController controller = new CommandXboxController(0);
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
       
+  new JoystickButton(joystick, 3).whileTrue(clawCommand);
+  new JoystickButton(joystick, 4).whileTrue(clawCommand);      
+  new JoystickButton(joystick, 2).onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
   }
 
   /**

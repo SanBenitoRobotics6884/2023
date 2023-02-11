@@ -2,15 +2,15 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Subsystems.ClawSubsystem;
-import static frc.robot.Constants.Claw.*;
+import frc.robot.subsystems.ClawSubsystem;
+import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
 
 import java.util.function.BooleanSupplier;
 
-public class ClawCommand extends CommandBase {
+public class ClawCmmd extends CommandBase {
   ClawSubsystem m_clawSubsystem;
   boolean m_triggerState = false;
   boolean m_leftPressed = false;
@@ -18,7 +18,7 @@ public class ClawCommand extends CommandBase {
   double m_rotations = 0;
   double m_CurrentButton = 0;
 
-  public ClawCommand(
+  public ClawCmmd(
       ClawSubsystem clawSubsystem, 
       BooleanSupplier triggerPressed, 
       BooleanSupplier leftPressed, 
@@ -27,8 +27,8 @@ public class ClawCommand extends CommandBase {
     addRequirements(clawSubsystem);
     m_clawSubsystem = clawSubsystem;
     m_triggerState = triggerPressed.getAsBoolean();
-    m_leftPressed = triggerPressed.getAsBoolean();
-    m_rightPressed = triggerPressed.getAsBoolean();
+    m_leftPressed = leftPressed.getAsBoolean();
+    m_rightPressed = rightPressed.getAsBoolean();
   }
 
   @Override
