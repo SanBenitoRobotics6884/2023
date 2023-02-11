@@ -36,7 +36,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
+import static frc.robot.constants.RobotConstants.Drive.*;
 
 import java.util.Optional;
 import java.util.function.DoubleSupplier;

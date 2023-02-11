@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 
+import static frc.robot.constants.FieldConstants.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +27,10 @@ import frc.robot.AStar.Edge;
 import frc.robot.AStar.Node;
 import frc.robot.AStar.Obstacle;
 import frc.robot.AStar.VisGraph;
-import frc.robot.ConstantsFolder.FieldConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.Util.Doubles;
-import static frc.robot.ConstantsFolder.FieldConstants.*;
+import frc.robot.util.Doubles;
+import frc.robot.constants.FieldConstants;
 
 public class AStar extends CommandBase {
   private final DriveSubsystem driveSystem;

@@ -1,4 +1,4 @@
-package frc.robot.ConstantsFolder;
+package frc.robot.constants;
 
 import java.util.List;
 

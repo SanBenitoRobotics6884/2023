@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.ConstantsFolder.RobotConstants.Turret.*;
+import static frc.robot.constants.RobotConstants.Turret.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -75,6 +75,20 @@ public class TurretSubsystem extends SubsystemBase {
   /** Get the desired value of the encoder */
   public double getSetpoint() {
     return m_turretPID.getGoal().position;
+  }
+
+  public void turnLeft() {
+    double newSetpoint = getSetpoint() - MANUAL_ROTATE;
+    if (newSetpoint >= HARD_MIN_ANGLE) {
+      setSetpoint(newSetpoint);
+    }
+  }
+
+  public void turnRight() {
+    double newSetpoint = getSetpoint() + MANUAL_ROTATE;
+    if (newSetpoint <= HARD_MAX_ANGLE) {
+      setSetpoint(newSetpoint);
+    }
   }
 
   /** Return when to rumble the left side of the controller */

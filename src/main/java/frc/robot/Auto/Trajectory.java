@@ -1,6 +1,6 @@
 package frc.robot.Auto;
 
-import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
+import static frc.robot.constants.RobotConstants.Drive.*;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;

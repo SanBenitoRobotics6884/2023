@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.ConstantsFolder;
+package frc.robot.constants;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public final class RobotConstants {
         public static final double TURN_TO_TARGET_KI = 0.0;
         public static final double TURN_TO_TARGET_KD = 0.0;
         public static final PIDController TURN_TO_TARGET_CONTROLLER = 
-        new PIDController(TURN_TO_TARGET_KP, TURN_TO_TARGET_KI, TURN_TO_TARGET_KD);
+            new PIDController(TURN_TO_TARGET_KP, TURN_TO_TARGET_KI, TURN_TO_TARGET_KD);
         public static final double TURN_TO_TARGET_FF = 0.0;
        
         public static final int PIGEON_ID = 0;
@@ -196,7 +196,7 @@ public final class RobotConstants {
         public static final AprilTag TAG_EIGHT = new AprilTag(8, TAG_EIGHT_POSE);
 
         public static final List<AprilTag> TAG_LIST = (List<AprilTag>) Collections.unmodifiableList(
-        List.of(TAG_ONE, TAG_TWO, TAG_THREE, TAG_FOUR, TAG_FIVE, TAG_SIX, TAG_SEVEN, TAG_EIGHT));
+            List.of(TAG_ONE, TAG_TWO, TAG_THREE, TAG_FOUR, TAG_FIVE, TAG_SIX, TAG_SEVEN, TAG_EIGHT));
 
         public static final double FIELD_LENGTH = Units.inchesToMeters(319);
         public static final double FIELD_WIDTH = Units.inchesToMeters(649);
@@ -227,7 +227,7 @@ public final class RobotConstants {
         public static final double LEFT_SWITCH_ANGLE = -GEAR_RATIO * 130/360;
         public static final double RIGHT_SWITCH_ANGLE = GEAR_RATIO * 130/360;
 
-        public static final double MANUAL_ROTATE_SCALE = 0.0001;
+        public static final double MANUAL_ROTATE = 0.0001; // change this
         public static final double P = 0;
         public static final double I = 0;
         public static final double D = 0;
