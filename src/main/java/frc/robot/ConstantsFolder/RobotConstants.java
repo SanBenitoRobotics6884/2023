@@ -204,8 +204,36 @@ public final class RobotConstants {
             TAG_LIST, FIELD_LENGTH, FIELD_WIDTH);
 
         public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d());
+        public static final Transform3d CAMERA_TO_TURRET = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d());
+        public static final Transform3d TAG_TO_CUBE = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d());
+        public static final Transform3d TAG_TO_LEFT_CONE = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d());
+        public static final Transform3d TAG_TO_RIGHT_CONE = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d());
         public static final Transform3d BOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
      
+    }
+
+    public static class Turret {
+        public static final int TURRET_ID = 1;
+        public static final int LEFT_SWITCH_PORT = 1;
+        public static final int RIGHT_SWITCH_PORT = 2;
+        public static final double GEAR_RATIO = 37.2;
+
+        public static final double SOFT_MIN_ANGLE = -GEAR_RATIO * 110 / 360; // Not sure of what the angle is
+        public static final double SOFT_MAX_ANGLE = GEAR_RATIO * 110 / 360;
+        public static final double HARD_MIN_ANGLE = -GEAR_RATIO * 130 / 360;
+        public static final double HARD_MAX_ANGLE = GEAR_RATIO * 130 / 360;
+        public static final double LEFT_RUMBLE_ANGLE = -GEAR_RATIO * 120/360;
+        public static final double RIGHT_RUMBLE_ANGLE = GEAR_RATIO * 120/360;
+        public static final double LEFT_SWITCH_ANGLE = -GEAR_RATIO * 130/360;
+        public static final double RIGHT_SWITCH_ANGLE = GEAR_RATIO * 130/360;
+
+        public static final double MANUAL_ROTATE_SCALE = 0.0001;
+        public static final double P = 0;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double MAX_VELOCITY = 1; // Rotations per second of turret (not motor)
+        public static final double MAX_ACCELERATION = 1; // Rotations per second per second of turret
+        public static final double BOUNDARY_SCALE = 2/3; // Shrink voltage when near boundary
     }
   
   
