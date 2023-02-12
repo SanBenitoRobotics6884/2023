@@ -12,9 +12,9 @@ import java.util.function.BooleanSupplier;
 
 public class ClawCmmd extends CommandBase {
   ClawSubsystem m_clawSubsystem;
-  boolean m_triggerState = false;
-  boolean m_leftPressed = false;
-  boolean m_rightPressed = false;
+  BooleanSupplier m_triggerState;
+  BooleanSupplier m_leftPressed;
+  BooleanSupplier m_rightPressed;
   double m_rotations = 0;
   double m_CurrentButton = 0;
 
@@ -26,9 +26,9 @@ public class ClawCmmd extends CommandBase {
   {
     addRequirements(clawSubsystem);
     m_clawSubsystem = clawSubsystem;
-    m_triggerState = triggerPressed.getAsBoolean();
-    m_leftPressed = leftPressed.getAsBoolean();
-    m_rightPressed = rightPressed.getAsBoolean();
+    m_triggerState = triggerPressed;
+    m_leftPressed = leftPressed;
+    m_rightPressed = rightPressed;
   }
 
   @Override
@@ -36,16 +36,16 @@ public class ClawCmmd extends CommandBase {
 
   @Override
   public void execute() {
-    if (m_triggerState) {
-     if (m_leftPressed && m_rotations < kContLimit - 0.01) {
+    if (m_triggerState.getAsBoolean()) {
+     if (m_leftPressed.getAsBoolean() && m_rotations < kContLimit - 0.01) {
         m_rotations += kCloseClawRate;
-      } else if (m_rightPressed && m_rotations < kContLimit + 0.01) {
+      } else if (m_rightPressed.getAsBoolean() && m_rotations < kContLimit + 0.01) {
         m_rotations += kOpenClawRate;
       }
    } else {
-    if (m_leftPressed) {
+    if (m_leftPressed.getAsBoolean()) {
       m_rotations = kCubeClose;
-    } else if (m_rightPressed) {
+    } else if (m_rightPressed.getAsBoolean()) {
       m_rotations = kConeClose;
     }
    }
