@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
-import static frc.robot.Constants.Arm.*;
+import static frc.robot.ConstantsFolder.RobotConstants.Arm.*;
 
 
 public class ArmCommand extends CommandBase {
@@ -31,7 +31,6 @@ public class ArmCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     double extend = aSubsystem.getExtendSetPoint() + Extend.Y_SCALE * value.getAsDouble();
     double pivot = aSubsystem.getPivotSetPoint() + Pivot.Y_SCALE * value.getAsDouble();
 

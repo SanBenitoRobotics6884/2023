@@ -39,6 +39,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
@@ -205,9 +206,87 @@ public final class RobotConstants {
 
         public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d());
         public static final Transform3d BOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
+
+
+
+        
      
     }
+    public static final class Arm {
+
+        public static final class Pivot {
+
+            public static final double P = 0;
+            public static final double I = 0;
+            public static final double D = 0;
+
+            public static final double HYBRID_SETPOINT = 0;
+            public static final double MID_SETPOINT = 0;
+            public static final double HIGH_SETPOINT = 0;
+
+            public static final double PIVOT_HYBRID_ROTATIONS = 0;
+            public static final double PIVOT_MID_ROTATIONS = 0;
+            public static final double PIVOT_HIGH_ROTATIONS = 0;
+            
+            public static final double Y_SCALE = 1; 
+
+            //in motor rotations
+            public static final float PIVOT_REVERSE_SOFT_LIMIT = 1;
+            public static final float PIVOT_FORWARD_SOFT_LIMIT = 1;
+            public static final double BACK_HARD_LIMIT = 0;
+            public static final double FRONT_HARD_LIMIT = 0;
+
+            public static final int LEFT_MOTOR = 0; 
+            public static final int RIGHT_MOTOR = 0;
+            
+            public static final double GEAR_RATIO = 10.71;
+            public static final double MAX_VELOCITY = 0;
+            public static final double MAX_ACCELERATION = 0;
+
+            public static final double MIN_ANGLE = 0;
+            public static final int SWITCH_PORT = 1;
+
+           
+        
+        }
+        public static final class Extend {
+
+            public static final double P = 0;
+            public static final double I = 0;
+            public static final double D = 0;
+            
+
+            public static final double HYBRID_SETPOINT = 0;
+            public static final double MID_SETPOINT = 0;
+            public static final double HIGH_SETPOINT = 0;
+
+            public static final double EXTEND_HYBRID_ROTATIONS = 0;
+            public static final double EXTEND_MID_ROTATIONS = 0;
+            public static final double EXTEND_HIGH_ROTATIONS = 0;
+
+            public static final double Y_SCALE = 1;
+
+            public static final float EXTEND_REVERSE_SOFT_LIMIT = 1;
+            public static final float EXTEND_FORWARD_SOFT_LIMIT = 1;
+            public static final double BACK_HARD_LIMIT = 0;
+            public static final double FRONT_HARD_LIMIT = 0;
+
+            public static final int EXTEND_MOTOR = 0; 
+
+            public static final double GEAR_RATIO = 3;
+            public static final double MAX_VELOCITY = 0;
+            public static final double MAX_ACCELERATION = 0;
+
+            public static final double SERVO_DELAY = 1;
+            public static final double TOTAL_SERVO_DELAY = Timer.getFPGATimestamp() + SERVO_DELAY;
+            public static final double SERVO_ENGAGED = 1;
+            public static final double SERVO_DISENGAGED = 0;
+            public static final double RATCHET_DELAY = 1; 
+
+            
+
+        }
   
   
-   
+    }  
 }
