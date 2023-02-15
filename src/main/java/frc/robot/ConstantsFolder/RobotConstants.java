@@ -215,10 +215,10 @@ public final class RobotConstants {
     public static final class Arm {
 
         public static final class Pivot {
-
             public static final double P = 0;
             public static final double I = 0;
             public static final double D = 0;
+            public static final double SETPOINT_ERROR = 1;
 
             public static final double HYBRID_SETPOINT = 0;
             public static final double MID_SETPOINT = 0;
@@ -249,11 +249,12 @@ public final class RobotConstants {
            
         
         }
-        public static final class Extend {
 
+        public static final class Extend {
             public static final double P = 0;
             public static final double I = 0;
             public static final double D = 0;
+            public static final double SETPOINT_ERROR = 1;
             
 
             public static final double HYBRID_SETPOINT = 0;
@@ -277,16 +278,11 @@ public final class RobotConstants {
             public static final double MAX_VELOCITY = 0;
             public static final double MAX_ACCELERATION = 0;
 
+            public static final int SERVO_PORT = 0;
             public static final double SERVO_DELAY = 1;
-            public static final double TOTAL_SERVO_DELAY = Timer.getFPGATimestamp() + SERVO_DELAY;
-            public static final double SERVO_ENGAGED = 1;
-            public static final double SERVO_DISENGAGED = 0;
-            public static final double RATCHET_DELAY = 1; 
-
-            
-
+            public static final double RATCHET_ENGAGED = 1;
+            public static final double RATCHET_DISENGAGED = 0;
+            public static final double RATCHET_DELAY = 1;
         }
-  
-  
     }  
 }

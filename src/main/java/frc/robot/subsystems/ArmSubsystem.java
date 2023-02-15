@@ -13,7 +13,10 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Util.BooleanChecker;
+
 import static frc.robot.ConstantsFolder.RobotConstants.Arm.*;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -33,15 +36,20 @@ public class ArmSubsystem extends SubsystemBase {
       new TrapezoidProfile.Constraints(Extend.GEAR_RATIO * Extend.MAX_VELOCITY, Extend.GEAR_RATIO * Extend.MAX_ACCELERATION));
 
   private RelativeEncoder m_extendMotorEncoder;
-  private RelativeEncoder m_firstLiftMotorEncoder;
+  private RelativeEncoder m_pivotMotorEncoder;
 
     DigitalInput m_limitSwitch = new DigitalInput(Pivot.SWITCH_PORT);
 
-  // set extentions
-
+  // intialize setpoints
   private double m_extendSetpoint = 0;
   private double m_pivotSetpoint = 0;
-  private boolean waiting = false;
+
+  // stuff for ratchet
+  private boolean m_waiting = false;
+  private double m_timestamp = 0;
+  private double m_servoValue = Extend.RATCHET_ENGAGED;
+  private BooleanChecker m_upChecker = new BooleanChecker(
+      () -> m_extendSetpoint + extendCorrect(m_pivotSetpoint) > m_extendMotorEncoder.getPosition()+ Extend.SETPOINT_ERROR);
 
   /** Creates a new ExtensionSubsystem. */
   public ArmSubsystem() {
@@ -53,7 +61,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     // encoders
     m_extendMotorEncoder = m_extendMotor.getEncoder();
-    m_firstLiftMotorEncoder = m_firstLiftMotor.getEncoder();
+    m_pivotMotorEncoder = m_firstLiftMotor.getEncoder();
  
     // soft limits on motors
     // Leaving it commented out until we understand it better
@@ -70,34 +78,66 @@ public class ArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // 
     if (m_limitSwitch.get()) {
-      m_firstLiftMotorEncoder.setPosition(Pivot.MIN_ANGLE);
+      m_pivotMotorEncoder.setPosition(Pivot.MIN_ANGLE);
+      m_pivotPIDController.setGoal(Pivot.MIN_ANGLE);
     }
-      
-    m_extendPIDController.setGoal(m_extendSetpoint + extendCorrect(m_pivotSetpoint));
-    m_pivotPIDController.setGoal(m_pivotSetpoint);
     
-    m_firstLiftMotor.set(m_pivotPIDController.calculate(m_firstLiftMotorEncoder.getPosition()));  
-    m_extendMotor.set(m_extendPIDController.calculate(m_extendMotorEncoder.getPosition())); 
+    if (m_upChecker.check()) {
+      // When we are starting to try to extend out, we need a wait
+      m_waiting = true;
+      m_timestamp = Timer.getFPGATimestamp() + Extend.SERVO_DELAY;
+      // We wait for the servo to fully disengage
+      m_servoValue = Extend.RATCHET_DISENGAGED;
+      m_firstLiftMotor.set(0);
+      m_extendMotor.set(0);
+    } else if (!m_waiting) {
+      // While we're going we need to update the goal
+      m_extendPIDController.setGoal(m_extendSetpoint + extendCorrect(m_pivotSetpoint));
+      m_pivotPIDController.setGoal(m_pivotSetpoint);
+
+      // If the extension is within the error, reengage the ratchet and stop the motor, otherwise give it the pid output
+      if (Math.abs(m_extendMotorEncoder.getPosition() - (m_extendSetpoint + extendCorrect(m_pivotSetpoint))) > Extend.SETPOINT_ERROR) {
+        m_extendMotor.set(m_extendPIDController.calculate(m_extendMotorEncoder.getPosition()));
+      } else {
+        m_extendMotor.set(0);
+        m_servoValue = Extend.RATCHET_ENGAGED;
+      }
+      // If the pivot is within the error, stop the motor, otherwise, give it the pid output
+      if (Math.abs(m_pivotMotorEncoder.getPosition() - m_pivotSetpoint) < Pivot.SETPOINT_ERROR) {
+        m_firstLiftMotor.set(m_pivotPIDController.calculate(m_pivotMotorEncoder.getPosition()));
+      } else {
+        m_firstLiftMotor.set(0);
+      }
+    } else {
+      // While waiting, put both motors to false.
+      if (Timer.getFPGATimestamp() + 0.020 >= m_timestamp) {
+        m_waiting = false;
+      }
+      m_firstLiftMotor.set(0);
+      m_extendMotor.set(0);
+    }
+    m_extendServo.set(m_servoValue);
   }
 
   public double extendCorrect(double armPosition){
     return 0;
   }
 
-  public double getM_extendSetpoint(){
+  public double getExtendSetpoint(){
     return m_extendSetpoint;
   }
 
-  public void setM_extendSetpoint(double value){
+  public void setExtendSetpoint(double value){
     m_extendSetpoint = value;
   }
 
-  public double getM_pivotSetpoint(){
+  public double getPivotSetpoint(){
     return m_pivotSetpoint;
   }
 
-  public void setM_pivotSetpoint(double value){
+  public void setPivotSetpoint(double value){
     m_extendSetpoint = value;
   }
 }
