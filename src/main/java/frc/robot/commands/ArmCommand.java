@@ -13,14 +13,13 @@ import static frc.robot.ConstantsFolder.RobotConstants.Arm.*;
 
 public class ArmCommand extends CommandBase {
   /** Creates a new ExtendCommand. */
-  ArmSubsystem aSubsystem;
-  DoubleSupplier value;
-  BooleanSupplier extensionMode;
-  public ArmCommand(ArmSubsystem m_ArmSubsystem, DoubleSupplier value, BooleanSupplier extensionMode) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.value = value;
-    this.extensionMode = extensionMode;
-    addRequirements(aSubsystem);
+  ArmSubsystem m_armSubsystem;
+  DoubleSupplier m_value;
+  BooleanSupplier m_extensionMode;
+  public ArmCommand(ArmSubsystem armSubsystem, DoubleSupplier value, BooleanSupplier extensionMode) {
+    m_armSubsystem = armSubsystem;
+    m_value = value;
+    addRequirements(armSubsystem);
   }
 
 
@@ -31,15 +30,15 @@ public class ArmCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double extend = aSubsystem.getExtendSetPoint() + Extend.Y_SCALE * value.getAsDouble();
-    double pivot = aSubsystem.getPivotSetPoint() + Pivot.Y_SCALE * value.getAsDouble();
+    double extend = m_armSubsystem.getM_extendSetpoint() + Extend.Y_SCALE * m_value.getAsDouble();
+    double pivot = m_armSubsystem.getM_pivotSetpoint() + Pivot.Y_SCALE * m_value.getAsDouble();
 
-    if (extensionMode.getAsBoolean() && extend > Extend.BACK_HARD_LIMIT && extend < Extend.FRONT_HARD_LIMIT){
-      aSubsystem.setExtendSetPoint(
-      aSubsystem.getExtendSetPoint() + Extend.Y_SCALE * value.getAsDouble());
+    if (m_extensionMode.getAsBoolean() && extend > Extend.BACK_HARD_LIMIT && extend < Extend.FRONT_HARD_LIMIT){
+      m_armSubsystem.setM_extendSetpoint(
+          m_armSubsystem.getM_extendSetpoint() + Extend.Y_SCALE * m_value.getAsDouble());
     } else if (pivot > Pivot.BACK_HARD_LIMIT && pivot < Pivot.FRONT_HARD_LIMIT) { 
-      aSubsystem.setPivotSetPoint(
-        aSubsystem.getPivotSetPoint() + Pivot.Y_SCALE * value.getAsDouble());
+      m_armSubsystem.setM_pivotSetpoint(
+          m_armSubsystem.getM_pivotSetpoint() + Pivot.Y_SCALE * m_value.getAsDouble());
     }
   }
 

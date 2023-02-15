@@ -64,13 +64,13 @@ CommandXboxController controller = new CommandXboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
-    // Configure the button bindings
     m_ArmSubsystem.setDefaultCommand(m_armCommand);
     driveSubsystem.setDefaultCommand(new DriveCmmd(driveSubsystem,
-     ()->controller.getLeftY(), ()->controller.getRightX(), false));
+      () -> controller.getLeftY(), 
+      () -> controller.getRightX(), 
+      false));
     
-     configureButtonBindings();
+    configureButtonBindings();
 
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
@@ -107,22 +107,22 @@ CommandXboxController controller = new CommandXboxController(0);
         AStarMap));
 
         new JoystickButton(m_joystick, 7)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setExtendSetPoint(Arm.Extend.HYBRID_SETPOINT))); 
+        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setM_extendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
     
        new JoystickButton(m_joystick, 9)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setExtendSetPoint(Arm.Extend.MID_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setM_extendSetpoint(Arm.Extend.MID_SETPOINT)));
     
        new JoystickButton(m_joystick, 11)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setExtendSetPoint(Arm.Extend.HIGH_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setM_extendSetpoint(Arm.Extend.HIGH_SETPOINT)));
     
        new JoystickButton(m_joystick, 12)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setPivotSetPoint(Arm.Pivot.HYBRID_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setM_pivotSetpoint(Arm.Pivot.HYBRID_SETPOINT)));
        
        new JoystickButton(m_joystick, 10)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setPivotSetPoint(Arm.Pivot.MID_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setM_pivotSetpoint(Arm.Pivot.MID_SETPOINT)));
        
        new JoystickButton(m_joystick, 8)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setPivotSetPoint(Arm.Pivot.HIGH_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setM_pivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
     
       
   }
