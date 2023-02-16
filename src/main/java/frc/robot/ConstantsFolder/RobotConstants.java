@@ -59,9 +59,9 @@ public final class RobotConstants {
         public static final int BL_ID = 0;
 
         public static final double NORMAL_FOWARD_FF = 0.0;
-        public static final double NORMAL_TURN_FF = 0.0;
+        public static final double NORMAL_TURN_FF = 0.7;
         public static final double TURBO_FOWARD_FF = 0.0;
-        public static final double TURBO_TURN_FF = 0.0;
+        public static final double TURBO_TURN_FF = 0.1;
 
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 4.10;
@@ -70,7 +70,7 @@ public final class RobotConstants {
         public static final double POSITION_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10;
         public static final double VELOCITY_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10/60;
 
-        public static final double TURN_TO_TARGET_KP = 0.0;
+        public static final double TURN_TO_TARGET_KP = 1.2;
         public static final double TURN_TO_TARGET_KI = 0.0;
         public static final double TURN_TO_TARGET_KD = 0.0;
         public static final PIDController TURN_TO_TARGET_CONTROLLER = 
