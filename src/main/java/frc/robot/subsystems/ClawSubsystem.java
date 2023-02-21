@@ -72,7 +72,7 @@ public class ClawSubsystem extends SubsystemBase {
  
   public void setReference(double rotations) {
     if (!triggerState) {  
-      if (isClawClosed = false) {
+      if (isClawClosed == false) {
         isClawClosed = true;
         move(rotations);
       } else {

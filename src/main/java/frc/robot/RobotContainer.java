@@ -111,9 +111,7 @@ public class RobotContainer {
         driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
-      
-  new JoystickButton(joystick, 3).whileTrue(clawCommand);
-  new JoystickButton(joystick, 4).whileTrue(clawCommand);      
+       
   new JoystickButton(joystick, 2).onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
   }
 
