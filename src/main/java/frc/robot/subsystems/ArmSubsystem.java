@@ -49,7 +49,7 @@ public class ArmSubsystem extends SubsystemBase {
   private double m_timestamp = 0;
   private double m_servoValue = Extend.RATCHET_ENGAGED;
   private BooleanChecker m_upChecker = new BooleanChecker(
-      () -> m_extendSetpoint + extendCorrect(m_pivotSetpoint) > m_extendMotorEncoder.getPosition()+ Extend.SETPOINT_ERROR);
+      () -> m_extendSetpoint > m_extendMotorEncoder.getPosition() + Extend.SETPOINT_ERROR);
 
   /** Creates a new ExtensionSubsystem. */
   public ArmSubsystem() {
@@ -94,11 +94,11 @@ public class ArmSubsystem extends SubsystemBase {
       m_extendMotor.set(0);
     } else if (!m_waiting) {
       // While we're going we need to update the goal
-      m_extendPIDController.setGoal(m_extendSetpoint + extendCorrect(m_pivotSetpoint));
+      m_extendPIDController.setGoal(m_extendSetpoint);
       m_pivotPIDController.setGoal(m_pivotSetpoint);
 
       // If the extension is within the error, reengage the ratchet and stop the motor, otherwise give it the pid output
-      if (Math.abs(m_extendMotorEncoder.getPosition() - (m_extendSetpoint + extendCorrect(m_pivotSetpoint))) > Extend.SETPOINT_ERROR) {
+      if (Math.abs(m_extendMotorEncoder.getPosition() - m_extendSetpoint) > Extend.SETPOINT_ERROR) {
         m_extendMotor.set(m_extendPIDController.calculate(m_extendMotorEncoder.getPosition()));
       } else {
         m_extendMotor.set(0);
@@ -119,10 +119,6 @@ public class ArmSubsystem extends SubsystemBase {
       m_extendMotor.set(0);
     }
     m_extendServo.set(m_servoValue);
-  }
-
-  public double extendCorrect(double armPosition){
-    return 0;
   }
 
   public double getExtendSetpoint(){
