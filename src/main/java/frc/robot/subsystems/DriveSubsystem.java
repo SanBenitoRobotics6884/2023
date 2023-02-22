@@ -61,8 +61,8 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     m_FLMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
     m_FRMotor = new CANSparkMax(FR_ID, MotorType.kBrushless);
-    m_BRMotor = new CANSparkMax(BL_ID, MotorType.kBrushless);
-    m_BLMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
+    m_BRMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
+    m_BLMotor = new CANSparkMax(BL_ID, MotorType.kBrushless);
     
     m_rControllerGroup = new MotorControllerGroup(m_FRMotor, m_BRMotor);
     m_lControllerGroup = new MotorControllerGroup(m_FLMotor, m_BLMotor);
