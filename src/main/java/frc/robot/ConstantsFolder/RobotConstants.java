@@ -53,10 +53,10 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 public final class RobotConstants {
 
     public static final class Drive {
-        public static final int FR_ID = 0;
-        public static final int FL_ID = 0;
-        public static final int BR_ID = 0;
-        public static final int BL_ID = 0;
+        public static final int FR_ID = 32;
+        public static final int FL_ID = 33;
+        public static final int BR_ID = 30;
+        public static final int BL_ID = 31;
 
         public static final double NORMAL_FOWARD_FF = 0.0;
         public static final double NORMAL_TURN_FF = 0.7;
