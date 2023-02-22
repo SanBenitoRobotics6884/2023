@@ -79,6 +79,9 @@ public class ArmSubsystem extends SubsystemBase {
     config.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_100Ms;
     m_pivotMotorEncoder.configAllSettings(config);
 
+    m_pivotMotorEncoder.setPosition(0);
+    m_extendMotorEncoder.setPosition(0);
+
     // soft limits on motors
     // Leaving it commented out until we understand it better
     /*
