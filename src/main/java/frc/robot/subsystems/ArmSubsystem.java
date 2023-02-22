@@ -5,6 +5,12 @@
 package frc.robot.subsystems;
 
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.SoftLimitDirection; // Is commented out
@@ -36,7 +42,7 @@ public class ArmSubsystem extends SubsystemBase {
       new TrapezoidProfile.Constraints(Extend.GEAR_RATIO * Extend.MAX_VELOCITY, Extend.GEAR_RATIO * Extend.MAX_ACCELERATION));
 
   private RelativeEncoder m_extendMotorEncoder;
-  private RelativeEncoder m_pivotMotorEncoder;
+  private WPI_CANCoder m_pivotMotorEncoder;
 
     DigitalInput m_limitSwitch = new DigitalInput(Pivot.SWITCH_PORT);
 
@@ -61,8 +67,18 @@ public class ArmSubsystem extends SubsystemBase {
 
     // encoders
     m_extendMotorEncoder = m_extendMotor.getEncoder();
-    m_pivotMotorEncoder = m_firstLiftMotor.getEncoder();
- 
+    //cancoder and setting the config values
+    CANCoderConfiguration config = new CANCoderConfiguration();
+    m_pivotMotorEncoder = new WPI_CANCoder(Pivot.PIVOT_CANCODER_ID);
+    config.sensorCoefficient = Pivot.CANCODER_COEFFECIENT;
+    config.unitString = ("rotations");
+    config.sensorTimeBase = SensorTimeBase.PerSecond;
+    // counter clockwise is false, clockwise is true, when facing LED on CANCoder
+    config.sensorDirection = false;
+    config.initializationStrategy = SensorInitializationStrategy.BootToZero;
+    config.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_100Ms;
+    m_pivotMotorEncoder.configAllSettings(config);
+
     // soft limits on motors
     // Leaving it commented out until we understand it better
     /*
@@ -80,8 +96,8 @@ public class ArmSubsystem extends SubsystemBase {
   public void periodic() {
     // 
     if (m_limitSwitch.get()) {
-      m_pivotMotorEncoder.setPosition(Pivot.MIN_ANGLE);
-      m_pivotPIDController.setGoal(Pivot.MIN_ANGLE);
+      m_extendMotorEncoder.setPosition(Extend.FULL_CLOSED);
+      m_extendPIDController.setGoal(Extend.FULL_CLOSED);
     }
     
     if (m_upChecker.check()) {
