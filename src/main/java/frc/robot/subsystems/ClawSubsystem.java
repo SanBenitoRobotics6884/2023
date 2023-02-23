@@ -41,7 +41,7 @@ public class ClawSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    setReference(m_rotations);
+    m_pidController.setReference(m_rotations, ControlType.kPosition);
   }
 
    
@@ -52,45 +52,14 @@ public class ClawSubsystem extends SubsystemBase {
   public double getRotations() {
     return m_rotations;
   }
-  
-
-  public void setTriggerState(boolean state) {
-    triggerState = state;
-  }
-
-  public boolean getTriggerState() {
-    return triggerState;
-  }
-
-  public void move(double rotations) {
-    m_pidController.setReference(rotations, ControlType.kPosition);
-  }
-
-  public double getCurrentButton() {
-    return m_CurrentButton;
-  }
- 
-  public void setReference(double rotations) {
-    if (!triggerState) {  
-      if (isClawClosed == false) {
-        isClawClosed = true;
-        move(rotations);
-      } else {
-        isClawClosed = false;
-        move(kOpen);
-      }
-    }
-  }
 
   public void colorCheck() {
     hue = getHue(m_colorSensor.getRawColor());
     
       if (kConeMinHue <= hue && hue <= kConeMaxHue) {
         m_rotations = kConeClose;
-        setReference(m_rotations);
       } else if (kCubeMinHue <= hue && hue <= kCubeMaxHue) {
         m_rotations = kCubeClose;
-        setReference(m_rotations);
       }
   }
 

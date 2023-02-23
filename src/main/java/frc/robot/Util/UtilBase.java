@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.Util;
 
 /** Extend this from a util class for a sort of periodic */
 public abstract class UtilBase {
