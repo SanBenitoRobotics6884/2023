@@ -44,7 +44,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_gyro);
+  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
 
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);

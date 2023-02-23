@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
@@ -59,11 +60,11 @@ public class DriveSubsystem extends SubsystemBase {
   //make sure to output degrees as negative!!!!!!!!!
  // WPI_Pigeon2 m_gyro;
 
-  ADIS16470_IMU m_gyro;
+  AHRS m_gyro;
   
 
   ChassisSpeeds chassisSpeeds;
-  public DriveSubsystem(ADIS16470_IMU gyro) {
+  public DriveSubsystem() {
     m_FLMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
     m_FRMotor = new CANSparkMax(FR_ID, MotorType.kBrushless);
     m_BRMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
@@ -91,10 +92,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftEncoder.setPositionConversionFactor(POSITION_CONVERSION);
     
     m_rightEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
-    m_leftEncoder.setVelocityConversionFactor(BL_ID);
+    m_leftEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
 
   
-    m_gyro = gyro;
+    m_gyro = new AHRS();
     
   // m_gyro = new WPI_Pigeon2(PIGEON_ID);
     /* 
@@ -196,17 +197,18 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void ChargeStationAlign(){
-    /*m_gyro.getGravityVector(GRAVITY_VECTOR);
+  /* 
      AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      //might have to negative this
      m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      m_BRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      m_FRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
-     m_FLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));*/
-    /* 
-     double GRAVITY_VECTOR = m_gyro.getAccelZ();
-     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR * Math.sin(0),KA * GRAVITY_VECTOR * Math.sin(m_gyro.));
+     m_FLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      */
+    
+     double GRAVITY_VECTOR = m_gyro.getRawAccelZ();
+     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR * Math.sin(0),KA * GRAVITY_VECTOR * Math.sin(m_gyro.getPitch()));
+     
   }
 
   public void SetBreakMode(){
