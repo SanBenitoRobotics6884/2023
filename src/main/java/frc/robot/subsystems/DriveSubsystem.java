@@ -97,12 +97,12 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyro = gyro;
     
   // m_gyro = new WPI_Pigeon2(PIGEON_ID);
-
+    /* 
      Pigeon2Configuration config = new Pigeon2Configuration();
     config.MountPosePitch= MOUNT_PITCH;
     config.MountPoseRoll= MOUNT_ROLL;
     config.MountPoseYaw = MOUNT_YAW;
-  
+  */
    // m_gyro.configAllSettings(config);
 
      
