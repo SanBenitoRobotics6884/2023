@@ -14,9 +14,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.AStar.Edge;
 import frc.robot.AStar.Node;
 import frc.robot.AStar.Obstacle;
@@ -46,7 +48,10 @@ import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_gyro);
+
+
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);
   private final TrajectorySubystem trajectorySubystem = new TrajectorySubystem(driveSubsystem, poseEstimatorSubsystem);
   private final ClawSubsystem clawSubsystem = new ClawSubsystem();
