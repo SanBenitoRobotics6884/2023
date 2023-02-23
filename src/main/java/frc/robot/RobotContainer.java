@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -113,6 +114,8 @@ public class RobotContainer {
         AStarMap));
        
   new JoystickButton(joystick, 2).onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
+  new JoystickMultiPress(joystick, 3).onTrue(new InstantCommand(() -> clawSubsystem.setRotations(kClosed))); // double click to close claw
+  new JoystickMultiPress(joystick, 4).onTrue(new InstantCommand(() -> clawSubsystem.setRotations(kOpen)));  // double click to open claw
   }
 
   /**
