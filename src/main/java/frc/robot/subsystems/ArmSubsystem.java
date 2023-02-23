@@ -29,9 +29,9 @@ public class ArmSubsystem extends SubsystemBase {
   // arm motors
   private Servo m_extendServo = new Servo(Extend.SERVO_PORT); 
   
-  private CANSparkMax m_extendMotor = new CANSparkMax(Extend.EXTEND_MOTOR, MotorType.kBrushless);
-  private CANSparkMax m_firstLiftMotor = new CANSparkMax(Pivot.LEFT_MOTOR, MotorType.kBrushless);
-  private CANSparkMax m_secondLiftMotor = new CANSparkMax(Pivot.RIGHT_MOTOR, MotorType.kBrushless);
+  private CANSparkMax m_extendMotor = new CANSparkMax(Extend.EXTEND_MOTOR_ID, MotorType.kBrushless);
+  private CANSparkMax m_firstLiftMotor = new CANSparkMax(Pivot.LEFT_MOTOR_ID, MotorType.kBrushless);
+  private CANSparkMax m_secondLiftMotor = new CANSparkMax(Pivot.RIGHT_MOTOR_ID, MotorType.kBrushless);
 
   // Profiled PID for the Extend and Pivoting Motors
   private ProfiledPIDController m_pivotPIDController = new ProfiledPIDController(
@@ -67,10 +67,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     // encoders
     m_extendMotorEncoder = m_extendMotor.getEncoder();
-    //cancoder and setting the config values
+    // cancoder and setting the config values
     CANCoderConfiguration config = new CANCoderConfiguration();
     m_pivotMotorEncoder = new WPI_CANCoder(Pivot.PIVOT_CANCODER_ID);
-    config.sensorCoefficient = Pivot.CANCODER_COEFFECIENT;
+    config.sensorCoefficient = Pivot.CANCODER_COEFFICIENT;
     config.unitString = ("rotations");
     config.sensorTimeBase = SensorTimeBase.PerSecond;
     // counter clockwise is false, clockwise is true, when facing LED on CANCoder
@@ -97,10 +97,10 @@ public class ArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // 
+    // If the limit switch for the arm is hit, set the encoders
     if (m_limitSwitch.get()) {
-      m_extendMotorEncoder.setPosition(Extend.FULL_CLOSED);
-      m_extendPIDController.setGoal(Extend.FULL_CLOSED);
+      m_extendMotorEncoder.setPosition(Extend.FULLY_RETRACTED);
+      m_extendPIDController.setGoal(Extend.FULLY_RETRACTED);
     }
     
     if (m_upChecker.check()) {

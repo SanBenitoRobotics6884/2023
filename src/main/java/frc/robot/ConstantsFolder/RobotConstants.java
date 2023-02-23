@@ -219,6 +219,7 @@ public final class RobotConstants {
             public static final double I = 0;
             public static final double D = 0;
             public static final double SETPOINT_ERROR = 1;
+            public static final double CANCODER_COEFFICIENT = 1 / 4096; // Rotations
 
             public static final double HYBRID_SETPOINT = 0;
             public static final double MID_SETPOINT = 0;
@@ -236,8 +237,9 @@ public final class RobotConstants {
             public static final double BACK_HARD_LIMIT = 0;
             public static final double FRONT_HARD_LIMIT = 0;
 
-            public static final int LEFT_MOTOR = 0; 
-            public static final int RIGHT_MOTOR = 0;
+            public static final int PIVOT_CANCODER_ID = 0;
+            public static final int LEFT_MOTOR_ID = 0; 
+            public static final int RIGHT_MOTOR_ID = 0;
             
             public static final double GEAR_RATIO = 10.71;
             public static final double MAX_VELOCITY = 0;
@@ -271,8 +273,10 @@ public final class RobotConstants {
             public static final float EXTEND_FORWARD_SOFT_LIMIT = 1;
             public static final double BACK_HARD_LIMIT = 0;
             public static final double FRONT_HARD_LIMIT = 0;
+            public static final double FULLY_RETRACTED = 0;
+            public static final double FULLY_EXTENDED = 0;
 
-            public static final int EXTEND_MOTOR = 0; 
+            public static final int EXTEND_MOTOR_ID = 0; 
 
             public static final double GEAR_RATIO = 3;
             public static final double MAX_VELOCITY = 0;
