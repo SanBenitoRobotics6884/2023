@@ -54,24 +54,24 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 public final class RobotConstants {
 
     public static final class Drive {
-        public static final int FR_ID = 0;
-        public static final int FL_ID = 0;
-        public static final int BR_ID = 0;
-        public static final int BL_ID = 0;
+        public static final int FR_ID = 1;
+        public static final int FL_ID = 2;
+        public static final int BR_ID = 3;
+        public static final int BL_ID = 4;
 
         public static final double NORMAL_FOWARD_FF = 0.0;
-        public static final double NORMAL_TURN_FF = 0.0;
+        public static final double NORMAL_TURN_FF = 0.7;
         public static final double TURBO_FOWARD_FF = 0.0;
-        public static final double TURBO_TURN_FF = 0.0;
+        public static final double TURBO_TURN_FF = 0.1;
 
         public static final int ENCODER_REVOLUTION= 8192;
-        public static final double GEAR_RATIO = 4.10;
+        public static final double GEAR_RATIO = 1/10.71;
         public static final double WHEEL_RADIUS = 3.0;
       
         public static final double POSITION_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10;
         public static final double VELOCITY_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10/60;
 
-        public static final double TURN_TO_TARGET_KP = 0.0;
+        public static final double TURN_TO_TARGET_KP = 1.2;
         public static final double TURN_TO_TARGET_KI = 0.0;
         public static final double TURN_TO_TARGET_KD = 0.0;
         public static final PIDController TURN_TO_TARGET_CONTROLLER = 
@@ -100,7 +100,7 @@ public final class RobotConstants {
         public static final double TELE_FOWARD_D = 0.0;
         public static final PIDController TELE_FOWARD_CONTROLLER = new PIDController(TELE_FOWARD_P, TELE_FOWARD_I, TELE_FOWARD_D);
 */
-        public static final double TELE_ROTATION_P = 0.0;
+        public static final double TELE_ROTATION_P = 0.7;
         public static final double TELE_ROTATION_I = 0.0;
         public static final double TELE_ROTATION_D = 0.0;
         public static final PIDController TELE_ROTATION_CONTROLLER = new PIDController(TELE_ROTATION_P, TELE_ROTATION_I, TELE_ROTATION_D);
@@ -115,7 +115,7 @@ public final class RobotConstants {
         public static final RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
      
         public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV);
-
+        //not done
         public static final double TRACK_WIDTH = Units.inchesToMeters(2.0);
         public static final DifferentialDriveKinematics KINEMATICS = 
         new DifferentialDriveKinematics(TRACK_WIDTH);
