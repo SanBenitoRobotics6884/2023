@@ -88,7 +88,7 @@ public class DriveSubsystem extends SubsystemBase {
     
     m_rightEncoder = m_FRMotor.getAlternateEncoder(
       SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
-    m_leftEncoder = m_FRMotor.getAlternateEncoder(
+    m_leftEncoder = m_FLMotor.getAlternateEncoder(
         SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
 
     m_rightEncoder.setPositionConversionFactor(POSITION_CONVERSION);
@@ -120,11 +120,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void NormalDrive(Double foward, Double rotation){
     //maybe add gyro assist?
-    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TELE_ROTATION_CONTROLLER.calculate(0, rotation * NORMAL_TURN_FF ));
+    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TELE_ROTATION_CONTROLLER.calculate(getAngle(), (getAngle() - rotation)) * NORMAL_TURN_FF);
   }
   
   public void TurboJoystickDrive(Double foward, Double rotation){
-    m_drive.arcadeDrive(foward * TURBO_FOWARD_FF, TELE_ROTATION_CONTROLLER.calculate(0, rotation * TURBO_TURN_FF));
+    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TURBO_TURN_FF * TELE_ROTATION_CONTROLLER.calculate(getAngle(), (getAngle() - rotation)));
 
   }
 
@@ -136,6 +136,9 @@ public class DriveSubsystem extends SubsystemBase {
   public Rotation2d getRotation2D(){
    // return m_gyro.getRotation2d();
    return Rotation2d.fromDegrees(-m_gyro.getAngle());
+  }
+  public Double getAngle(){
+    return -m_gyro.getAngle();
   }
   
   public double getLeftDistance(){
