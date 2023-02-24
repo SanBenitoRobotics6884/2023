@@ -63,11 +63,11 @@ public class DriveSubsystem extends SubsystemBase {
  // WPI_Pigeon2 m_gyro;
  
 
-  AHRS m_gyro;
+  ADIS16470_IMU m_gyro;
   
 
   ChassisSpeeds chassisSpeeds;
-  public DriveSubsystem() {
+  public DriveSubsystem(ADIS16470_IMU gyro) {
     m_FLMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
     m_FRMotor = new CANSparkMax(FR_ID, MotorType.kBrushless);
     m_BRMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
@@ -98,7 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
     
   
-    m_gyro = new AHRS();
+    m_gyro = gyro;
     
   // m_gyro = new WPI_Pigeon2(PIGEON_ID);
     /* 
@@ -208,10 +208,10 @@ public class DriveSubsystem extends SubsystemBase {
      m_FRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      m_FLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      */
-    
+    /*
      double GRAVITY_VECTOR = m_gyro.getRawAccelZ();
      AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR * Math.sin(0),KA * GRAVITY_VECTOR * Math.sin(m_gyro.getPitch()));
-     
+     */
   }
 
   public void SetBreakMode(){
