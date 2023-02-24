@@ -83,7 +83,7 @@ public final class RobotConstants {
         public static final double MOUNT_ROLL = 0.0 ;
         public static final double GRAVITY_VECTOR[] = new double[3];
 
-        public static final double DRIVE_KP = 0.0;
+        public static final double DRIVE_KP = 0.088307;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
@@ -104,18 +104,18 @@ public final class RobotConstants {
         public static final double TELE_ROTATION_D = 0.0;
         public static final PIDController TELE_ROTATION_CONTROLLER = new PIDController(TELE_ROTATION_P, TELE_ROTATION_I, TELE_ROTATION_D);
         
-        public static final double KA = 0.0;
-        public static final double KS = 0.0;
-        public static final double KV = 0.0;
-        public static final double RAMSETE_ZETA = 0.0;
-        public static final double RAMSETE_B = 0.0;
+        public static final double KA = 0.11778;
+        public static final double KS = 0.056226;
+        public static final double KV = 2.8715;
+        public static final double RAMSETE_ZETA = 0.7;
+        public static final double RAMSETE_B = 2.0;
 
          
         public static final RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
      
         public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV);
-        //not done
-        public static final double TRACK_WIDTH = Units.inchesToMeters(2.0);
+        //23 inches when using center of the wheels, 21 inches when going from end to end
+        public static final double TRACK_WIDTH = Units.inchesToMeters(23);
         public static final DifferentialDriveKinematics KINEMATICS = 
         new DifferentialDriveKinematics(TRACK_WIDTH);
        
@@ -123,8 +123,8 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = 0.0; 
-        public static final double MAX_ACCELERATION = 0.0; 
+        public static final double MAX_VELOCTIY = 3.0; 
+        public static final double MAX_ACCELERATION = 3.0; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =

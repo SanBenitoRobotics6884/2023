@@ -10,9 +10,11 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.EncoderType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -59,6 +61,7 @@ public class DriveSubsystem extends SubsystemBase {
   RelativeEncoder m_leftEncoder;
   //make sure to output degrees as negative!!!!!!!!!
  // WPI_Pigeon2 m_gyro;
+ 
 
   AHRS m_gyro;
   
@@ -93,7 +96,7 @@ public class DriveSubsystem extends SubsystemBase {
     
     m_rightEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
     m_leftEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
-
+    
   
     m_gyro = new AHRS();
     
