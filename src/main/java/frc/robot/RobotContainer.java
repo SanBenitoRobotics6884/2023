@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,14 +50,14 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   Joystick m_joystick = new Joystick(0);
   JoystickButton aButton = new JoystickButton(m_joystick, 0);
-  private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
+  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_gyro);
 
 
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);
   private final TrajectorySubystem trajectorySubystem = new TrajectorySubystem(driveSubsystem, poseEstimatorSubsystem);
-  private final Command m_armCommand = new ArmCommand(m_ArmSubsystem,
+  private final Command m_armCommand = new ArmCommand(m_armSubsystem,
     () -> m_joystick.getY(),
     () -> m_joystick.getZ() > 0);
 
@@ -69,7 +70,7 @@ CommandXboxController controller = new CommandXboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_ArmSubsystem.setDefaultCommand(m_armCommand);
+    m_armSubsystem.setDefaultCommand(m_armCommand);
     driveSubsystem.setDefaultCommand(new DriveCmmd(driveSubsystem,
       () -> controller.getLeftY(), 
       () -> controller.getRightX(), 
@@ -99,9 +100,9 @@ CommandXboxController controller = new CommandXboxController(0);
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-   controller.leftTrigger().whileTrue(new DriveCmmd(driveSubsystem, ()->controller.getLeftY(), ()->controller.getRightX(), true));
+    controller.leftTrigger().whileTrue(new DriveCmmd(driveSubsystem, ()->controller.getLeftY(), ()->controller.getRightX(), true));
 
-      controller.x().whileTrue(new AStar(
+    controller.x().whileTrue(new AStar(
         driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
@@ -111,25 +112,29 @@ CommandXboxController controller = new CommandXboxController(0);
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
 
-        new JoystickButton(m_joystick, 7)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
+    new JoystickButton(m_joystick, 7)
+         .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
+
+    new JoystickButton(m_joystick, 9)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
+
+    new JoystickButton(m_joystick, 11)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
+
+    new JoystickButton(m_joystick, 12)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HYBRID_SETPOINT)));
     
-       new JoystickButton(m_joystick, 9)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
+    new JoystickButton(m_joystick, 10)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.MID_SETPOINT)));
     
-       new JoystickButton(m_joystick, 11)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
-    
-       new JoystickButton(m_joystick, 12)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setPivotSetpoint(Arm.Pivot.HYBRID_SETPOINT)));
-       
-       new JoystickButton(m_joystick, 10)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setPivotSetpoint(Arm.Pivot.MID_SETPOINT)));
-       
-       new JoystickButton(m_joystick, 8)
-        .onTrue(new InstantCommand(() -> m_ArmSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
-    
-      
+    new JoystickButton(m_joystick, 8)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
+
+    new Trigger(() -> m_joystick.getPOV() == 0)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.resetEncoders()));
+
+    new Trigger(() -> m_joystick.getPOV() == 180)
+        .onTrue(new InstantCommand(() -> m_armSubsystem.printCANCoderOffset()));
   }
 
   /**

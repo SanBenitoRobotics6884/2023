@@ -30,15 +30,15 @@ public class ArmCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double extend = m_armSubsystem.getExtendSetpoint() + Extend.Y_SCALE * m_value.getAsDouble();
-    double pivot = m_armSubsystem.getPivotSetpoint() + Pivot.Y_SCALE * m_value.getAsDouble();
+    double value = m_value.getAsDouble();
+    double extend = m_armSubsystem.getExtendSetpoint() + Extend.Y_SCALE * value;
+    double pivot = m_armSubsystem.getPivotSetpoint() + Pivot.Y_SCALE * value;
+    boolean isInExtensionMode = m_extensionMode.getAsBoolean();
 
-    if (m_extensionMode.getAsBoolean() && extend > Extend.BACK_HARD_LIMIT && extend < Extend.FRONT_HARD_LIMIT) {
-      m_armSubsystem.setExtendSetpoint(
-          m_armSubsystem.getExtendSetpoint() + Extend.Y_SCALE * m_value.getAsDouble());
-    } else if (pivot > Pivot.BACK_HARD_LIMIT && pivot < Pivot.FRONT_HARD_LIMIT) { 
-      m_armSubsystem.setPivotSetpoint(
-          m_armSubsystem.getPivotSetpoint() + Pivot.Y_SCALE * m_value.getAsDouble());
+    if (isInExtensionMode && extend > Extend.BACK_HARD_LIMIT && extend < Extend.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) {
+      m_armSubsystem.setExtendSetpoint(extend);
+    } else if (!isInExtensionMode && Pivot.BACK_HARD_LIMIT < pivot && pivot < Pivot.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
+      m_armSubsystem.setPivotSetpoint(pivot);
     }
   }
 
