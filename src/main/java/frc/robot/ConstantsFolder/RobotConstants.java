@@ -58,10 +58,11 @@ public final class RobotConstants {
         public static final int BR_ID = 3;
         public static final int BL_ID = 4;
 
-        public static final double NORMAL_FOWARD_FF = 0.7;
-        public static final double NORMAL_TURN_FF = 0.7;
-        public static final double TURBO_FOWARD_FF = 0.9;
-        public static final double TURBO_TURN_FF = 0.1;
+        public static final double NORMAL_FOWARD_MAX = 0.7;
+        public static final double NORMAL_TURN_MAX = 0.7;
+        public static final double TURBO_FOWARD_MAX = 0.9;
+        public static final double TURBO_TURN_MAX = 0.9;
+        public static final double RATE_LIMIT = 2.0;
 
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 10.71;
@@ -102,7 +103,7 @@ public final class RobotConstants {
         public static final double TELE_FOWARD_D = 0.0;
         public static final PIDController TELE_FOWARD_CONTROLLER = new PIDController(TELE_FOWARD_P, TELE_FOWARD_I, TELE_FOWARD_D);
 */
-        public static final double TELE_ROTATION_P = 0.7;
+        public static final double TELE_ROTATION_P = 0.1;
         public static final double TELE_ROTATION_I = 0.0;
         public static final double TELE_ROTATION_D = 0.0;
         public static final PIDController TELE_ROTATION_CONTROLLER = new PIDController(TELE_ROTATION_P, TELE_ROTATION_I, TELE_ROTATION_D);
@@ -116,7 +117,7 @@ public final class RobotConstants {
          
         public static final RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
      
-        public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV);
+        public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV, KA);
         //23 inches when using center of the wheels, 21 inches when going from end to end
         public static final double TRACK_WIDTH = Units.inchesToMeters(23);
         public static final DifferentialDriveKinematics KINEMATICS = 

@@ -8,7 +8,9 @@ import frc.robot.subsystems.DriveSubsystem;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
 
 /** An example command that uses an example subsystem. */
 public class DriveCmmd extends CommandBase {
@@ -17,6 +19,7 @@ public class DriveCmmd extends CommandBase {
   private final DoubleSupplier fowDoubleSupplier;
   private final DoubleSupplier m_thetaDoubleSupplier;
   private Boolean m_turbo;
+  private SlewRateLimiter m_Limiter;
 
   /**
    * Creates a new ExampleCommand.
@@ -28,6 +31,7 @@ public class DriveCmmd extends CommandBase {
     fowDoubleSupplier = f;
     m_thetaDoubleSupplier = t;
     m_turbo = turbo;
+    m_Limiter = new SlewRateLimiter(RATE_LIMIT);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -41,10 +45,29 @@ public class DriveCmmd extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double foward = fowDoubleSupplier.getAsDouble();
+    double theta = m_thetaDoubleSupplier.getAsDouble();
     if(m_turbo){
+      
+      foward = m_Limiter.calculate(foward);
+      if (foward > TURBO_FOWARD_MAX){
+        foward = TURBO_FOWARD_MAX;
+      }
+      theta = m_Limiter.calculate(theta);
+      if (theta > TURBO_TURN_MAX){
+        theta = TURBO_TURN_MAX;
+      }
       m_subsystem.TurboJoystickDrive(fowDoubleSupplier.getAsDouble(), m_thetaDoubleSupplier.getAsDouble());
     }
     if(!m_turbo){
+      foward = m_Limiter.calculate(foward);
+      if (foward > NORMAL_FOWARD_MAX){
+        foward = NORMAL_FOWARD_MAX;
+      }
+      theta = m_Limiter.calculate(theta);
+      if (theta > NORMAL_TURN_MAX){
+        theta = NORMAL_TURN_MAX;
+      }
       m_subsystem.NormalDrive(fowDoubleSupplier.getAsDouble(), m_thetaDoubleSupplier.getAsDouble());
     }
     

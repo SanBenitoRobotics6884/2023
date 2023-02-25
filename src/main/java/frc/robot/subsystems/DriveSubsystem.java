@@ -87,6 +87,7 @@ public class DriveSubsystem extends SubsystemBase {
    
 
     m_drive = new DifferentialDrive(m_rControllerGroup, m_lControllerGroup);
+   
     /* 
     m_rightEncoder = m_FRMotor.getAlternateEncoder(
       SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
@@ -140,13 +141,14 @@ m_leftEncoder = m_FLMotor.getEncoder();
 
   public void NormalDrive(Double foward, Double rotation){
     //maybe add gyro assist?
-    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF, rotation);
+    m_drive.arcadeDrive(foward , rotation);
   }
   
   public void TurboJoystickDrive(Double foward, Double rotation){
-    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF, rotation);
+    m_drive.arcadeDrive(foward , rotation);
 
   }
+  
 
   public void ResetEncoder(){
     m_rightEncoder.setPosition(0);
