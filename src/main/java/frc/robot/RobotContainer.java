@@ -9,11 +9,15 @@ import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
 import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -31,16 +35,18 @@ import frc.robot.commands.DriveCmmd;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.subsystems.TrajectorySubystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
+import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -55,7 +61,6 @@ public class RobotContainer {
 
 
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);
-  private final TrajectorySubystem trajectorySubystem = new TrajectorySubystem(driveSubsystem, poseEstimatorSubsystem);
   private final ClawSubsystem clawSubsystem = new ClawSubsystem();
  
   Joystick m_joystick = new Joystick(0);
@@ -66,6 +71,7 @@ public class RobotContainer {
   CommandXboxController controller = new CommandXboxController(0);
 
   VisGraph AStarMap = new VisGraph();
+  
 
   ClawCmmd clawCommand = new ClawCmmd(
     clawSubsystem,
@@ -76,14 +82,17 @@ public class RobotContainer {
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
 
+  PathPlannerTrajectory trajectory;
+
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+     trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS );
     
     // Configure the button bindings
     driveSubsystem.setDefaultCommand(new DriveCmmd(driveSubsystem,
-     ()->controller.getLeftY(), ()->controller.getRightX(), false));
+     ()->controller.getRightY(), ()->controller.getRightX(), false));
    
      configureButtonBindings();
 
@@ -111,9 +120,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-   controller.leftTrigger().whileTrue(new DriveCmmd(driveSubsystem, ()->controller.getLeftY(), ()->controller.getRightX(), true));
+    controller.leftTrigger().whileTrue(new DriveCmmd(driveSubsystem, ()->controller.getLeftY(), ()->controller.getRightX(), true));
 
-      controller.x().whileTrue(new AStar(
+    controller.x().whileTrue(new AStar(
         driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
@@ -122,17 +131,23 @@ public class RobotContainer {
         driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
+
+    controller.a().whileTrue(new RunCommand(driveSubsystem::ResetEncoder, driveSubsystem) );
        
-  new JoystickButton(m_joystick, 2)
-      .onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
-  new JoystickMultiPress(m_joystick, 3)
-      .and(m_joystickTrigger.negate())
-      .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT))); 
-  new JoystickMultiPress(m_joystick, 4)
-      .and(m_joystickTrigger.negate())
-      .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT)));  
-  new Trigger(() -> m_joystick.getPOV() == 0) // May be removed after testing
-      .onTrue(new InstantCommand(() -> clawSubsystem.resetEncoder()));
+    new JoystickButton(m_joystick, 2)
+        .onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
+
+    new JoystickMultiPress(m_joystick, 3)
+        .and(m_joystickTrigger.negate())
+        .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT))); 
+
+    new JoystickMultiPress(m_joystick, 4)
+        .and(m_joystickTrigger.negate())
+        .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT)));  
+        
+    new Trigger(() -> m_joystick.getPOV() == 0) // May be removed after testing
+        .onTrue(new InstantCommand(() -> clawSubsystem.resetEncoder()));
+      
   }
 
   /**
@@ -142,6 +157,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return new SequentialCommandGroup(new PPRamseteCommand(trajectory, poseEstimatorSubsystem::getPose2d, RAMSETE_CONTROLLER, FEED_FOWARD, KINEMATICS, driveSubsystem::getWheelSpeeds, LEFT_DRIVE_CONTROLLER, RIGHT_DRIVE_CONTROLLER, driveSubsystem::SetMotorVoltage, false, driveSubsystem),new RunCommand(driveSubsystem::StopMotors, driveSubsystem) );
   }
 }
