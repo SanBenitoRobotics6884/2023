@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class UtilRunner {
   private static UtilRunner instance;
-  private ArrayList<Runnable> m_runnables;
+  private ArrayList<Runnable> m_runnables = new ArrayList<>();
 
   private UtilRunner() {}
 

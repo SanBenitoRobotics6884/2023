@@ -31,7 +31,7 @@ public class MultiPress extends UtilBase {
   }
 
   public MultiPress(int times, BooleanSupplier condition) {
-    this(times, condition, DEFAULT_TIMES);
+    this(times, condition, DEFAULT_TIME_RANGE);
   }
 
   public MultiPress(int times, BooleanSupplier condition, double timeRange) {
