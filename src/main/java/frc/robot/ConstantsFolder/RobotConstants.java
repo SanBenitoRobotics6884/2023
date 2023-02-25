@@ -209,21 +209,22 @@ public final class RobotConstants {
     }
   
     public static class Claw {
-        public static final double kP = 0.25; // Arbitrary, Needs Refinement
-        public static final double kI = 0;
-        public static final double kD = 0.25; // Arbitrary, Needs Refinement
-        public static final double kFF = 0;
-        public static final double kIZone = 0;
-        public static final double kConeMinHue = 70;
-        public static final double kConeMaxHue = 95;
-        public static final double kCubeMinHue = 140;
-        public static final double kCubeMaxHue = 230;
-        public static final double kConeClose = 270 / 360; // (In Degrees) Arbitrary, Needs Refinement 
-        public static final double kCubeClose = 120 / 360; // (In Degrees) Arbitrary, Needs Refinement
-        public static final double kOpen = 0 / 360; // (In Degress) Arbitrary, Needs Refinement
-        public static final double kOpenClawRate = -0.005; // Arbitrary, Needs Refinement
-        public static final double kCloseClawRate = 0.005; // Arbitrary, Needs Refinement
-        public static final double kContLimit = 290 / 360; // (In Degress) Arbitrary, Needs Refinement
+        public static final double P = 0.25;
+        public static final double I = 0;
+        public static final double D = 0; // Might or might not use
+        public static final double MAX_VOLTAGE = 0.05;
+        public static final double CONE_MIN_HUE = 70;
+        public static final double CONE_MAX_HUE = 95;
+        public static final double CUBE_MIN_HUE = 140;
+        public static final double CUBE_MAX_HUE = 230;
+
+        public static final double GEAR_RATIO = 25; // Might change to 50
+        public static final double CONE_SETPOINT = GEAR_RATIO * 0.1; // needs adjustment
+        public static final double CUBE_SETPOINT = GEAR_RATIO * 0.2; // needs adjustment
+        public static final double OPEN_SETPOINT = 0; 
+        public static final double CLOSED_SETPOINT = GEAR_RATIO * 0.25; // needs adjustment
+        public static final double OPEN_RATE = 0.05;
+        public static final double CLOSE_RATE = -0.05;
     }
   
 }

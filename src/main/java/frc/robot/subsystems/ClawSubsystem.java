@@ -7,41 +7,39 @@ import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3.RawColor;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClawSubsystem extends SubsystemBase {
-  /** Creates a new ClawSubsystem. */
   CANSparkMax m_motor = new CANSparkMax(0, MotorType.kBrushless);
- 
+  RelativeEncoder m_encoder = m_motor.getEncoder();
+
   double m_rotations = 0;
   double m_CurrentButton = 0;
   double hue = 0;
-  double prevHue = 0;
-  boolean isClawClosed = false;
-  boolean triggerState = false;
   ColorSensorV3 m_colorSensor = new ColorSensorV3(Port.kOnboard);
-  public SparkMaxPIDController m_pidController = m_motor.getPIDController();
+  PIDController m_pidController = new PIDController(P, I, D);
   Joystick m_joystick = new Joystick(0);
 
+  /** Creates a new ClawSubsystem. */
   public ClawSubsystem() {
+    m_motor.setInverted(false); // I don't recall whether or not we need it inverted (closing -> +)
     m_motor.restoreFactoryDefaults();
-    m_pidController.setP(kP);
-    m_pidController.setI(kI);
-    m_pidController.setD(kD);
-    m_pidController.setFF(kFF);
-    m_pidController.setIZone(kIZone); 
   }
 
   @Override
   public void periodic() {
-    m_pidController.setReference(m_rotations, ControlType.kPosition);
+    m_motor.set(MathUtil.clamp(m_pidController.calculate(m_encoder.getPosition(), m_rotations), 
+        -MAX_VOLTAGE, MAX_VOLTAGE));
   }
 
    
@@ -53,13 +51,18 @@ public class ClawSubsystem extends SubsystemBase {
     return m_rotations;
   }
 
+  public void resetEncoder() {
+    m_encoder.setPosition(0);
+    m_rotations = 0;
+  }
+
   public void colorCheck() {
     hue = getHue(m_colorSensor.getRawColor());
     
-      if (kConeMinHue <= hue && hue <= kConeMaxHue) {
-        m_rotations = kConeClose;
-      } else if (kCubeMinHue <= hue && hue <= kCubeMaxHue) {
-        m_rotations = kCubeClose;
+      if (CONE_MIN_HUE <= hue && hue <= CONE_MAX_HUE) {
+        m_rotations = CONE_SETPOINT;
+      } else if (CUBE_MIN_HUE <= hue && hue <= CUBE_MAX_HUE) {
+        m_rotations = CUBE_SETPOINT;
       }
   }
 

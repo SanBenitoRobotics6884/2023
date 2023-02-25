@@ -15,8 +15,6 @@ public class ClawCmmd extends CommandBase {
   BooleanSupplier m_triggerState;
   BooleanSupplier m_leftPressed;
   BooleanSupplier m_rightPressed;
-  double m_rotations = 0;
-  double m_CurrentButton = 0;
 
   public ClawCmmd(
       ClawSubsystem clawSubsystem, 
@@ -36,20 +34,32 @@ public class ClawCmmd extends CommandBase {
 
   @Override
   public void execute() {
-    if (m_triggerState.getAsBoolean()) {
-     if (m_leftPressed.getAsBoolean() && m_rotations < kContLimit - 0.01) {
-        m_rotations += kCloseClawRate;
-      } else if (m_rightPressed.getAsBoolean() && m_rotations < kContLimit + 0.01) {
-        m_rotations += kOpenClawRate;
+    double rotations = m_clawSubsystem.getRotations();
+    double newSetpoint;
+    boolean triggerPressed = m_triggerState.getAsBoolean();
+    boolean leftPressed = m_leftPressed.getAsBoolean();
+    boolean rightPressed = m_rightPressed.getAsBoolean();
+    if (!triggerPressed) {
+      // When the trigger and left button are pressed together, close claw
+      newSetpoint = rotations + CLOSE_RATE;
+      if (leftPressed && !rightPressed 
+          && OPEN_SETPOINT <= newSetpoint && newSetpoint <= CLOSED_SETPOINT) {
+        rotations = newSetpoint;
       }
-   } else {
-    if (m_leftPressed.getAsBoolean()) {
-      m_rotations = kCubeClose;
-    } else if (m_rightPressed.getAsBoolean()) {
-      m_rotations = kConeClose;
+      // When the trigger and right button are pressed together, open claw
+      newSetpoint = rotations + OPEN_RATE;
+      if (rightPressed && !leftPressed 
+          && OPEN_SETPOINT <= newSetpoint && newSetpoint <= CLOSED_SETPOINT) {
+        rotations = newSetpoint;
+      }
+    } else {
+      if (leftPressed && !rightPressed) {
+        rotations = CUBE_SETPOINT;
+      } else if (rightPressed && !leftPressed) {
+        rotations = CONE_SETPOINT;
+      }
     }
-   }
-    m_clawSubsystem.setRotations(m_rotations);
+    m_clawSubsystem.setRotations(rotations);
   }
 
   @Override

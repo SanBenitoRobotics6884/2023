@@ -38,6 +38,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
 
 /**
@@ -56,8 +58,10 @@ public class RobotContainer {
   private final TrajectorySubystem trajectorySubystem = new TrajectorySubystem(driveSubsystem, poseEstimatorSubsystem);
   private final ClawSubsystem clawSubsystem = new ClawSubsystem();
  
-  Joystick joystick = new Joystick(0);
-  JoystickButton aButton = new JoystickButton(joystick, 0);
+  Joystick m_joystick = new Joystick(0);
+  Trigger m_joystickTrigger = new JoystickButton(m_joystick, 1);
+  Trigger m_joystickCloseClawLeft = new JoystickButton(m_joystick, 3);
+  Trigger m_joystickOpenClawRight = new JoystickButton(m_joystick, 4);
 
   CommandXboxController controller = new CommandXboxController(0);
 
@@ -65,9 +69,9 @@ public class RobotContainer {
 
   ClawCmmd clawCommand = new ClawCmmd(
     clawSubsystem,
-    () -> joystick.getTrigger(),
-    () -> joystick.getRawButton(3),
-    () -> joystick.getRawButton(4));
+    () -> m_joystick.getTrigger(),
+    () -> m_joystick.getRawButton(3),
+    () -> m_joystick.getRawButton(4));
 
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
@@ -119,9 +123,16 @@ public class RobotContainer {
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
        
-  new JoystickButton(joystick, 2).onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
-  new JoystickMultiPress(joystick, 3).onTrue(new InstantCommand(() -> clawSubsystem.setRotations(kClosed))); // double click to close claw
-  new JoystickMultiPress(joystick, 4).onTrue(new InstantCommand(() -> clawSubsystem.setRotations(kOpen)));  // double click to open claw
+  new JoystickButton(m_joystick, 2)
+      .onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
+  new JoystickMultiPress(m_joystick, 3)
+      .and(m_joystickTrigger.negate())
+      .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT))); 
+  new JoystickMultiPress(m_joystick, 4)
+      .and(m_joystickTrigger.negate())
+      .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT)));  
+  new Trigger(() -> m_joystick.getPOV() == 0) // May be removed after testing
+      .onTrue(new InstantCommand(() -> clawSubsystem.resetEncoder()));
   }
 
   /**
