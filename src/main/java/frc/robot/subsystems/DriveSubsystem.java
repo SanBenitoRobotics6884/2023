@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -81,24 +82,36 @@ public class DriveSubsystem extends SubsystemBase {
     m_BRMotor.restoreFactoryDefaults(); 
     m_BLMotor.restoreFactoryDefaults();
 
-    m_rControllerGroup.setInverted(true);
-    m_lControllerGroup.setInverted(false);
+    m_rControllerGroup.setInverted(false);
+    m_lControllerGroup.setInverted(true);
+   
 
     m_drive = new DifferentialDrive(m_rControllerGroup, m_lControllerGroup);
-    
+    /* 
     m_rightEncoder = m_FRMotor.getAlternateEncoder(
       SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
     m_leftEncoder = m_FLMotor.getAlternateEncoder(
         SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+*/
+m_rightEncoder = m_FRMotor.getEncoder();
+m_leftEncoder = m_FLMotor.getEncoder();
+
+//m_rightEncoder.setInverted(true);
+//m_leftEncoder.setInverted(false);
+
 
     m_rightEncoder.setPositionConversionFactor(POSITION_CONVERSION);
     m_leftEncoder.setPositionConversionFactor(POSITION_CONVERSION);
     
     m_rightEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
     m_leftEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
+
+    m_leftEncoder.setPosition(0);
+    m_rightEncoder.setPosition(0);
     
   
     m_gyro = gyro;
+    m_gyro.reset();
     
   // m_gyro = new WPI_Pigeon2(PIGEON_ID);
     /* 
@@ -115,16 +128,23 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
+    m_rightEncoder.getPosition();
+    m_leftEncoder.getPosition();
+    SmartDashboard.putNumber("left Encoders",getLeftDistance());
+    SmartDashboard.putNumber("right Encoders", getRightDistance());
+    SmartDashboard.putNumber("gyroangle", getAngle());
+    SmartDashboard.putNumber("right Velocity", getRightVelocity());
+    SmartDashboard.putNumber("left Velocity", getLeftVelocity());
+    SmartDashboard.putNumber(" Velocity", getVelocity());
   }
 
   public void NormalDrive(Double foward, Double rotation){
     //maybe add gyro assist?
-    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TELE_ROTATION_CONTROLLER.calculate(getAngle(), (getAngle() - rotation)) * NORMAL_TURN_FF);
+    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF, rotation);
   }
   
   public void TurboJoystickDrive(Double foward, Double rotation){
-    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF,TURBO_TURN_FF * TELE_ROTATION_CONTROLLER.calculate(getAngle(), (getAngle() - rotation)));
+    m_drive.arcadeDrive(foward * NORMAL_FOWARD_FF, rotation);
 
   }
 
@@ -146,14 +166,14 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getRightDistance(){
-    return m_rightEncoder.getPosition();
+    return -m_rightEncoder.getPosition();
   }
 
   public double getLeftVelocity(){
     return m_leftEncoder.getVelocity();
   }
   public double getRightVelocity(){
-    return m_rightEncoder.getVelocity();
+    return -m_rightEncoder.getVelocity();
   }
 
   public void SetMotorVoltage(Double rightVoltage, Double leftVoltage){

@@ -58,17 +58,20 @@ public final class RobotConstants {
         public static final int BR_ID = 3;
         public static final int BL_ID = 4;
 
-        public static final double NORMAL_FOWARD_FF = 0.0;
+        public static final double NORMAL_FOWARD_FF = 0.7;
         public static final double NORMAL_TURN_FF = 0.7;
-        public static final double TURBO_FOWARD_FF = 0.0;
+        public static final double TURBO_FOWARD_FF = 0.9;
         public static final double TURBO_TURN_FF = 0.1;
 
         public static final int ENCODER_REVOLUTION= 8192;
-        public static final double GEAR_RATIO = 1/10.71;
+        public static final double GEAR_RATIO = 10.71;
         public static final double WHEEL_RADIUS = 3.0;
       
-        public static final double POSITION_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10;
-        public static final double VELOCITY_CONVERSION =WHEEL_RADIUS*Math.PI *2 *GEAR_RATIO*10/60;
+        public static final double POSITION_CONVERSION = 
+        (Units.inchesToMeters(1 / (GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(WHEEL_RADIUS)) * 10));
+        public static final double VELOCITY_CONVERSION = (POSITION_CONVERSION/60);
+
+       
 
         public static final double TURN_TO_TARGET_KP = 1.2;
         public static final double TURN_TO_TARGET_KI = 0.0;
@@ -123,8 +126,8 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = 3.0; 
-        public static final double MAX_ACCELERATION = 3.0; 
+        public static final double MAX_VELOCTIY = 1.0; 
+        public static final double MAX_ACCELERATION = 1.0; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =

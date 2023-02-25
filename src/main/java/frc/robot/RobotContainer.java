@@ -9,11 +9,15 @@ import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
 import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -30,9 +34,12 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -53,19 +60,23 @@ public class RobotContainer {
 CommandXboxController controller = new CommandXboxController(0);
 
   VisGraph AStarMap = new VisGraph();
+  
 
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
+
+  PathPlannerTrajectory trajectory;
 
 
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+     trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS );
     
     // Configure the button bindings
     driveSubsystem.setDefaultCommand(new DriveCmmd(driveSubsystem,
-     ()->controller.getLeftY(), ()->controller.getRightX(), false));
+     ()->controller.getRightY(), ()->controller.getRightX(), false));
    
      configureButtonBindings();
 
@@ -103,6 +114,8 @@ CommandXboxController controller = new CommandXboxController(0);
         driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
+
+        controller.a().whileTrue(new RunCommand(driveSubsystem::ResetEncoder, driveSubsystem) );
       
   }
 
@@ -113,6 +126,6 @@ CommandXboxController controller = new CommandXboxController(0);
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return new SequentialCommandGroup(new PPRamseteCommand(trajectory, poseEstimatorSubsystem::getPose2d, RAMSETE_CONTROLLER, FEED_FOWARD, KINEMATICS, driveSubsystem::getWheelSpeeds, LEFT_DRIVE_CONTROLLER, RIGHT_DRIVE_CONTROLLER, driveSubsystem::SetMotorVoltage, false, driveSubsystem),new RunCommand(driveSubsystem::StopMotors, driveSubsystem) );
   }
 }
