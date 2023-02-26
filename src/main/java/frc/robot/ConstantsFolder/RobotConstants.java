@@ -240,8 +240,8 @@ public final class RobotConstants {
             public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 0.45; // NEED ANGLE
 
             public static final int PIVOT_CANCODER_ID = 0;
-            public static final int MASTER_MOTOR_ID = 0; 
-            public static final int SLAVE_MOTOR_ID = 0;
+            public static final int MASTER_MOTOR_ID = 5; 
+            public static final int SLAVE_MOTOR_ID = 6;
 
             public static final int SWITCH_PORT = 1;
 
@@ -273,7 +273,7 @@ public final class RobotConstants {
             public static final double FULLY_RETRACTED = 0;
             public static final double FULLY_EXTENDED = 0;
 
-            public static final int EXTEND_MOTOR_ID = 0; 
+            public static final int EXTEND_MOTOR_ID = 7; 
 
             public static final double GEAR_RATIO = 3;
             public static final double MAX_VOLTAGE = 0; // Normal pid
