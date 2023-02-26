@@ -133,10 +133,14 @@ public class ArmSubsystem extends SubsystemBase {
         m_waiting = false;
       }
       // Since the spring pushes out against the ratchet, the extension shouldn't move until after
-      // the ratchet is disengaged, and by that time the 
+      // the ratchet is disengaged, and by that time the spring is pushing it out. 
       m_extendMotor.set(0);
     }
     m_extendServo.set(m_servoValue);
+  }
+
+  public double getExtendPosition() {
+    return m_extendEncoder.getPosition();
   }
 
   public double getExtendSetpoint(){
@@ -145,6 +149,10 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void setExtendSetpoint(double value){
     m_extendSetpoint = value;
+  }
+
+  public double getPivotPosition() {
+    return m_pivotEncoder.getPosition();
   }
 
   public double getPivotSetpoint(){
