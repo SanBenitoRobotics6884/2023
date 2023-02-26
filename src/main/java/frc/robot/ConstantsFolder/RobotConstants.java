@@ -215,18 +215,18 @@ public final class RobotConstants {
         public static final double P = 0.25;
         public static final double I = 0;
         public static final double D = 0.25; // Might or might not use
-        public static final double MAX_VOLTAGE = 0.25;
+        public static final double MAX_VOLTAGE = 0.25; // Might need more testing
         public static final double CONE_MIN_HUE = 70;
         public static final double CONE_MAX_HUE = 95;
         public static final double CUBE_MIN_HUE = 140;
         public static final double CUBE_MAX_HUE = 230;
 
-        public static final double GEAR_RATIO = 25; // Might change to 50
+        public static final double GEAR_RATIO = 50;
         public static final double CONE_SETPOINT = -8.1; // needs adjustment
         public static final double CUBE_SETPOINT = -4; // needs adjustment
         public static final double OPEN_SETPOINT = 0; 
         public static final double CLOSED_SETPOINT = -8.9; // needs adjustment
-        public static final double OPEN_RATE = 0.05;
+        public static final double OPEN_RATE = 0.05; // Might need adjustment
         public static final double CLOSE_RATE = -0.05;
     }
   
