@@ -36,9 +36,9 @@ public class ArmCommand extends CommandBase {
     double pivot = m_armSubsystem.getPivotSetpoint() + Pivot.Y_SCALE * value;
     boolean isInExtensionMode = m_extensionMode.getAsBoolean();
 
-    if (isInExtensionMode && extend > Extend.BACK_HARD_LIMIT && extend < Extend.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) {
+    if (isInExtensionMode && extend >= Extend.BACK_HARD_LIMIT && extend <= Extend.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) {
       m_armSubsystem.setExtendSetpoint(extend);
-    } else if (!isInExtensionMode && Pivot.BACK_HARD_LIMIT < pivot && pivot < Pivot.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
+    } else if (!isInExtensionMode && Pivot.BACK_HARD_LIMIT <= pivot && pivot <= Pivot.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
       m_armSubsystem.setPivotSetpoint(pivot);
     }
   }

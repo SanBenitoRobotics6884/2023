@@ -62,7 +62,7 @@ public class RobotContainer {
 
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);
   private final Command m_armCommand = new ArmCommand(m_armSubsystem,
-    () -> m_joystick.getY(),
+    () -> -m_joystick.getY(), // DOUBLE CHECK NEEDED
     () -> m_joystick.getZ() > 0);
 
 CommandXboxController controller = new CommandXboxController(0);

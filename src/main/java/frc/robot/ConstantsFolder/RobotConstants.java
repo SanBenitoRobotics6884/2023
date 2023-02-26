@@ -225,23 +225,23 @@ public final class RobotConstants {
             public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
 
             public static final double GEAR_RATIO = 9;
-            public static final double MAX_VOLTAGE = 0.15; // For normal pid (we were using 0.333 while testing, it was a lot)
+            public static final double MAX_VOLTAGE = 0.15; // For normal pid. DOUBLE CHECK NEEDED
             public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
             public static final double MAX_ACCELERATION = 0;
 
-            public static final double HYBRID_SETPOINT = GEAR_RATIO * 0.2; // 0.2 of a full rotation for the arm
+            public static final double HYBRID_SETPOINT = GEAR_RATIO * 0.2; // NEED SETPOINTS
             public static final double MID_SETPOINT = GEAR_RATIO * 0.3;
             public static final double HIGH_SETPOINT = GEAR_RATIO * 0.4;
             
             public static final double Y_SCALE = 0.025;
 
-            //in motor rotations
+            // Rotations of the shaft that the CANCoder is attached to
             public static final double BACK_HARD_LIMIT = 0; // Limits where the setpoint can go on the joystick
-            public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 0.45; // 0.45 of a full rotation of arm
+            public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 0.45; // NEED ANGLE
 
             public static final int PIVOT_CANCODER_ID = 0;
-            public static final int LEFT_MOTOR_ID = 0; 
-            public static final int RIGHT_MOTOR_ID = 0;
+            public static final int MASTER_MOTOR_ID = 0; 
+            public static final int SLAVE_MOTOR_ID = 0;
 
             public static final int SWITCH_PORT = 1;
 

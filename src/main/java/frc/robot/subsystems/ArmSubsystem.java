@@ -33,8 +33,8 @@ public class ArmSubsystem extends SubsystemBase {
   private Servo m_extendServo = new Servo(Extend.SERVO_PORT); 
   
   private CANSparkMax m_extendMotor = new CANSparkMax(Extend.EXTEND_MOTOR_ID, MotorType.kBrushless);
-  private CANSparkMax m_masterPivotMotor = new CANSparkMax(Pivot.LEFT_MOTOR_ID, MotorType.kBrushless);
-  private CANSparkMax m_slavePivotMotor = new CANSparkMax(Pivot.RIGHT_MOTOR_ID, MotorType.kBrushless);
+  private CANSparkMax m_masterPivotMotor = new CANSparkMax(Pivot.MASTER_MOTOR_ID, MotorType.kBrushless);
+  private CANSparkMax m_slavePivotMotor = new CANSparkMax(Pivot.SLAVE_MOTOR_ID, MotorType.kBrushless);
 
   // Profiled PID for the Extend and Pivoting Motors
   private PIDController m_pivotPIDController = new PIDController(
@@ -107,6 +107,7 @@ public class ArmSubsystem extends SubsystemBase {
       m_extendPIDController.setSetpoint(Extend.FULLY_RETRACTED);
       m_extendSetpoint = Extend.FULLY_RETRACTED;
     }
+
     // Give the pivot motor voltage
     m_pivotPIDController.setSetpoint(m_pivotSetpoint);
     m_masterPivotMotor.set(MathUtil.clamp(m_pivotPIDController.calculate(m_pivotEncoder.getPosition()),
@@ -114,6 +115,7 @@ public class ArmSubsystem extends SubsystemBase {
     if (m_upChecker.check()) {
       // When we are starting to try to extend out, we need a wait
       m_waiting = true;
+      // The time we stop waiting
       m_timestamp = Timer.getFPGATimestamp() + Extend.SERVO_DELAY;
       // We wait for the servo to fully disengage
       m_servoValue = Extend.RATCHET_DISENGAGED;
@@ -134,6 +136,8 @@ public class ArmSubsystem extends SubsystemBase {
       if (Timer.getFPGATimestamp() + 0.020 >= m_timestamp) {
         m_waiting = false;
       }
+      // Since the spring pushes out against the ratchet, the extension shouldn't move until after
+      // the ratchet is disengaged, and by that time the 
       m_extendMotor.set(0);
     }
     m_extendServo.set(m_servoValue);
