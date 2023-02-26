@@ -41,15 +41,15 @@ public class ClawCmmd extends CommandBase {
     boolean rightPressed = m_rightPressed.getAsBoolean();
     if (!triggerPressed) {
       // When the trigger and left button are pressed together, close claw
-      newSetpoint = rotations + CLOSE_RATE;
+      newSetpoint = rotations + OPEN_RATE;
       if (leftPressed && !rightPressed 
-          && OPEN_SETPOINT <= newSetpoint && newSetpoint <= CLOSED_SETPOINT) {
+          && OPEN_SETPOINT >= newSetpoint && newSetpoint >= CLOSED_SETPOINT) {
         rotations = newSetpoint;
       }
       // When the trigger and right button are pressed together, open claw
-      newSetpoint = rotations + OPEN_RATE;
+      newSetpoint = rotations + CLOSE_RATE;
       if (rightPressed && !leftPressed 
-          && OPEN_SETPOINT <= newSetpoint && newSetpoint <= CLOSED_SETPOINT) {
+          && OPEN_SETPOINT >= newSetpoint && newSetpoint >= CLOSED_SETPOINT) {
         rotations = newSetpoint;
       }
     } else {

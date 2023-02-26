@@ -17,6 +17,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClawSubsystem extends SubsystemBase {
@@ -24,22 +25,25 @@ public class ClawSubsystem extends SubsystemBase {
   RelativeEncoder m_encoder = m_motor.getEncoder();
 
   double m_rotations = 0;
-  double m_CurrentButton = 0;
   double hue = 0;
   ColorSensorV3 m_colorSensor = new ColorSensorV3(Port.kOnboard);
-  PIDController m_pidController = new PIDController(P, I, D);
-  Joystick m_joystick = new Joystick(0);
+  SparkMaxPIDController m_pidController = m_motor.getPIDController();
 
   /** Creates a new ClawSubsystem. */
   public ClawSubsystem() {
-    m_motor.setInverted(false); // I don't recall whether or not we need it inverted (closing -> +)
     m_motor.restoreFactoryDefaults();
+    m_pidController.setP(P);
+    m_pidController.setI(I);
+    m_pidController.setD(D);
+    m_pidController.setOutputRange(-MAX_VOLTAGE, MAX_VOLTAGE);
+    m_encoder.setPosition(0);
   }
 
   @Override
   public void periodic() {
-    m_motor.set(MathUtil.clamp(m_pidController.calculate(m_encoder.getPosition(), m_rotations), 
-        -MAX_VOLTAGE, MAX_VOLTAGE));
+    m_pidController.setReference(m_rotations, ControlType.kPosition);
+    SmartDashboard.putNumber("claw encoder", m_encoder.getPosition());
+    SmartDashboard.putNumber("setpoint", m_rotations);
   }
 
    
