@@ -81,10 +81,6 @@ public class ArmSubsystem extends SubsystemBase {
 
     m_pivotEncoder.setPosition(0);
     m_extendEncoder.setPosition(0);
-    // If we can use the absolute encoder the way I'm hoping, line 80'll look like this:
-    // m_pivotEncoder.setPosition(calcShaftRotations(absPos) + absPos);
-    // Where calcShaftRotations() uses the decimal of absPos to figure out which 'group' of 40
-    // 40 degrees the arm is likely in. This will require us to know a range of 40 degrees.  
 
     // soft limits on motors
     // Leaving it commented out until we understand it better
@@ -156,7 +152,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void setPivotSetpoint(double value){
-    m_extendSetpoint = value;
+    m_pivotSetpoint = value;
   }
 
   public void resetEncoders() {
