@@ -19,6 +19,7 @@ public class ArmCommand extends CommandBase {
   public ArmCommand(ArmSubsystem armSubsystem, DoubleSupplier value, BooleanSupplier extensionMode) {
     m_armSubsystem = armSubsystem;
     m_value = value;
+    m_extensionMode = extensionMode;
     addRequirements(armSubsystem);
   }
 

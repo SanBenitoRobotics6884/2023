@@ -34,7 +34,7 @@ public class ArmSubsystem extends SubsystemBase {
   
   private CANSparkMax m_extendMotor = new CANSparkMax(Extend.EXTEND_MOTOR_ID, MotorType.kBrushless);
   private CANSparkMax m_masterPivotMotor = new CANSparkMax(Pivot.LEFT_MOTOR_ID, MotorType.kBrushless);
-  private CANSparkMax m_slaveLiftMotor = new CANSparkMax(Pivot.RIGHT_MOTOR_ID, MotorType.kBrushless);
+  private CANSparkMax m_slavePivotMotor = new CANSparkMax(Pivot.RIGHT_MOTOR_ID, MotorType.kBrushless);
 
   // Profiled PID for the Extend and Pivoting Motors
   private PIDController m_pivotPIDController = new PIDController(
@@ -63,9 +63,9 @@ public class ArmSubsystem extends SubsystemBase {
   public ArmSubsystem() {
     m_extendMotor.restoreFactoryDefaults();
     m_masterPivotMotor.restoreFactoryDefaults();
-    m_slaveLiftMotor.restoreFactoryDefaults();
+    m_slavePivotMotor.restoreFactoryDefaults();
 
-    m_slaveLiftMotor.follow(m_masterPivotMotor);
+    m_slavePivotMotor.follow(m_masterPivotMotor);
 
     // encoders
     m_extendEncoder = m_extendMotor.getEncoder();
@@ -75,7 +75,7 @@ public class ArmSubsystem extends SubsystemBase {
     config.unitString = ("rotations");
     config.sensorTimeBase = SensorTimeBase.PerSecond;
     // counterclockwise is positive when facing LED on CANCoder
-    config.sensorDirection = false; // I don't recall if this was false or true
+    config.sensorDirection = false; 
     config.magnetOffsetDegrees = Pivot.CANCODER_OFFSET_DEGREES;
     m_pivotEncoder.configAllSettings(config);
 

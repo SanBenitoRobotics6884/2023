@@ -218,10 +218,9 @@ public final class RobotConstants {
     public static final class Arm {
 
         public static final class Pivot {
-            public static final double P = 0.035; // Not sure what we came up with
+            public static final double P = 0.4;
             public static final double I = 0;
             public static final double D = 0;
-            public static final double SETPOINT_ERROR = 1;
             public static final double CANCODER_COEFFICIENT = 1.0 / 4096; // Rotations
             public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
 
@@ -234,7 +233,7 @@ public final class RobotConstants {
             public static final double MID_SETPOINT = GEAR_RATIO * 0.3;
             public static final double HIGH_SETPOINT = GEAR_RATIO * 0.4;
             
-            public static final double Y_SCALE = 0.006; // Not sure what we came up with
+            public static final double Y_SCALE = 0.025;
 
             //in motor rotations
             public static final double BACK_HARD_LIMIT = 0; // Limits where the setpoint can go on the joystick
