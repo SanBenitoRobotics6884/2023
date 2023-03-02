@@ -13,15 +13,12 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3.RawColor;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClawSubsystem extends SubsystemBase {
-  CANSparkMax m_motor = new CANSparkMax(0, MotorType.kBrushless);
+  CANSparkMax m_motor = new CANSparkMax(MOTOR_ID, MotorType.kBrushless);
   RelativeEncoder m_encoder = m_motor.getEncoder();
 
   double m_rotations = 0;

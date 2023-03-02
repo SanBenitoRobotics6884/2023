@@ -212,6 +212,8 @@ public final class RobotConstants {
     }
   
     public static class Claw {
+        public static final int MOTOR_ID = 8;
+
         public static final double P = 0.25;
         public static final double I = 0;
         public static final double D = 0.25; // Might or might not use
