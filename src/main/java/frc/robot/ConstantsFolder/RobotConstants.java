@@ -4,43 +4,26 @@
 
 package frc.robot.ConstantsFolder;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.ejml.equation.Variable;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.auto.RamseteAutoBuilder;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -208,6 +191,10 @@ public final class RobotConstants {
 
         public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d());
         public static final Transform3d BOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
+
+
+
+        
      
     }
   
@@ -232,4 +219,76 @@ public final class RobotConstants {
         public static final double CLOSE_RATE = -0.05;
     }
   
+    public static final class Arm {
+
+        public static final class Pivot {
+            public static final double P = 0.4;
+            public static final double I = 0;
+            public static final double D = 0;
+            public static final double CANCODER_COEFFICIENT = 1.0 / 4096; // Rotations
+            public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
+
+            public static final double GEAR_RATIO = 9;
+            public static final double MAX_VOLTAGE = 0.15; // For normal pid. DOUBLE CHECK NEEDED
+            public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
+            public static final double MAX_ACCELERATION = 0;
+
+            public static final double HYBRID_SETPOINT = GEAR_RATIO * 0.2; // NEED SETPOINTS
+            public static final double MID_SETPOINT = GEAR_RATIO * 0.3;
+            public static final double HIGH_SETPOINT = GEAR_RATIO * 0.4;
+            
+            public static final double Y_SCALE = 0.025;
+
+            // Rotations of the shaft that the CANCoder is attached to
+            public static final double BACK_HARD_LIMIT = 0; // Limits where the setpoint can go on the joystick
+            public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 0.45; // NEED ANGLE
+
+            public static final int PIVOT_CANCODER_ID = 0;
+            public static final int MASTER_MOTOR_ID = 5; 
+            public static final int SLAVE_MOTOR_ID = 6;
+
+            public static final int SWITCH_PORT = 1;
+
+           
+        
+        }
+
+        public static final class Extend {
+            public static final double P = 0;
+            public static final double I = 0;
+            public static final double D = 0;
+            public static final double SETPOINT_ERROR = 1;
+            
+
+            public static final double HYBRID_SETPOINT = 0;
+            public static final double MID_SETPOINT = 0;
+            public static final double HIGH_SETPOINT = 0;
+
+            public static final double EXTEND_HYBRID_ROTATIONS = 0;
+            public static final double EXTEND_MID_ROTATIONS = 0;
+            public static final double EXTEND_HIGH_ROTATIONS = 0;
+
+            public static final double Y_SCALE = 1;
+
+            public static final float EXTEND_REVERSE_SOFT_LIMIT = 1;
+            public static final float EXTEND_FORWARD_SOFT_LIMIT = 1;
+            public static final double BACK_HARD_LIMIT = 0;
+            public static final double FRONT_HARD_LIMIT = 0;
+            public static final double FULLY_RETRACTED = 0;
+            public static final double FULLY_EXTENDED = 0;
+
+            public static final int EXTEND_MOTOR_ID = 7; 
+
+            public static final double GEAR_RATIO = 3;
+            public static final double MAX_VOLTAGE = 0; // Normal pid
+            public static final double MAX_VELOCITY = 0; // profiled pid 
+            public static final double MAX_ACCELERATION = 0;
+
+            public static final int SERVO_PORT = 0;
+            public static final double SERVO_DELAY = 1;
+            public static final double RATCHET_ENGAGED = 1;
+            public static final double RATCHET_DISENGAGED = 0;
+            public static final double RATCHET_DELAY = 1;
+        }
+    }  
 }
