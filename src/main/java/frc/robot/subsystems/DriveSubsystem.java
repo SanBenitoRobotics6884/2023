@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.constants.RobotConstants.Drive.*;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
@@ -20,8 +22,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */

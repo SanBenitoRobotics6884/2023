@@ -4,10 +4,10 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.RobotConstants.Arm.Pivot.*;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
-
-import static frc.robot.ConstantsFolder.RobotConstants.Arm.Pivot.*;
 
 /**
  * Until we add a feedforward for gravity (which will require us to be able to know the exact

@@ -1,4 +1,4 @@
-package frc.robot.AStar;
+package frc.robot.astar;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -4,8 +4,8 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
-import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
+import static frc.robot.constants.RobotConstants.Drive.*;
+import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
 import java.io.IOException;
 import java.util.ConcurrentModificationException;

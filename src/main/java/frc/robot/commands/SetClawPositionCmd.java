@@ -4,10 +4,10 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.RobotConstants.Claw.*;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ClawSubsystem;
-
-import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
 
 /**
  * This command extends InstantCommand so there needs to be a WaitCommand after it in autonomous)

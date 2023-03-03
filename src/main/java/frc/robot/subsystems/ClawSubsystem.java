@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
+import static frc.robot.constants.RobotConstants.Claw.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;

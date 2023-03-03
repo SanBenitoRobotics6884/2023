@@ -4,11 +4,12 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.RobotConstants.Arm.*;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
-import static frc.robot.ConstantsFolder.RobotConstants.Arm.*;
 
 
 public class ArmCommand extends CommandBase {

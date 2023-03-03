@@ -6,7 +6,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClawSubsystem;
-import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
+
+import static frc.robot.constants.RobotConstants.Claw.*;
 
 import java.util.function.BooleanSupplier;
 

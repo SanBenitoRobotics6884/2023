@@ -4,13 +4,13 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.constants.RobotConstants.FiducialTracking.*;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
 
 
 public class VisionSubsystem extends SubsystemBase {

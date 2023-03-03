@@ -4,7 +4,9 @@
 
 package frc.robot;
 
-import static frc.robot.ConstantsFolder.RobotConstants.FiducialTracking.*;
+import static frc.robot.constants.RobotConstants.Claw.*;
+import static frc.robot.constants.RobotConstants.Drive.*;
+import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
 import java.util.List;
 
@@ -19,21 +21,21 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.AStar.Edge;
-import frc.robot.AStar.Node;
-import frc.robot.AStar.Obstacle;
-import frc.robot.AStar.VisGraph;
-import frc.robot.ConstantsFolder.FieldConstants;
-import frc.robot.Util.JoystickMultiPress;
+import frc.robot.astar.Edge;
+import frc.robot.astar.Node;
+import frc.robot.astar.Obstacle;
+import frc.robot.astar.VisGraph;
 import frc.robot.commands.AStar;
 import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
+import frc.robot.constants.FieldConstants;
+import frc.robot.constants.RobotConstants.Arm;
 import frc.robot.subsystems.ClawSubsystem;
-import frc.robot.ConstantsFolder.RobotConstants.Arm;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.util.JoystickMultiPress;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -41,9 +43,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import static frc.robot.ConstantsFolder.RobotConstants.Claw.*;
-import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

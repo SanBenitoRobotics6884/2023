@@ -4,10 +4,10 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.RobotConstants.Arm.Extend.*;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
-
-import static frc.robot.ConstantsFolder.RobotConstants.Arm.Extend.*;
 
 /**
  * This subclasses an InstantCommand for consistency because SetArmPivotCmd has to subclass an

@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 
+import static frc.robot.constants.RobotConstants.Arm.*;
+
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
@@ -18,9 +20,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Util.BooleanChecker;
-
-import static frc.robot.ConstantsFolder.RobotConstants.Arm.*;
+import frc.robot.util.BooleanChecker;
 
 public class ArmSubsystem extends SubsystemBase {
   private Servo m_extendServo = new Servo(Extend.SERVO_PORT); 
