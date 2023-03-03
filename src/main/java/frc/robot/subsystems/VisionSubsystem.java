@@ -46,23 +46,23 @@ public class VisionSubsystem extends SubsystemBase {
         m_pitch = target.getPitch();
         m_tagPose3d = TAG_POSES.getTagPose(m_fiducialID).get();
        m_distance = PhotonUtils.calculateDistanceToTargetMeters(
-        CAMERA_ONE_HEIGHT, m_tagPose3d.getZ(), CAMERA_ONE_PITCH_RADIANS, GetPitchRadians());
+        CAMERA_ONE_HEIGHT, m_tagPose3d.getZ(), CAMERA_ONE_PITCH_RADIANS, getPitchRadians());
          cameraToTarget = target.getBestCameraToTarget();
         
         
       }
     }
   }
-  public double GetYawDegrees(){
+  public double getYawDegrees(){
     return m_yaw;
   }
-  public double GetYawRadians(){
+  public double getYawRadians(){
     return m_yaw * Math.PI /180;
   }
-  public double GetPitchDegrees(){
+  public double getPitchDegrees(){
     return m_pitch;
   }
-  public double GetPitchRadians(){
+  public double getPitchRadians(){
     return m_pitch * Math.PI /180;
   }
 

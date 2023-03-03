@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 import static frc.robot.constants.RobotConstants.Claw.*;
+import static frc.robot.constants.RobotConstants.Feedback.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
@@ -13,6 +14,8 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3.RawColor;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ClawSubsystem extends SubsystemBase {
   CANSparkMax m_motor = new CANSparkMax(MOTOR_ID, MotorType.kBrushless);
   RelativeEncoder m_encoder = m_motor.getEncoder();
+  Debouncer m_rumble = new Debouncer(0.2, DebounceType.kRising);
 
   double m_rotations = 0;
   double hue = 0;
@@ -65,6 +69,13 @@ public class ClawSubsystem extends SubsystemBase {
       } else if (CUBE_MIN_HUE <= hue && hue <= CUBE_MAX_HUE) {
         m_rotations = CUBE_SETPOINT;
       }
+  }
+
+  /** Return when to rumble */
+  public boolean getStatus() {
+    return m_rumble.calculate(
+        m_encoder.getVelocity() <= CLAW_RUMBLE_MAX_VELOCITY 
+        && (m_encoder.getPosition() - m_rotations) * 3 > CLAW_RUMBLE_MIN_VOLTAGE);
   }
 
 

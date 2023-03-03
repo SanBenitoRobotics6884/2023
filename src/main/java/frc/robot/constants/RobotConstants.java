@@ -290,5 +290,16 @@ public final class RobotConstants {
             public static final double RATCHET_DISENGAGED = 0;
             public static final double RATCHET_DELAY = 1;
         }
-    }  
+    }
+    
+    public static final class Feedback {
+        public static final boolean IS_TESTING = true;
+        public static final double STRENGTH = 0;
+        public static final int[] DRIVE_POWER_CHANNEL = {1, 2, 3, 4};
+        public static final double GRAVITY = 9.8;
+        public static final double CURRENT_RATIO_RUMBLE_THRESHOLD = 0;
+        public static final double ACCELERATION_RUMBLE_THRESHOLD = 0;
+        public static final double CLAW_RUMBLE_MAX_VELOCITY = 0.001;
+        public static final double CLAW_RUMBLE_MIN_VOLTAGE = 1.5;
+    }
 }
