@@ -254,21 +254,18 @@ public final class RobotConstants {
         }
 
         public static final class Extend {
-            public static final double P = 0;
+            public static final double P = 0.2;
             public static final double I = 0;
             public static final double D = 0;
-            public static final double SETPOINT_ERROR = 1;
+            public static final double SETPOINT_TOLERANCE = 4;
+            public static final double START_EXTENDING = 1;
             
 
             public static final double HYBRID_SETPOINT = 0;
-            public static final double MID_SETPOINT = 0;
-            public static final double HIGH_SETPOINT = 0;
+            public static final double MID_SETPOINT = 25;
+            public static final double HIGH_SETPOINT = 35;
 
-            public static final double EXTEND_HYBRID_ROTATIONS = 0;
-            public static final double EXTEND_MID_ROTATIONS = 0;
-            public static final double EXTEND_HIGH_ROTATIONS = 0;
-
-            public static final double Y_SCALE = 1;
+            public static final double Y_SCALE = 0.06;
 
             public static final float EXTEND_REVERSE_SOFT_LIMIT = 1;
             public static final float EXTEND_FORWARD_SOFT_LIMIT = 1;
@@ -279,15 +276,16 @@ public final class RobotConstants {
 
             public static final int EXTEND_MOTOR_ID = 7; 
 
-            public static final double GEAR_RATIO = 3;
-            public static final double MAX_VOLTAGE = 0; // Normal pid
+            public static final double GEAR_RATIO = 7;
+            public static final double MAX_VOLTAGE_EXTEND = 0.2;
+            public static final double MAX_VOLTAGE_RETRACT = 0.2;
             public static final double MAX_VELOCITY = 0; // profiled pid 
             public static final double MAX_ACCELERATION = 0;
 
-            public static final int SERVO_PORT = 0;
+            public static final int SERVO_PORT = 9;
             public static final double SERVO_DELAY = 1;
-            public static final double RATCHET_ENGAGED = 1;
-            public static final double RATCHET_DISENGAGED = 0;
+            public static final double RATCHET_ENGAGED = 115. / 180;
+            public static final double RATCHET_DISENGAGED = 93. / 180;
             public static final double RATCHET_DELAY = 1;
         }
     }  
