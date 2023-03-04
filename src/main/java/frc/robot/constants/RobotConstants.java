@@ -269,8 +269,8 @@ public final class RobotConstants {
 
             public static final float EXTEND_REVERSE_SOFT_LIMIT = 1;
             public static final float EXTEND_FORWARD_SOFT_LIMIT = 1;
-            public static final double BACK_HARD_LIMIT = 0;
-            public static final double FRONT_HARD_LIMIT = 0;
+            public static final double BACK_HARD_LIMIT = -10;
+            public static final double FRONT_HARD_LIMIT = 80;
             public static final double FULLY_RETRACTED = 0;
             public static final double FULLY_EXTENDED = 0;
 
