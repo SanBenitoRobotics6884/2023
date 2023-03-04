@@ -45,6 +45,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   // stuff for ratchet
   private double m_targetTime = 0;
+  private double m_currentTime = 0;
   private boolean m_ratchetEngaged = true;
   private BooleanChecker m_upChecker = new BooleanChecker(
       () -> m_extendSetpoint > m_extendEncoder.getPosition() + Extend.START_EXTENDING);
@@ -54,6 +55,9 @@ public class ArmSubsystem extends SubsystemBase {
     m_extendMotor.restoreFactoryDefaults();
     m_masterPivotMotor.restoreFactoryDefaults();
     m_slavePivotMotor.restoreFactoryDefaults();
+
+    m_masterPivotMotor.setInverted(true);
+    m_slavePivotMotor.setInverted(true);
 
     m_slavePivotMotor.follow(m_masterPivotMotor);
 
@@ -85,6 +89,7 @@ public class ArmSubsystem extends SubsystemBase {
     double extendOutput;
     if (m_upChecker.check() && m_ratchetEngaged) {
       m_targetTime = Timer.getFPGATimestamp() + Extend.SERVO_DELAY;
+      m_currentTime = Timer.getFPGATimestamp();
       m_ratchetEngaged = false;
     }
 
@@ -103,7 +108,11 @@ public class ArmSubsystem extends SubsystemBase {
             -Extend.MAX_VOLTAGE_RETRACT, Extend.MAX_VOLTAGE_EXTEND);
       }
     } else {
-      extendOutput = 0;
+      if (Timer.getFPGATimestamp() - m_currentTime < Extend.BACK_TIME) {
+        extendOutput = -Extend.BACK_VOLTAGE;
+      } else {
+        extendOutput = 0;
+      }
     }
     m_extendMotor.set(extendOutput);
     if (m_ratchetEngaged) {

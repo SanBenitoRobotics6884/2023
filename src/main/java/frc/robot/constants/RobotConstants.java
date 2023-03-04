@@ -277,6 +277,9 @@ public final class RobotConstants {
             public static final int EXTEND_MOTOR_ID = 7; 
 
             public static final double GEAR_RATIO = 7;
+            // All voltage values are percent output
+            public static final double BACK_VOLTAGE = 0.01; // Should be positive (has negative sign in code)
+            public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
             public static final double MAX_VOLTAGE_EXTEND = 0.2;
             public static final double MAX_VOLTAGE_RETRACT = 0.2;
             public static final double MAX_VELOCITY = 0; // profiled pid 
