@@ -34,6 +34,7 @@ import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.util.JoystickMultiPress;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,14 +53,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+
+  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_gyro);
-
-
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);
   private final ClawSubsystem clawSubsystem = new ClawSubsystem();
- 
+  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
+
   Joystick m_joystick = new Joystick(0);
   Trigger m_joystickTrigger = new JoystickButton(m_joystick, 1);
   Trigger m_joystickCloseClawLeft = new JoystickButton(m_joystick, 3);
@@ -163,6 +164,16 @@ public class RobotContainer {
     
     new JoystickButton(m_joystick, 8)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
+
+    // LED triggers
+    new JoystickButton(m_joystick, 5).and(new JoystickButton(m_joystick, 6).negate())
+        .onTrue(new InstantCommand(m_ledSubsystem::putPurple));
+
+    new JoystickButton(m_joystick, 6).and(new JoystickButton(m_joystick, 5).negate())
+        .onTrue(new InstantCommand(m_ledSubsystem::putYellow));
+
+    new JoystickButton(m_joystick, 5).and(new JoystickButton(m_joystick, 6))
+        .onTrue(new InstantCommand(m_ledSubsystem::putOff));
 
     new Trigger(() -> m_joystick.getPOV() == 0)
         .onTrue(new InstantCommand(() -> m_armSubsystem.resetEncoders()));

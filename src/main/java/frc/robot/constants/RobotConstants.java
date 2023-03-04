@@ -24,6 +24,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -290,5 +291,13 @@ public final class RobotConstants {
             public static final double RATCHET_DISENGAGED = 0;
             public static final double RATCHET_DELAY = 1;
         }
-    }  
+    }
+
+    public static final class LED {
+        public static final int LED_PORT = 1; // Needs changing
+        public static final int LENGTH = 60; // Needs changing
+        public static final Color PURPLE = new Color(200, 0, 255);
+        public static final Color YELLOW = new Color(255, 255, 0);
+        public static final Color OFF = new Color(0, 0, 0);
+    }
 }
