@@ -65,8 +65,7 @@ public class RobotContainer {
   Trigger m_joystickCloseClawLeft = new JoystickButton(m_joystick, 3);
   Trigger m_joystickOpenClawRight = new JoystickButton(m_joystick, 4);
   private final Command m_armCommand = new ArmCommand(m_armSubsystem,
-    () -> -m_joystick.getY(),
-    () -> m_joystick.getZ() > 0);
+    () -> -m_joystick.getY());
 
   CommandXboxController controller = new CommandXboxController(0);
 

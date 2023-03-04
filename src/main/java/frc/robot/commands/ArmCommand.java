@@ -17,10 +17,9 @@ public class ArmCommand extends CommandBase {
   ArmSubsystem m_armSubsystem;
   DoubleSupplier m_value;
   BooleanSupplier m_extensionMode;
-  public ArmCommand(ArmSubsystem armSubsystem, DoubleSupplier value, BooleanSupplier extensionMode) {
+  public ArmCommand(ArmSubsystem armSubsystem, DoubleSupplier value) {
     m_armSubsystem = armSubsystem;
     m_value = value;
-    m_extensionMode = extensionMode;
     addRequirements(armSubsystem);
   }
 
@@ -35,11 +34,7 @@ public class ArmCommand extends CommandBase {
     double value = m_value.getAsDouble();
     double extend = m_armSubsystem.getExtendSetpoint() + Extend.Y_SCALE * value;
     double pivot = m_armSubsystem.getPivotSetpoint() + Pivot.Y_SCALE * value;
-    boolean isInExtensionMode = m_extensionMode.getAsBoolean();
-
-    if (isInExtensionMode && extend >= Extend.BACK_HARD_LIMIT && extend <= Extend.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) {
-      m_armSubsystem.setExtendSetpoint(extend);
-    } else if (!isInExtensionMode && Pivot.BACK_HARD_LIMIT <= pivot && pivot <= Pivot.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
+    if (Pivot.BACK_HARD_LIMIT <= pivot && pivot <= Pivot.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
       m_armSubsystem.setPivotSetpoint(pivot);
     }
   }
