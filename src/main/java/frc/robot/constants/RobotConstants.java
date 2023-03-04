@@ -301,5 +301,9 @@ public final class RobotConstants {
         public static final double ACCELERATION_RUMBLE_THRESHOLD = 0;
         public static final double CLAW_RUMBLE_MAX_VELOCITY = 0.001;
         public static final double CLAW_RUMBLE_MIN_VOLTAGE = 1.5;
+        public static final double CAMERA_TELEMETRY_PERIOD = 3;
+        public static final int CAMERA_BRIGHTNESS_PERCENT = 80;
+        public static final int CAMERA_EXPOSURE_PERCENT = 45;
+        public static final int DESIRED_FPS = 15;
     }
 }

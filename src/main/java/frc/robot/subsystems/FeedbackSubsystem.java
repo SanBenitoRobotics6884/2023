@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.RobotConstants.Feedback.*;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CameraServerJNI;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
@@ -20,25 +23,31 @@ public class FeedbackSubsystem extends SubsystemBase {
   ADIS16470_IMU m_gyro;
   XboxController m_controller;
   PowerDistribution m_pdh;
+  UsbCamera m_clawCam;
 
   double m_currentToAccelerationRatio = 0;
   double m_netAcceleration = 0;
 
   /** Creates a new FeedbackSubsystem. */
   public FeedbackSubsystem(
-    ArmSubsystem armSubsystem,
-    ClawSubsystem clawSubsystem,
-    VisionSubsystem visionSubsystem,
-    ADIS16470_IMU gyro,
-    XboxController controller,
-    PowerDistribution pdh
-  ) {
+      ArmSubsystem armSubsystem,
+      ClawSubsystem clawSubsystem,
+      VisionSubsystem visionSubsystem,
+      ADIS16470_IMU gyro,
+      XboxController controller,
+      PowerDistribution pdh) {
     m_armSubsystem = armSubsystem;
     m_clawSubsystem = clawSubsystem;
     m_visionSubsystem = visionSubsystem;
     m_gyro = gyro;
     m_controller = controller;
     m_pdh = pdh;
+
+    m_clawCam = CameraServer.startAutomaticCapture();
+    m_clawCam.setBrightness(CAMERA_BRIGHTNESS_PERCENT);
+    m_clawCam.setExposureManual(CAMERA_EXPOSURE_PERCENT);
+    m_clawCam.setFPS(DESIRED_FPS);
+    CameraServerJNI.setTelemetryPeriod(CAMERA_TELEMETRY_PERIOD);
   }
 
   @Override
@@ -78,6 +87,8 @@ public class FeedbackSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Target Yaw", m_visionSubsystem.getYawDegrees());
       SmartDashboard.putNumber("Target Pitch", m_visionSubsystem.getPitchDegrees());
       SmartDashboard.putNumber("Current To Acceleration Ratio", m_currentToAccelerationRatio);
+      SmartDashboard.putNumber("Claw Camera FPS", m_clawCam.getActualFPS());
+      SmartDashboard.putBoolean("Claw Camera Connected", m_clawCam.isConnected());
     }  
   }
 
