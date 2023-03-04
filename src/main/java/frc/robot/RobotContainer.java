@@ -145,13 +145,13 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT)));  
 
     // Arm triggers
-    new JoystickButton(m_joystick, 7)
+    new JoystickButton(m_joystick, 11)
          .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
 
     new JoystickButton(m_joystick, 9)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
 
-    new JoystickButton(m_joystick, 11)
+    new JoystickButton(m_joystick, 7)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
 
     new JoystickButton(m_joystick, 12)
