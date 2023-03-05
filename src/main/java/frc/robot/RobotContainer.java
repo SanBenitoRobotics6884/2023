@@ -88,8 +88,10 @@ public class RobotContainer {
      trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS );
     
     m_armSubsystem.setDefaultCommand(m_armCommand);
-    driveSubsystem.setDefaultCommand(new DriveCmmd(driveSubsystem,
-     ()->controller.getRightY(), ()->controller.getRightX(), false));
+    driveSubsystem.setDefaultCommand(new DriveCmmd(
+        driveSubsystem,
+        () -> controller.getLeftY(), 
+        () -> -controller.getRightX(), false));
    
      configureButtonBindings();
 
@@ -121,8 +123,8 @@ public class RobotContainer {
     controller.leftTrigger()
         .whileTrue(new DriveCmmd(
             driveSubsystem, 
-            ()->controller.getLeftY(), 
-            ()->controller.getRightX(), 
+            () -> controller.getLeftY(), 
+            () -> -controller.getRightX(), 
             true));
     controller.x().whileTrue(new AStar(
         driveSubsystem, poseEstimatorSubsystem,
