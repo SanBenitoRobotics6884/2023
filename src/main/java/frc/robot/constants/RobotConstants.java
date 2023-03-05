@@ -295,7 +295,7 @@ public final class RobotConstants {
 
     public static final class LED {
         public static final int LED_PORT = 1; // Needs changing
-        public static final int LENGTH = 60; // Needs changing
+        public static final int LENGTH = 300;
         public static final Color PURPLE = new Color(200, 0, 255);
         public static final Color YELLOW = new Color(255, 255, 0);
         public static final Color OFF = new Color(0, 0, 0);
