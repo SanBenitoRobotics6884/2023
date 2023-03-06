@@ -147,6 +147,6 @@ public class AStar extends CommandBase {
       pathDrivingCommand.cancel();
     }
 
-    driveSystem.StopMotors();
+    driveSystem.stopMotors();
   }
 }

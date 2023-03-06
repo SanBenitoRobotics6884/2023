@@ -14,41 +14,36 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class DriveCmmd extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveSubsystem m_subsystem;
-  private final DoubleSupplier fowDoubleSupplier;
-  private final DoubleSupplier m_thetaDoubleSupplier;
-  private Boolean m_turbo;
+  private final DoubleSupplier m_forwSupplier;
+  private final DoubleSupplier m_rotSupplier;
+  private final Boolean m_snailMode;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveCmmd(DriveSubsystem subsystem, DoubleSupplier f, DoubleSupplier t, Boolean turbo) {
+  public DriveCmmd(DriveSubsystem subsystem, DoubleSupplier forward, DoubleSupplier rotation, Boolean inSnailMode) {
     m_subsystem = subsystem;
-    fowDoubleSupplier = f;
-    m_thetaDoubleSupplier = t;
-    m_turbo = turbo;
+    m_forwSupplier = forward;
+    m_rotSupplier = rotation;
+    m_snailMode = inSnailMode;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_turbo){
-      m_subsystem.TurboJoystickDrive(fowDoubleSupplier.getAsDouble(), m_thetaDoubleSupplier.getAsDouble());
+    if(m_snailMode){
+      m_subsystem.snailDrive(m_forwSupplier.getAsDouble(), m_rotSupplier.getAsDouble());
+    } else {
+      m_subsystem.drive(m_forwSupplier.getAsDouble(), m_rotSupplier.getAsDouble());
     }
-    if(!m_turbo){
-      m_subsystem.NormalDrive(fowDoubleSupplier.getAsDouble(), m_thetaDoubleSupplier.getAsDouble());
-    }
-    
-  
   }
 
   // Called once the command ends or is interrupted.

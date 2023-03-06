@@ -52,47 +52,46 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-  ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_gyro);
-
-
-  private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, driveSubsystem);
-  private final ClawSubsystem clawSubsystem = new ClawSubsystem();
+  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem(m_gyro);
+  private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, m_driveSubsystem);
+  private final ClawSubsystem m_clawSubsystem = new ClawSubsystem();
  
-  Joystick m_joystick = new Joystick(0);
-  Trigger m_joystickTrigger = new JoystickButton(m_joystick, 1);
-  Trigger m_joystickCloseClawLeft = new JoystickButton(m_joystick, 3);
-  Trigger m_joystickOpenClawRight = new JoystickButton(m_joystick, 4);
-  private final Command m_armCommand = new ArmCommand(m_armSubsystem,
-    () -> -m_joystick.getY(),
-    () -> m_joystick.getZ() > 0);
-
-  CommandXboxController controller = new CommandXboxController(0);
-
-  VisGraph AStarMap = new VisGraph();
+  private final Joystick m_joystick = new Joystick(0);
+  private final CommandXboxController controller = new CommandXboxController(1);
   
-
-  ClawCmmd clawCommand = new ClawCmmd(
-    clawSubsystem,
+  private final Command m_armCommand = new ArmCommand(m_armSubsystem,
+      () -> -m_joystick.getY());
+  private final ClawCmmd m_clawCommand = new ClawCmmd(
+    m_clawSubsystem,
     () -> m_joystick.getTrigger(),
     () -> m_joystick.getRawButton(3),
     () -> m_joystick.getRawButton(4));
+  private final DriveCmmd m_normalDriveCommand = new DriveCmmd(
+      m_driveSubsystem,
+      () -> controller.getLeftY(),
+      () -> -controller.getRightX(),
+      false);
+  private final DriveCmmd m_snailDriveCommand = new DriveCmmd(
+      m_driveSubsystem,
+      () -> controller.getLeftY(),
+      () -> -controller.getRightX(),
+      true);
 
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
-  final List<Obstacle> obstacles = FieldConstants.obstacles;
-
-  PathPlannerTrajectory trajectory;
+  private final List<Obstacle> obstacles = FieldConstants.obstacles;
+  private final VisGraph AStarMap = new VisGraph();
+  private final PathPlannerTrajectory trajectory;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-     trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS );
+    trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
     
     m_armSubsystem.setDefaultCommand(m_armCommand);
-    driveSubsystem.setDefaultCommand(new DriveCmmd(driveSubsystem,
-     ()->controller.getRightY(), ()->controller.getRightX(), false));
-   
-     configureButtonBindings();
+    m_clawSubsystem.setDefaultCommand(m_clawCommand);
+    m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
+    configureButtonBindings();
 
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
@@ -107,8 +106,6 @@ public class RobotContainer {
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
     }
-
-    clawSubsystem.setDefaultCommand(clawCommand);
   }
 
   /**
@@ -120,39 +117,35 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Chassis triggers
     controller.leftTrigger()
-        .whileTrue(new DriveCmmd(
-            driveSubsystem, 
-            ()->controller.getLeftY(), 
-            ()->controller.getRightX(), 
-            true));
+        .whileTrue(m_snailDriveCommand);
     controller.x().whileTrue(new AStar(
-        driveSubsystem, poseEstimatorSubsystem,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
-        AStarMap));
+        m_driveSubsystem, poseEstimatorSubsystem,
+        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
+        Rotation2d.fromDegrees(180)), obstacles, AStarMap));
     controller.y().whileTrue(new AStar(
-        driveSubsystem, poseEstimatorSubsystem,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
-        AStarMap));
-    controller.a().whileTrue(new RunCommand(driveSubsystem::ResetEncoder, driveSubsystem) );
+        m_driveSubsystem, poseEstimatorSubsystem,
+        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
+        Rotation2d.fromDegrees(180)), obstacles, AStarMap));
+    controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
     
     // Claw triggers
     new JoystickButton(m_joystick, 2)
-        .onTrue(new InstantCommand(() -> clawSubsystem.colorCheck())); // To close the claw (with color sensor) 
+        .onTrue(new InstantCommand(m_clawSubsystem::colorCheck)); // To close the claw (with color sensor) 
     new JoystickMultiPress(m_joystick, 3)
-        .and(m_joystickTrigger.negate())
-        .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT))); 
+        .and(new JoystickButton(m_joystick, 1).negate())
+        .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT))); 
     new JoystickMultiPress(m_joystick, 4)
-        .and(m_joystickTrigger.negate())
-        .onTrue(new InstantCommand(() -> clawSubsystem.setRotations(OPEN_SETPOINT)));  
+        .and(new JoystickButton(m_joystick, 1).negate())
+        .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT)));  
 
     // Arm triggers
-    new JoystickButton(m_joystick, 7)
+    new JoystickButton(m_joystick, 11)
          .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
 
     new JoystickButton(m_joystick, 9)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
 
-    new JoystickButton(m_joystick, 11)
+    new JoystickButton(m_joystick, 7)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
 
     new JoystickButton(m_joystick, 12)
@@ -185,12 +178,12 @@ public class RobotContainer {
             RAMSETE_CONTROLLER, 
             FEED_FOWARD, 
             KINEMATICS, 
-            driveSubsystem::getWheelSpeeds, 
+            m_driveSubsystem::getWheelSpeeds, 
             LEFT_DRIVE_CONTROLLER, 
             RIGHT_DRIVE_CONTROLLER, 
-            driveSubsystem::SetMotorVoltage, 
+            m_driveSubsystem::tankDrive, 
             false, 
-            driveSubsystem),
-        new RunCommand(driveSubsystem::StopMotors, driveSubsystem));
+            m_driveSubsystem),
+        new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
   }
 }

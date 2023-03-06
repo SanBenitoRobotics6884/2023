@@ -16,7 +16,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,23 +37,26 @@ public class ArmSubsystem extends SubsystemBase {
   private WPI_CANCoder m_pivotEncoder;
 
   // Limit switch on extend for when the arm is fully retracted
-  private DigitalInput m_extendSwitch = new DigitalInput(Pivot.SWITCH_PORT);
+  // private DigitalInput m_extendSwitch = new DigitalInput(Pivot.SWITCH_PORT);
 
   private double m_extendSetpoint = 0;
   private double m_pivotSetpoint = 0;
 
   // stuff for ratchet
-  private boolean m_waiting = false;
-  private double m_timestamp = 0;
-  private double m_servoValue = Extend.RATCHET_ENGAGED;
+  private double m_targetTime = 0;
+  private double m_currentTime = 0;
+  private boolean m_ratchetEngaged = true;
   private BooleanChecker m_upChecker = new BooleanChecker(
-      () -> m_extendSetpoint > m_extendEncoder.getPosition() + Extend.SETPOINT_ERROR);
+      () -> m_extendSetpoint > m_extendEncoder.getPosition() + Extend.START_EXTENDING);
 
   /** Creates a new ArmSubsystem. */
   public ArmSubsystem() {
     m_extendMotor.restoreFactoryDefaults();
     m_masterPivotMotor.restoreFactoryDefaults();
     m_slavePivotMotor.restoreFactoryDefaults();
+
+    m_masterPivotMotor.setInverted(true);
+    m_slavePivotMotor.setInverted(true);
 
     m_slavePivotMotor.follow(m_masterPivotMotor);
 
@@ -72,62 +74,51 @@ public class ArmSubsystem extends SubsystemBase {
 
     m_pivotEncoder.setPosition(0);
     m_extendEncoder.setPosition(0);
-
-    // soft limits on motors
-    // Leaving it commented out until we understand it better
-    /*
-    m_firstLiftMotor.setSoftLimit(SoftLimitDirection.kReverse, Pivot.PIVOT_REVERSE_SOFT_LIMIT);
-    m_secondLiftMotor.setSoftLimit(SoftLimitDirection.kReverse, Pivot.PIVOT_REVERSE_SOFT_LIMIT);
-    m_extendMotor.setSoftLimit(SoftLimitDirection.kReverse, Extend.EXTEND_REVERSE_SOFT_LIMIT);
-
-    m_firstLiftMotor.setSoftLimit(SoftLimitDirection.kForward, Pivot.PIVOT_FORWARD_SOFT_LIMIT);
-    m_secondLiftMotor.setSoftLimit(SoftLimitDirection.kForward, Pivot.PIVOT_FORWARD_SOFT_LIMIT);
-    m_extendMotor.setSoftLimit(SoftLimitDirection.kForward, Extend.EXTEND_FORWARD_SOFT_LIMIT);
-    */
   }
 
   @Override
   public void periodic() {
-    // If the limit switch for the arm is hit, set the encoders
-    if (m_extendSwitch.get()) {
-      m_extendEncoder.setPosition(Extend.FULLY_RETRACTED);
-      m_extendPIDController.setSetpoint(Extend.FULLY_RETRACTED);
-      m_extendSetpoint = Extend.FULLY_RETRACTED;
-    }
-
     // Give the pivot motor voltage
     m_pivotPIDController.setSetpoint(m_pivotSetpoint);
+    m_extendPIDController.setSetpoint(m_extendSetpoint);
+
     m_masterPivotMotor.set(MathUtil.clamp(m_pivotPIDController.calculate(m_pivotEncoder.getPosition()),
         -Pivot.MAX_VOLTAGE, Pivot.MAX_VOLTAGE));
-    if (m_upChecker.check()) {
-      // When we are starting to try to extend out, we need a wait
-      m_waiting = true;
-      // The time we stop waiting
-      m_timestamp = Timer.getFPGATimestamp() + Extend.SERVO_DELAY;
-      // We wait for the servo to fully disengage
-      m_servoValue = Extend.RATCHET_DISENGAGED;
-      m_extendMotor.set(0);
-    } else if (!m_waiting) {
-      // While we're going (not waiting) we need to update the setpoint
-      m_extendPIDController.setSetpoint(m_extendSetpoint);
-      // If the extension is within the error, reengage the ratchet and stop the motor, otherwise give it the pid output
-      if (Math.abs(m_extendEncoder.getPosition() - m_extendSetpoint) > Extend.SETPOINT_ERROR) {
-        m_extendMotor.set(MathUtil.clamp(m_extendPIDController.calculate(m_extendEncoder.getPosition()),
-            -Extend.MAX_VOLTAGE, Extend.MAX_VOLTAGE));
+
+    double extendOutput;
+    if (m_upChecker.check() && m_ratchetEngaged) {
+      m_targetTime = Timer.getFPGATimestamp() + Extend.SERVO_DELAY;
+      m_currentTime = Timer.getFPGATimestamp();
+      m_ratchetEngaged = false;
+    }
+
+    if (Timer.getFPGATimestamp() > m_targetTime) {
+      if (m_extendEncoder.getPosition() > m_extendSetpoint - Extend.SETPOINT_TOLERANCE) {
+        m_ratchetEngaged = true;
+      }
+
+      if (m_ratchetEngaged) {
+        extendOutput = MathUtil.clamp(
+            m_extendPIDController.calculate(m_extendEncoder.getPosition()),
+            -Extend.MAX_VOLTAGE_RETRACT, 0);
       } else {
-        m_extendMotor.set(0);
-        m_servoValue = Extend.RATCHET_ENGAGED;
+        extendOutput = MathUtil.clamp(
+            m_extendPIDController.calculate(m_extendEncoder.getPosition()),
+            -Extend.MAX_VOLTAGE_RETRACT, Extend.MAX_VOLTAGE_EXTEND);
       }
     } else {
-      // While waiting, don't give extend motor voltage
-      if (Timer.getFPGATimestamp() + 0.020 >= m_timestamp) {
-        m_waiting = false;
+      if (Timer.getFPGATimestamp() - m_currentTime < Extend.BACK_TIME) {
+        extendOutput = -Extend.BACK_VOLTAGE;
+      } else {
+        extendOutput = 0;
       }
-      // Since the spring pushes out against the ratchet, the extension shouldn't move until after
-      // the ratchet is disengaged, and by that time the spring is pushing it out. 
-      m_extendMotor.set(0);
     }
-    m_extendServo.set(m_servoValue);
+    m_extendMotor.set(extendOutput);
+    if (m_ratchetEngaged) {
+      m_extendServo.set(Extend.RATCHET_ENGAGED);
+    } else {
+      m_extendServo.set(Extend.RATCHET_DISENGAGED);
+    }
   }
 
   public double getExtendPosition() {
@@ -155,9 +146,9 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void resetEncoders() {
-    m_extendEncoder.setPosition(Extend.FULLY_EXTENDED);
-    m_extendPIDController.setSetpoint(Extend.FULLY_EXTENDED);
-    m_extendSetpoint = Extend.FULLY_EXTENDED;
+    m_extendEncoder.setPosition(0);
+    m_extendPIDController.setSetpoint(0);
+    m_extendSetpoint = 0;
 
     m_pivotEncoder.setPosition(0);
     m_pivotPIDController.setSetpoint(0);
