@@ -146,9 +146,9 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void resetEncoders() {
-    m_extendEncoder.setPosition(Extend.FULLY_EXTENDED);
-    m_extendPIDController.setSetpoint(Extend.FULLY_EXTENDED);
-    m_extendSetpoint = Extend.FULLY_EXTENDED;
+    m_extendEncoder.setPosition(0);
+    m_extendPIDController.setSetpoint(0);
+    m_extendSetpoint = 0;
 
     m_pivotEncoder.setPosition(0);
     m_pivotPIDController.setSetpoint(0);

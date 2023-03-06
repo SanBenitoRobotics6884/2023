@@ -32,7 +32,6 @@ public class ArmCommand extends CommandBase {
   @Override
   public void execute() {
     double value = m_value.getAsDouble();
-    double extend = m_armSubsystem.getExtendSetpoint() + Extend.Y_SCALE * value;
     double pivot = m_armSubsystem.getPivotSetpoint() + Pivot.Y_SCALE * value;
     if (Pivot.BACK_HARD_LIMIT <= pivot && pivot <= Pivot.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
       m_armSubsystem.setPivotSetpoint(pivot);
