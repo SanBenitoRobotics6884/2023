@@ -35,7 +35,6 @@ import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.util.JoystickMultiPress;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -131,12 +130,10 @@ public class RobotContainer {
     // Claw triggers
     new JoystickButton(m_joystick, 2)
         .onTrue(new InstantCommand(m_clawSubsystem::colorCheck)); // To close the claw (with color sensor) 
-    new JoystickMultiPress(m_joystick, 3)
-        .and(new JoystickButton(m_joystick, 1).negate())
+    new JoystickButton(m_joystick, 1).negate()
+        .and(new JoystickButton(m_joystick, 3))
+        .and(new JoystickButton(m_joystick, 4))
         .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT))); 
-    new JoystickMultiPress(m_joystick, 4)
-        .and(new JoystickButton(m_joystick, 1).negate())
-        .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT)));  
 
     // Arm triggers
     new JoystickButton(m_joystick, 11)
