@@ -85,26 +85,23 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
-    
     m_armSubsystem.setDefaultCommand(m_armCommand);
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
-    configureButtonBindings();
 
+    trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
     AStarMap.addNode(new Node(2.48 - 0.1, 1.07 - 0.1));
-    // Divider
-    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1));
-
+    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1)); // Divider
     for (int i = 0; i < AStarMap.getNodeSize(); i++) {
       Node startNode = AStarMap.getNode(i);
       for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
     }
+    configureButtonBindings();
   }
 
   /**
