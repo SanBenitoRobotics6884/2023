@@ -44,10 +44,8 @@ public class FeedbackSubsystem extends SubsystemBase {
     m_pdh = pdh;
 
     m_clawCam = CameraServer.startAutomaticCapture();
-    m_clawCam.setBrightness(CAMERA_BRIGHTNESS_PERCENT);
-    m_clawCam.setExposureManual(CAMERA_EXPOSURE_PERCENT);
-    m_clawCam.setFPS(DESIRED_FPS);
-    CameraServerJNI.setTelemetryPeriod(CAMERA_TELEMETRY_PERIOD);
+    m_clawCam.setResolution(320, 240);
+    m_clawCam.setFPS(20);
   }
 
   @Override
