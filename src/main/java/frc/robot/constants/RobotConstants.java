@@ -42,10 +42,10 @@ public final class RobotConstants {
         public static final int BR_ID = 3;
         public static final int BL_ID = 4;
 
-        public static final double NORMAL_FOWARD_FF = 0.7;
-        public static final double NORMAL_TURN_FF = 0.7;
-        public static final double TURBO_FOWARD_FF = 0.9;
-        public static final double TURBO_TURN_FF = 0.1;
+        public static final double NORMAL_MAX_FORWARD = 0.7;
+        public static final double NORMAL_MAX_TURN = 0.3;
+        public static final double SNAIL_MAX_FORWARD = 0.4;
+        public static final double SNAIL_MAX_TURN = 0.2;
 
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 10.71;
@@ -211,38 +211,38 @@ public final class RobotConstants {
         public static final double CUBE_MIN_HUE = 140;
         public static final double CUBE_MAX_HUE = 230;
 
-        public static final double GEAR_RATIO = 50;
-        public static final double CONE_SETPOINT = -8.1; // needs adjustment
-        public static final double CUBE_SETPOINT = -4; // needs adjustment
+        public static final double GEAR_RATIO = 25;
+        public static final double CONE_SETPOINT = -10; // needs adjustment
+        public static final double CUBE_SETPOINT = -7.2;
         public static final double OPEN_SETPOINT = 0; 
-        public static final double CLOSED_SETPOINT = -8.9; // needs adjustment
-        public static final double OPEN_RATE = 0.05; // Might need adjustment
+        public static final double CLOSED_SETPOINT = -18; // needs adjustment
+        public static final double OPEN_RATE = 0.05;
         public static final double CLOSE_RATE = -0.05;
     }
   
     public static final class Arm {
 
         public static final class Pivot {
-            public static final double P = 0.4;
+            public static final double P = 0.5;
             public static final double I = 0;
             public static final double D = 0;
             public static final double CANCODER_COEFFICIENT = 1.0 / 4096; // Rotations
             public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
 
             public static final double GEAR_RATIO = 9;
-            public static final double MAX_VOLTAGE = 0.15; // For normal pid. DOUBLE CHECK NEEDED
+            public static final double MAX_VOLTAGE = 0.15;
             public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
             public static final double MAX_ACCELERATION = 0;
 
-            public static final double HYBRID_SETPOINT = GEAR_RATIO * 0.2; // NEED SETPOINTS
-            public static final double MID_SETPOINT = GEAR_RATIO * 0.3;
-            public static final double HIGH_SETPOINT = GEAR_RATIO * 0.4;
+            public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
+            public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
+            public static final double HIGH_SETPOINT = GEAR_RATIO * 60.0 / 360;
             
             public static final double Y_SCALE = 0.025;
 
             // Rotations of the shaft that the CANCoder is attached to
             public static final double BACK_HARD_LIMIT = 0; // Limits where the setpoint can go on the joystick
-            public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 0.45; // NEED ANGLE
+            public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 90.0 / 360; // NEED ANGLE
 
             public static final int PIVOT_CANCODER_ID = 0;
             public static final int MASTER_MOTOR_ID = 5; 
@@ -255,40 +255,32 @@ public final class RobotConstants {
         }
 
         public static final class Extend {
-            public static final double P = 0;
+            public static final double P = 0.2;
             public static final double I = 0;
             public static final double D = 0;
-            public static final double SETPOINT_ERROR = 1;
+            public static final double SETPOINT_TOLERANCE = 4;
+            public static final double START_EXTENDING = 1;
             
 
             public static final double HYBRID_SETPOINT = 0;
-            public static final double MID_SETPOINT = 0;
-            public static final double HIGH_SETPOINT = 0;
+            public static final double MID_SETPOINT = 25;
+            public static final double HIGH_SETPOINT = 43;
 
-            public static final double EXTEND_HYBRID_ROTATIONS = 0;
-            public static final double EXTEND_MID_ROTATIONS = 0;
-            public static final double EXTEND_HIGH_ROTATIONS = 0;
-
-            public static final double Y_SCALE = 1;
-
-            public static final float EXTEND_REVERSE_SOFT_LIMIT = 1;
-            public static final float EXTEND_FORWARD_SOFT_LIMIT = 1;
-            public static final double BACK_HARD_LIMIT = 0;
-            public static final double FRONT_HARD_LIMIT = 0;
-            public static final double FULLY_RETRACTED = 0;
-            public static final double FULLY_EXTENDED = 0;
+            public static final double Y_SCALE = 0.06;
 
             public static final int EXTEND_MOTOR_ID = 7; 
 
-            public static final double GEAR_RATIO = 3;
-            public static final double MAX_VOLTAGE = 0; // Normal pid
-            public static final double MAX_VELOCITY = 0; // profiled pid 
-            public static final double MAX_ACCELERATION = 0;
+            public static final double GEAR_RATIO = 7;
+            // All voltage values are percent output
+            public static final double BACK_VOLTAGE = 0.1; // Should be positive (has negative sign in code)
+            public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
+            public static final double MAX_VOLTAGE_EXTEND = 0.2;
+            public static final double MAX_VOLTAGE_RETRACT = 0.25;
 
-            public static final int SERVO_PORT = 0;
+            public static final int SERVO_PORT = 9;
             public static final double SERVO_DELAY = 1;
-            public static final double RATCHET_ENGAGED = 1;
-            public static final double RATCHET_DISENGAGED = 0;
+            public static final double RATCHET_ENGAGED = 115. / 180;
+            public static final double RATCHET_DISENGAGED = 93. / 180;
             public static final double RATCHET_DELAY = 1;
         }
     }
