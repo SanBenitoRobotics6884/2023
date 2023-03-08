@@ -35,7 +35,6 @@ import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.util.JoystickMultiPress;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -86,26 +85,23 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
-    
     m_armSubsystem.setDefaultCommand(m_armCommand);
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
-    configureButtonBindings();
 
+    trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
     AStarMap.addNode(new Node(2.48 - 0.1, 1.07 - 0.1));
-    // Divider
-    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1));
-
+    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1)); // Divider
     for (int i = 0; i < AStarMap.getNodeSize(); i++) {
       Node startNode = AStarMap.getNode(i);
       for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
     }
+    configureButtonBindings();
   }
 
   /**
@@ -131,12 +127,10 @@ public class RobotContainer {
     // Claw triggers
     new JoystickButton(m_joystick, 2)
         .onTrue(new InstantCommand(m_clawSubsystem::colorCheck)); // To close the claw (with color sensor) 
-    new JoystickMultiPress(m_joystick, 3)
-        .and(new JoystickButton(m_joystick, 1).negate())
+    new JoystickButton(m_joystick, 1).negate()
+        .and(new JoystickButton(m_joystick, 3))
+        .and(new JoystickButton(m_joystick, 4))
         .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT))); 
-    new JoystickMultiPress(m_joystick, 4)
-        .and(new JoystickButton(m_joystick, 1).negate())
-        .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT)));  
 
     // Arm triggers
     new JoystickButton(m_joystick, 11)
