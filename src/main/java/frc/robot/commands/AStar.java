@@ -21,15 +21,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.AStar.Edge;
-import frc.robot.AStar.Node;
-import frc.robot.AStar.Obstacle;
-import frc.robot.AStar.VisGraph;
-import frc.robot.ConstantsFolder.FieldConstants;
+import frc.robot.astar.Edge;
+import frc.robot.astar.Node;
+import frc.robot.astar.Obstacle;
+import frc.robot.astar.VisGraph;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.Util.Doubles;
-import static frc.robot.ConstantsFolder.FieldConstants.*;
 
 public class AStar extends CommandBase {
   private final DriveSubsystem driveSystem;
@@ -149,6 +147,6 @@ public class AStar extends CommandBase {
       pathDrivingCommand.cancel();
     }
 
-    driveSystem.StopMotors();
+    driveSystem.stopMotors();
   }
 }

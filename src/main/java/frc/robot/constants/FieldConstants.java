@@ -1,4 +1,4 @@
-package frc.robot.ConstantsFolder;
+package frc.robot.constants;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.AStar.Obstacle;
+import frc.robot.astar.Obstacle;
 
 public final class FieldConstants {
 

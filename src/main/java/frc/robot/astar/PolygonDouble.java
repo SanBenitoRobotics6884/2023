@@ -1,4 +1,4 @@
-package frc.robot.AStar;
+package frc.robot.astar;
 
 import java.awt.Point;
 import java.awt.Polygon;

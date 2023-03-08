@@ -4,48 +4,25 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenix.sensors.Pigeon2Configuration;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
+import static frc.robot.constants.RobotConstants.Drive.*;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.EncoderType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAlternateEncoder.Type;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
-
-import java.util.Optional;
-import java.util.function.DoubleSupplier;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -88,17 +65,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_drive = new DifferentialDrive(m_rControllerGroup, m_lControllerGroup);
    
-    /* 
     m_rightEncoder = m_FRMotor.getAlternateEncoder(
-      SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+        Type.kQuadrature, 8192);
     m_leftEncoder = m_FLMotor.getAlternateEncoder(
-        SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
-*/
-m_rightEncoder = m_FRMotor.getEncoder();
-m_leftEncoder = m_FLMotor.getEncoder();
+        Type.kQuadrature, 8192);
 
-//m_rightEncoder.setInverted(true);
-//m_leftEncoder.setInverted(false);
+    //m_rightEncoder.setInverted(true);
+    //m_leftEncoder.setInverted(false);
 
 
     m_rightEncoder.setPositionConversionFactor(POSITION_CONVERSION);
@@ -121,9 +94,7 @@ m_leftEncoder = m_FLMotor.getEncoder();
     config.MountPoseRoll= MOUNT_ROLL;
     config.MountPoseYaw = MOUNT_YAW;
   */
-   // m_gyro.configAllSettings(config);
-
-     
+   // m_gyro.configAllSettings(config); 
   }
 
   @Override
@@ -139,18 +110,18 @@ m_leftEncoder = m_FLMotor.getEncoder();
     SmartDashboard.putNumber(" Velocity", getVelocity());
   }
 
-  public void NormalDrive(Double foward, Double rotation){
+  public void drive(Double forward, Double rotation){
     //maybe add gyro assist?
-    m_drive.arcadeDrive(foward , rotation);
+    m_drive.arcadeDrive(forward * NORMAL_MAX_FORWARD, rotation * NORMAL_MAX_TURN);
   }
   
-  public void TurboJoystickDrive(Double foward, Double rotation){
-    m_drive.arcadeDrive(foward , rotation);
+  public void snailDrive(Double forward, Double rotation){
+    m_drive.arcadeDrive(forward * SNAIL_MAX_FORWARD, rotation * SNAIL_MAX_TURN);
 
   }
   
 
-  public void ResetEncoder(){
+  public void resetEncoders(){
     m_rightEncoder.setPosition(0);
     m_leftEncoder.setPosition(0);
   }
@@ -178,13 +149,13 @@ m_leftEncoder = m_FLMotor.getEncoder();
     return -m_rightEncoder.getVelocity();
   }
 
-  public void SetMotorVoltage(Double rightVoltage, Double leftVoltage){
+  public void tankDrive(Double rightVoltage, Double leftVoltage){
     m_rControllerGroup.setVoltage(rightVoltage);
     m_lControllerGroup.setVoltage(leftVoltage);
     m_drive.feed();
   }
 
-  public void StopMotors(){
+  public void stopMotors(){
     m_rControllerGroup.setVoltage(0);
     m_lControllerGroup.setVoltage(0);
   }
@@ -205,18 +176,18 @@ m_leftEncoder = m_FLMotor.getEncoder();
     return KINEMATICS.toWheelSpeeds(this.getChassisSpeeds());
   }
 
-  public void ResetGyro(){
+  public void resetGyro(){
     m_gyro.reset();
   }
-  public void CalibrateGyro(){
+  public void calibrateGyro(){
     if(DriverStation.isDisabled()){
       m_gyro.calibrate();
     }
   }
 
 
-  public void TurnToTarget(double yaw, double setpoint){
-    if(yaw >=5){
+  public void turnToTarget(double yaw, double setpoint){
+    if(yaw >= 5){
     m_drive.arcadeDrive(0, TURN_TO_TARGET_CONTROLLER.calculate(yaw, setpoint));
     }
     else{
@@ -224,7 +195,7 @@ m_leftEncoder = m_FLMotor.getEncoder();
     }
   }
 
-  public void ChargeStationAlign(){
+  public void chargeStationAlign(){
   /* 
      AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
      //might have to negative this
@@ -239,14 +210,14 @@ m_leftEncoder = m_FLMotor.getEncoder();
      */
   }
 
-  public void SetBreakMode(){
+  public void setBrakeMode(){
     m_BLMotor.setIdleMode(IdleMode.kBrake);
     m_BRMotor.setIdleMode(IdleMode.kBrake);
     m_FRMotor.setIdleMode(IdleMode.kBrake);
     m_FLMotor.setIdleMode(IdleMode.kBrake);    
   }
 
-  public void SetCoastMode(){
+  public void setCoastMode(){
     m_BLMotor.setIdleMode(IdleMode.kCoast);
     m_BRMotor.setIdleMode(IdleMode.kCoast);
     m_FRMotor.setIdleMode(IdleMode.kCoast);
@@ -255,13 +226,15 @@ m_leftEncoder = m_FLMotor.getEncoder();
   }
   
   public static PPRamseteCommand followTrajCommand(DriveSubsystem driveSubsystem,
-   PoseEstimatorSubsystem poseEstimatorSubsystem,
-    PathPlannerTrajectory trajectory ){
-
-      return new PPRamseteCommand(
-        trajectory, poseEstimatorSubsystem::getPose2d, RAMSETE_CONTROLLER, KINEMATICS,
-         driveSubsystem::SetMotorVoltage, false);
-
+      PoseEstimatorSubsystem poseEstimatorSubsystem,
+      PathPlannerTrajectory trajectory ){
+    return new PPRamseteCommand(
+        trajectory, 
+        poseEstimatorSubsystem::getPose2d, 
+        RAMSETE_CONTROLLER, 
+        KINEMATICS,
+        driveSubsystem::tankDrive, 
+        false);
   }
   
   

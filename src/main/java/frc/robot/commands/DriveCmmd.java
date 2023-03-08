@@ -10,67 +10,48 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import static frc.robot.ConstantsFolder.RobotConstants.Drive.*;
+import static frc.robot.constants.RobotConstants.Drive.*;
 
 /** An example command that uses an example subsystem. */
 public class DriveCmmd extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveSubsystem m_subsystem;
-  private final DoubleSupplier fowDoubleSupplier;
-  private final DoubleSupplier m_thetaDoubleSupplier;
-  private Boolean m_turbo;
   private final SlewRateLimiter m_forwLimiter;
   private final SlewRateLimiter m_rotLimiter;
+  private final DoubleSupplier m_forwSupplier;
+  private final DoubleSupplier m_rotSupplier;
+  private final Boolean m_snailMode;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveCmmd(DriveSubsystem subsystem, DoubleSupplier f, DoubleSupplier t, Boolean turbo) {
+  public DriveCmmd(DriveSubsystem subsystem, DoubleSupplier forward, DoubleSupplier rotation, Boolean inSnailMode) {
     m_subsystem = subsystem;
-    fowDoubleSupplier = f;
-    m_thetaDoubleSupplier = t;
-    m_turbo = turbo;
     m_forwLimiter = new SlewRateLimiter(FORWARD_RATE_LIMIT);
     m_rotLimiter = new SlewRateLimiter(ROTATION_RATE_LIMIT);
+    m_forwSupplier = forward;
+    m_rotSupplier = rotation;
+    m_snailMode = inSnailMode;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double foward = fowDoubleSupplier.getAsDouble();
-    double theta = m_thetaDoubleSupplier.getAsDouble();
-    foward = m_forwLimiter.calculate(foward);
-    theta = m_rotLimiter.calculate(theta);
-    if(m_turbo){
-      if (foward > TURBO_FOWARD_MAX){
-        foward = TURBO_FOWARD_MAX;
-      }
-      if (theta > TURBO_TURN_MAX){
-        theta = TURBO_TURN_MAX;
-      }
-      m_subsystem.TurboJoystickDrive(fowDoubleSupplier.getAsDouble(), m_thetaDoubleSupplier.getAsDouble());
+    double forw = m_forwLimiter.calculate(m_forwSupplier.getAsDouble());
+    double rot = m_rotLimiter.calculate(m_rotSupplier.getAsDouble());
+    if(m_snailMode){
+      m_subsystem.snailDrive(forw, rot);
+    } else {
+      m_subsystem.drive(forw, rot);
     }
-    if(!m_turbo){
-      if (foward > NORMAL_FOWARD_MAX){
-        foward = NORMAL_FOWARD_MAX;
-      }
-      if (theta > NORMAL_TURN_MAX){
-        theta = NORMAL_TURN_MAX;
-      }
-      m_subsystem.NormalDrive(fowDoubleSupplier.getAsDouble(), m_thetaDoubleSupplier.getAsDouble());
-    }
-    
-  
   }
 
   // Called once the command ends or is interrupted.

@@ -2,45 +2,28 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.ConstantsFolder;
+package frc.robot.constants;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.ejml.equation.Variable;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.auto.RamseteAutoBuilder;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -58,10 +41,11 @@ public final class RobotConstants {
         public static final int BR_ID = 3;
         public static final int BL_ID = 4;
 
-        public static final double NORMAL_FOWARD_MAX = 0.7;
-        public static final double NORMAL_TURN_MAX = 0.7;
-        public static final double TURBO_FOWARD_MAX = 0.9;
-        public static final double TURBO_TURN_MAX = 0.9;
+        public static final double NORMAL_MAX_FORWARD = 0.7;
+        public static final double NORMAL_MAX_TURN = 0.3;
+        public static final double SNAIL_MAX_FORWARD = 0.4;
+        public static final double SNAIL_MAX_TURN = 0.2;
+
         public static final double FORWARD_RATE_LIMIT = 0.5;
         public static final double ROTATION_RATE_LIMIT = 0.3;
 
@@ -210,9 +194,96 @@ public final class RobotConstants {
 
         public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d());
         public static final Transform3d BOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
+
+
+
+        
      
     }
   
+    public static class Claw {
+        public static final int MOTOR_ID = 8;
+
+        public static final double P = 0.25;
+        public static final double I = 0;
+        public static final double D = 0.25; // Might or might not use
+        public static final double MAX_VOLTAGE = 0.25; // Might need more testing
+        public static final double CONE_MIN_HUE = 70;
+        public static final double CONE_MAX_HUE = 95;
+        public static final double CUBE_MIN_HUE = 140;
+        public static final double CUBE_MAX_HUE = 230;
+
+        public static final double GEAR_RATIO = 25;
+        public static final double CONE_SETPOINT = -10; // needs adjustment
+        public static final double CUBE_SETPOINT = -7.2;
+        public static final double OPEN_SETPOINT = 0; 
+        public static final double CLOSED_SETPOINT = -18; // needs adjustment
+        public static final double OPEN_RATE = 0.05;
+        public static final double CLOSE_RATE = -0.05;
+    }
   
-   
+    public static final class Arm {
+
+        public static final class Pivot {
+            public static final double P = 0.5;
+            public static final double I = 0;
+            public static final double D = 0;
+            public static final double CANCODER_COEFFICIENT = 1.0 / 4096; // Rotations
+            public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
+
+            public static final double GEAR_RATIO = 9;
+            public static final double MAX_VOLTAGE = 0.15;
+            public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
+            public static final double MAX_ACCELERATION = 0;
+
+            public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
+            public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
+            public static final double HIGH_SETPOINT = GEAR_RATIO * 60.0 / 360;
+            
+            public static final double Y_SCALE = 0.025;
+
+            // Rotations of the shaft that the CANCoder is attached to
+            public static final double BACK_HARD_LIMIT = 0; // Limits where the setpoint can go on the joystick
+            public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 90.0 / 360; // NEED ANGLE
+
+            public static final int PIVOT_CANCODER_ID = 0;
+            public static final int MASTER_MOTOR_ID = 5; 
+            public static final int SLAVE_MOTOR_ID = 6;
+
+            public static final int SWITCH_PORT = 1;
+
+           
+        
+        }
+
+        public static final class Extend {
+            public static final double P = 0.2;
+            public static final double I = 0;
+            public static final double D = 0;
+            public static final double SETPOINT_TOLERANCE = 4;
+            public static final double START_EXTENDING = 1;
+            
+
+            public static final double HYBRID_SETPOINT = 0;
+            public static final double MID_SETPOINT = 25;
+            public static final double HIGH_SETPOINT = 43;
+
+            public static final double Y_SCALE = 0.06;
+
+            public static final int EXTEND_MOTOR_ID = 7; 
+
+            public static final double GEAR_RATIO = 7;
+            // All voltage values are percent output
+            public static final double BACK_VOLTAGE = 0.1; // Should be positive (has negative sign in code)
+            public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
+            public static final double MAX_VOLTAGE_EXTEND = 0.2;
+            public static final double MAX_VOLTAGE_RETRACT = 0.25;
+
+            public static final int SERVO_PORT = 9;
+            public static final double SERVO_DELAY = 1;
+            public static final double RATCHET_ENGAGED = 115. / 180;
+            public static final double RATCHET_DISENGAGED = 93. / 180;
+            public static final double RATCHET_DELAY = 1;
+        }
+    }  
 }

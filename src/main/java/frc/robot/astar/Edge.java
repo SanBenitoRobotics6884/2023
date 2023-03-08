@@ -1,4 +1,4 @@
-package frc.robot.AStar;
+package frc.robot.astar;
 
 public class Edge {
     Node start, end;

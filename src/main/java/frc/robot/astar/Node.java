@@ -1,4 +1,4 @@
-package frc.robot.AStar;
+package frc.robot.astar;
 
 import java.util.ArrayList;
 import java.util.List;
