@@ -62,7 +62,8 @@ public final class RobotConstants {
         public static final double NORMAL_TURN_MAX = 0.7;
         public static final double TURBO_FOWARD_MAX = 0.9;
         public static final double TURBO_TURN_MAX = 0.9;
-        public static final double RATE_LIMIT = 2.0;
+        public static final double FORWARD_RATE_LIMIT = 0.5;
+        public static final double ROTATION_RATE_LIMIT = 0.3;
 
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 10.71;

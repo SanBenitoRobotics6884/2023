@@ -19,7 +19,8 @@ public class DriveCmmd extends CommandBase {
   private final DoubleSupplier fowDoubleSupplier;
   private final DoubleSupplier m_thetaDoubleSupplier;
   private Boolean m_turbo;
-  private SlewRateLimiter m_Limiter;
+  private final SlewRateLimiter m_forwLimiter;
+  private final SlewRateLimiter m_rotLimiter;
 
   /**
    * Creates a new ExampleCommand.
@@ -31,7 +32,8 @@ public class DriveCmmd extends CommandBase {
     fowDoubleSupplier = f;
     m_thetaDoubleSupplier = t;
     m_turbo = turbo;
-    m_Limiter = new SlewRateLimiter(RATE_LIMIT);
+    m_forwLimiter = new SlewRateLimiter(FORWARD_RATE_LIMIT);
+    m_rotLimiter = new SlewRateLimiter(ROTATION_RATE_LIMIT);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -47,24 +49,21 @@ public class DriveCmmd extends CommandBase {
   public void execute() {
     double foward = fowDoubleSupplier.getAsDouble();
     double theta = m_thetaDoubleSupplier.getAsDouble();
+    foward = m_forwLimiter.calculate(foward);
+    theta = m_rotLimiter.calculate(theta);
     if(m_turbo){
-      
-      foward = m_Limiter.calculate(foward);
       if (foward > TURBO_FOWARD_MAX){
         foward = TURBO_FOWARD_MAX;
       }
-      theta = m_Limiter.calculate(theta);
       if (theta > TURBO_TURN_MAX){
         theta = TURBO_TURN_MAX;
       }
       m_subsystem.TurboJoystickDrive(fowDoubleSupplier.getAsDouble(), m_thetaDoubleSupplier.getAsDouble());
     }
     if(!m_turbo){
-      foward = m_Limiter.calculate(foward);
       if (foward > NORMAL_FOWARD_MAX){
         foward = NORMAL_FOWARD_MAX;
       }
-      theta = m_Limiter.calculate(theta);
       if (theta > NORMAL_TURN_MAX){
         theta = NORMAL_TURN_MAX;
       }
