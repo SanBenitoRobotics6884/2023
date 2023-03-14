@@ -46,8 +46,8 @@ public final class RobotConstants {
         public static final double SNAIL_MAX_FORWARD = 0.4;
         public static final double SNAIL_MAX_TURN = 0.2;
 
-        public static final double FORWARD_RATE_LIMIT = 0.5;
-        public static final double ROTATION_RATE_LIMIT = 0.3;
+        public static final double FORWARD_RATE_LIMIT = 2;
+        public static final double ROTATION_RATE_LIMIT = 5;
 
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 10.71;
