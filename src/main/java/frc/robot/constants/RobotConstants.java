@@ -43,7 +43,7 @@ public final class RobotConstants {
         public static final int BL_ID = 4;
 
         public static final double NORMAL_MAX_FORWARD = 0.7;
-        public static final double NORMAL_MAX_TURN = 0.3;
+        public static final double NORMAL_MAX_TURN = 0.55;
         public static final double SNAIL_MAX_FORWARD = 0.4;
         public static final double SNAIL_MAX_TURN = 0.2;
 
@@ -55,7 +55,12 @@ public final class RobotConstants {
         (Units.inchesToMeters(1 / (GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(WHEEL_RADIUS)) * 10));
         public static final double VELOCITY_CONVERSION = (POSITION_CONVERSION/60);
 
-       
+        public static final double DRIVE_DISTANCE_P = 2;
+        public static final double DRIVE_DISTANCE_I = 0;
+        public static final double DRIVE_DISTANCE_D = 0;
+        public static final double DRIVE_DISTANCE_MAX_VOLTAGE = 0.5;
+        public static final double DRIVE_DISTANCE_LIMITER = 1.5;
+        public static final double DRIVE_DISTANCE_TOLERANCE = 0.1;
 
         public static final double TURN_TO_TARGET_KP = 1.2;
         public static final double TURN_TO_TARGET_KI = 0.0;
@@ -274,8 +279,8 @@ public final class RobotConstants {
             // All voltage values are percent output
             public static final double BACK_VOLTAGE = 0.1; // Should be positive (has negative sign in code)
             public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
-            public static final double MAX_VOLTAGE_EXTEND = 0.2;
-            public static final double MAX_VOLTAGE_RETRACT = 0.25;
+            public static final double MAX_VOLTAGE_EXTEND = 0.5; // Value after comp; before it was 0.2
+            public static final double MAX_VOLTAGE_RETRACT = 0.4; // Value after comp; before it was 0.28
 
             public static final int SERVO_PORT = 9;
             public static final double SERVO_DELAY = 1;

@@ -162,12 +162,6 @@ public class RobotContainer {
 
     new JoystickButton(m_joystick, 5).and(new JoystickButton(m_joystick, 6))
         .onTrue(new InstantCommand(m_ledSubsystem::putOff));
-
-    new Trigger(() -> m_joystick.getPOV() == 0)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.resetEncoders()));
-
-    new Trigger(() -> m_joystick.getPOV() == 180)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.printCANCoderOffset()));
   }
 
   /**
