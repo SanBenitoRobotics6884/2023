@@ -57,7 +57,11 @@ public final class RobotConstants {
         (Units.inchesToMeters(1 / (GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(WHEEL_RADIUS)) * 10));
         public static final double VELOCITY_CONVERSION = (POSITION_CONVERSION/60);
 
-       
+        public static final double DRIVE_DISTANCE_P = 2;
+        public static final double DRIVE_DISTANCE_I = 0;
+        public static final double DRIVE_DISTANCE_D = 0;
+        public static final double DRIVE_DISTANCE_MAX_VOLTAGE = 0.5;
+        public static final double DRIVE_DISTANCE_LIMITER = 0.3;
 
         public static final double TURN_TO_TARGET_KP = 1.2;
         public static final double TURN_TO_TARGET_KI = 0.0;

@@ -64,14 +64,19 @@ public class DriveSubsystem extends SubsystemBase {
    
 
     m_drive = new DifferentialDrive(m_rControllerGroup, m_lControllerGroup);
-   
+    
+    m_rightEncoder = m_FRMotor.getEncoder();
+    m_leftEncoder = m_FLMotor.getEncoder();
+
+    /**
     m_rightEncoder = m_FRMotor.getAlternateEncoder(
         Type.kQuadrature, 8192);
     m_leftEncoder = m_FLMotor.getAlternateEncoder(
         Type.kQuadrature, 8192);
+    */
 
-    //m_rightEncoder.setInverted(true);
-    //m_leftEncoder.setInverted(false);
+    // m_rightEncoder.setInverted(true);
+    // m_leftEncoder.setInverted(false);
 
 
     m_rightEncoder.setPositionConversionFactor(POSITION_CONVERSION);
@@ -110,12 +115,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(" Velocity", getVelocity());
   }
 
-  public void drive(Double forward, Double rotation){
+  public void drive(double forward, double rotation){
     //maybe add gyro assist?
     m_drive.arcadeDrive(forward * NORMAL_MAX_FORWARD, rotation * NORMAL_MAX_TURN);
   }
   
-  public void snailDrive(Double forward, Double rotation){
+  public void snailDrive(double forward, double rotation){
     m_drive.arcadeDrive(forward * SNAIL_MAX_FORWARD, rotation * SNAIL_MAX_TURN);
 
   }
