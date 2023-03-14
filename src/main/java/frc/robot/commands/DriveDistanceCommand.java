@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -22,6 +23,7 @@ public class DriveDistanceCommand extends CommandBase {
   public DriveDistanceCommand(DriveSubsystem driveSubsystem, double distance) {
     m_driveSubsystem = driveSubsystem;
     m_distance = distance;
+    m_pid.setTolerance(DRIVE_DISTANCE_TOLERANCE);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
   }
@@ -36,7 +38,8 @@ public class DriveDistanceCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double output = m_pid.calculate(m_driveSubsystem.getRightDistance());
+    double output = MathUtil.clamp(m_pid.calculate(m_driveSubsystem.getRightDistance()),
+        -DRIVE_DISTANCE_MAX_VOLTAGE, DRIVE_DISTANCE_MAX_VOLTAGE); // Might need to be negative
     output = m_limiter.calculate(output);
     m_driveSubsystem.drive(output, 0);
   }
@@ -48,6 +51,6 @@ public class DriveDistanceCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_pid.atSetpoint();
   }
 }
