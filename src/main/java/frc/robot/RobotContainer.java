@@ -61,7 +61,7 @@ public class RobotContainer {
   private final CommandXboxController controller = new CommandXboxController(1);
   
   private final Command m_armCommand = new ArmCommand(m_armSubsystem,
-      () -> -m_joystick.getY());
+      () -> m_joystick.getY());
   private final ClawCmmd m_clawCommand = new ClawCmmd(
     m_clawSubsystem,
     () -> m_joystick.getTrigger(),
