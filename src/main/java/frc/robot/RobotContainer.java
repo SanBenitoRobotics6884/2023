@@ -150,12 +150,6 @@ public class RobotContainer {
     
     new JoystickButton(m_joystick, 8)
         .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
-
-    new Trigger(() -> m_joystick.getPOV() == 0)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.resetEncoders()));
-
-    new Trigger(() -> m_joystick.getPOV() == 180)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.printCANCoderOffset()));
   }
 
   /**
