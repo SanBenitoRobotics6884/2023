@@ -133,10 +133,11 @@ public class DriveSubsystem extends SubsystemBase {
   
   public Rotation2d getRotation2D(){
    // return m_gyro.getRotation2d();
-   return Rotation2d.fromDegrees(-m_gyro.getAngle());
+   return Rotation2d.fromDegrees(m_gyro.getAngle());
   }
+  //Should be CCW Positive
   public Double getAngle(){
-    return -m_gyro.getAngle();
+    return m_gyro.getAngle();
   }
   
   public double getLeftDistance(){
