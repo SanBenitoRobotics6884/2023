@@ -82,6 +82,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    m_poseEstimator.update(m_driveSubsystem.getRotation2D(), m_driveSubsystem.getLeftDistance(), m_driveSubsystem.getRightDistance());
 
     m_photonEstimatedPose = m_photonPoseEstimator.update();
 
