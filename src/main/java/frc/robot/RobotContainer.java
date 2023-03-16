@@ -10,11 +10,13 @@ import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
@@ -82,6 +84,7 @@ public class RobotContainer {
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
   private final PathPlannerTrajectory trajectory;
+  SequentialCommandGroup auto;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -90,6 +93,7 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
 
     trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
+     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory);
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
@@ -159,7 +163,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new SequentialCommandGroup(
+    /*return new SequentialCommandGroup(
         new PPRamseteCommand(
             trajectory, 
             poseEstimatorSubsystem::getPose2d, 
@@ -173,5 +177,7 @@ public class RobotContainer {
             false, 
             m_driveSubsystem),
         new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
+        */
+        return auto;
   }
 }

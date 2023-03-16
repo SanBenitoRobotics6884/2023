@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -156,8 +158,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void tankDrive(Double rightVoltage, Double leftVoltage){
-    m_rControllerGroup.setVoltage(rightVoltage);
-    m_lControllerGroup.setVoltage(leftVoltage);
+    m_rControllerGroup.setVoltage(-rightVoltage);
+    m_lControllerGroup.setVoltage(-leftVoltage);
     m_drive.feed();
   }
 
@@ -231,17 +233,39 @@ public class DriveSubsystem extends SubsystemBase {
     
   }
   
-  public static PPRamseteCommand followTrajCommand(DriveSubsystem driveSubsystem,
+  public  SequentialCommandGroup followAutoCommand(DriveSubsystem m_driveSubsystem,
       PoseEstimatorSubsystem poseEstimatorSubsystem,
       PathPlannerTrajectory trajectory ){
-    return new PPRamseteCommand(
-        trajectory, 
-        poseEstimatorSubsystem::getPose2d, 
-        RAMSETE_CONTROLLER, 
-        KINEMATICS,
-        driveSubsystem::tankDrive, 
-        false);
-  }
+        poseEstimatorSubsystem.ResetPose2d(trajectory.getInitialPose());
+        return new SequentialCommandGroup(
+          new PPRamseteCommand(
+              trajectory, 
+              poseEstimatorSubsystem::getPose2d, 
+              RAMSETE_CONTROLLER, 
+              FEED_FOWARD, 
+              KINEMATICS, 
+              m_driveSubsystem::getWheelSpeeds, 
+              LEFT_DRIVE_CONTROLLER, 
+              RIGHT_DRIVE_CONTROLLER, 
+              m_driveSubsystem::tankDrive, 
+              false, 
+              m_driveSubsystem),
+          new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
+    }
+    
+  
+  public static PPRamseteCommand followTrajCommand(DriveSubsystem driveSubsystem,
+  PoseEstimatorSubsystem poseEstimatorSubsystem,
+  PathPlannerTrajectory trajectory ){
+    
+return new PPRamseteCommand(
+    trajectory, 
+    poseEstimatorSubsystem::getPose2d, 
+    RAMSETE_CONTROLLER, 
+    KINEMATICS,
+    driveSubsystem::tankDrive, 
+    false);
+}
   
   
 

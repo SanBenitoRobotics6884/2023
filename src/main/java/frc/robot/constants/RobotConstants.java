@@ -77,7 +77,7 @@ public final class RobotConstants {
         public static final double MOUNT_ROLL = 0.0 ;
         public static final double GRAVITY_VECTOR[] = new double[3];
 
-        public static final double DRIVE_KP = 0.088307;
+        public static final double DRIVE_KP = 1.9197;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
@@ -98,9 +98,9 @@ public final class RobotConstants {
         public static final double TELE_ROTATION_D = 0.0;
         public static final PIDController TELE_ROTATION_CONTROLLER = new PIDController(TELE_ROTATION_P, TELE_ROTATION_I, TELE_ROTATION_D);
         
-        public static final double KA = 0.11778;
-        public static final double KS = 0.056226;
-        public static final double KV = 2.8715;
+        public static final double KA = 0.28421;
+        public static final double KS = 0.13931;
+        public static final double KV = 2.8248;
         public static final double RAMSETE_ZETA = 0.7;
         public static final double RAMSETE_B = 2.0;
 
@@ -117,8 +117,8 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = 1.0; 
-        public static final double MAX_ACCELERATION = 1.0; 
+        public static final double MAX_VELOCTIY = .5; 
+        public static final double MAX_ACCELERATION = .5; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =
