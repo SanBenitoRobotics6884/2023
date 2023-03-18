@@ -50,7 +50,7 @@ public class ClawSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     double output;
-    if(m_pdp.getCurrent(CLAW_CHANNEL) > 0.25) {
+    if(m_pdp.getCurrent(CLAW_CHANNEL) > MAX_AMPS) {
       stopped = true;
     }
 

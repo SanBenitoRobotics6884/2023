@@ -213,6 +213,7 @@ public final class RobotConstants {
         public static final double I = 0;
         public static final double D = 0.25; // Might or might not use
         public static final double MAX_VOLTAGE = 0.25; // Might need more testing
+        public static final double MAX_AMPS = 0.125; // Needs testing (maximum current to avoid stalling)
         public static final double CONE_MIN_HUE = 70;
         public static final double CONE_MAX_HUE = 95;
         public static final double CUBE_MIN_HUE = 140;
@@ -225,7 +226,8 @@ public final class RobotConstants {
         public static final double CLOSED_SETPOINT = -18; // needs adjustment
         public static final double OPEN_RATE = 0.05;
         public static final double CLOSE_RATE = -0.05;
-        public static final int CLAW_CHANNEL = 3; // Need to find actual PDP channel
+
+        public static final int CLAW_CHANNEL = 3; // Need to find actual PDP channel for claw
     }
   
     public static final class Arm {
