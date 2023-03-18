@@ -132,6 +132,7 @@ ADIS16470_IMU m_gyro;
     SmartDashboard.putNumber(" Velocity", getVelocity());
     SmartDashboard.putNumber("pitch", this.getPitch());
     SmartDashboard.putNumber("chargeVoltage", KA*9.81*this.getPitch()/BALANCE_LIMITER);
+    SmartDashboard.putNumber("Rate", this.getRateAsRadians());
   }
 
   public void drive(double forward, double rotation){
@@ -191,7 +192,7 @@ ADIS16470_IMU m_gyro;
   }
 
   public double getRateAsRadians(){
-   return m_gyro.getRate(kZ) * Math.PI/180;
+   return -m_gyro.getRate(kZ) * Math.PI/180;
   }
 
   public double getVelocity(){
@@ -199,7 +200,7 @@ ADIS16470_IMU m_gyro;
   }
 
   public ChassisSpeeds getChassisSpeeds(){
-    return new ChassisSpeeds(getVelocity(), 0, getRateAsRadians());
+    return new ChassisSpeeds(getVelocity(), 0, this.getRateAsRadians());
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds(){
