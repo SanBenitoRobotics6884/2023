@@ -8,6 +8,8 @@ import static frc.robot.constants.RobotConstants.Claw.*;
 import static frc.robot.constants.RobotConstants.Drive.*;
 import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
@@ -83,17 +85,23 @@ public class RobotContainer {
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
-  private final PathPlannerTrajectory trajectory;
+  private final List< PathPlannerTrajectory > trajectory;
   SequentialCommandGroup auto;
+  HashMap<String, Command> eventMap;
+  RunCommand autoBalance = new RunCommand(
+    m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    eventMap = new HashMap<>();
+    eventMap.put("autobalance", autoBalance );
+    m_gyro.calibrate();
     m_armSubsystem.setDefaultCommand(m_armCommand);
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
 
-    trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
-     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory);
+    trajectory = PathPlanner.loadPathGroup("Test2", CONSTRAINTS, CONSTRAINTS);
+     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap);
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
@@ -127,7 +135,7 @@ public class RobotContainer {
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
         Rotation2d.fromDegrees(180)), obstacles, AStarMap));
     controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
-    controller.b().whileTrue(new RunCommand(m_driveSubsystem::autoBalance, m_driveSubsystem));
+    controller.b().whileTrue(autoBalance);
     
     // Claw triggers
     new JoystickButton(m_joystick, 2)

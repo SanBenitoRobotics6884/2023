@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import static frc.robot.constants.RobotConstants.Drive.*;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -14,6 +16,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAlternateEncoder.Type;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -22,11 +25,16 @@ import edu.wpi.first.wpilibj.ADIS16448_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.ADIS16470_IMU;
 import static frc.robot.util.ADIS16470_IMU.IMUAxis.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class DriveSubsystem extends SubsystemBase {
@@ -123,6 +131,7 @@ ADIS16470_IMU m_gyro;
     SmartDashboard.putNumber("left Velocity", getLeftVelocity());
     SmartDashboard.putNumber(" Velocity", getVelocity());
     SmartDashboard.putNumber("pitch", this.getPitch());
+    SmartDashboard.putNumber("chargeVoltage", KA*9.81*this.getPitch()/BALANCE_LIMITER);
   }
 
   public void drive(double forward, double rotation){
@@ -143,11 +152,11 @@ ADIS16470_IMU m_gyro;
   
   public Rotation2d getRotation2D(){
    // return m_gyro.getRotation2d();
-   return Rotation2d.fromDegrees(m_gyro.getAngle(kZ));
+   return Rotation2d.fromDegrees(this.getAngle());
   }
   //Should be CCW Positive
   public Double getAngle(){
-    return m_gyro.getAngle(kZ);
+    return -m_gyro.getAngle(kZ);
     
   }
 
@@ -231,10 +240,10 @@ ADIS16470_IMU m_gyro;
      double GRAVITY_VECTOR = m_gyro.getRawAccelZ();
      AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR * Math.sin(0),KA * GRAVITY_VECTOR * Math.sin(m_gyro.getPitch()));
      */
-    m_BLMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
-    m_BRMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
-    m_FLMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
-    m_FRMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
+    m_BLMotor.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
+    m_BRMotor.setVoltage(-KA*9.81*this.getPitch()/BALANCE_LIMITER);
+    m_FLMotor.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
+    m_FRMotor.setVoltage(-KA*9.81*this.getPitch()/BALANCE_LIMITER);
     
   }
   public double autoBalanceRoutine() {
@@ -284,9 +293,9 @@ ADIS16470_IMU m_gyro;
  public void autoBalance(){
   double speed = this.autoBalanceRoutine();
   m_BLMotor.set(speed);
-  m_BRMotor.set(speed);
+  m_BRMotor.set(-speed);
   m_FLMotor.set(speed);
-  m_FRMotor.set(speed);
+  m_FRMotor.set(-speed);
  }
 public int secondsToTicks(double time) {
   return (int) (time * 50);
@@ -304,27 +313,26 @@ public int secondsToTicks(double time) {
     m_BLMotor.setIdleMode(IdleMode.kCoast);
     m_BRMotor.setIdleMode(IdleMode.kCoast);
     m_FRMotor.setIdleMode(IdleMode.kCoast);
-    m_FLMotor.setIdleMode(IdleMode.kCoast);    
+    m_FLMotor.setIdleMode(IdleMode.kCoast);   
     
   }
   
   public  SequentialCommandGroup followAutoCommand(DriveSubsystem m_driveSubsystem,
       PoseEstimatorSubsystem poseEstimatorSubsystem,
-      PathPlannerTrajectory trajectory ){
-        poseEstimatorSubsystem.ResetPose2d(trajectory.getInitialPose());
-        return new SequentialCommandGroup(
-          new PPRamseteCommand(
-              trajectory, 
-              poseEstimatorSubsystem::getPose2d, 
-              RAMSETE_CONTROLLER, 
-              FEED_FOWARD, 
-              KINEMATICS, 
-              m_driveSubsystem::getWheelSpeeds, 
-              LEFT_DRIVE_CONTROLLER, 
-              RIGHT_DRIVE_CONTROLLER, 
-              m_driveSubsystem::tankDrive, 
-              false, 
-              m_driveSubsystem),
+      List<PathPlannerTrajectory> trajectory, HashMap<String, Command>m_hashMap ){
+        poseEstimatorSubsystem.ResetPose2d(trajectory.get(0).getInitialPose());
+      
+      
+        RamseteAutoBuilder autoBuilder =
+         new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
+          KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
+           m_hashMap, m_driveSubsystem);
+       
+
+        Command auto = autoBuilder.followPathGroupWithEvents(trajectory);
+
+        return new SequentialCommandGroup(auto
+        ,
           new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
     }
     
