@@ -10,31 +10,36 @@ import com.revrobotics.ColorSensorV3;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3.RawColor;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClawSubsystem extends SubsystemBase {
   CANSparkMax m_motor = new CANSparkMax(MOTOR_ID, MotorType.kBrushless);
   RelativeEncoder m_encoder = m_motor.getEncoder();
 
+  boolean stopped = false;
+  PowerDistribution m_pdp;
   double m_rotations = 0;
   double hue = 0;
   ColorSensorV3 m_colorSensor = new ColorSensorV3(Port.kOnboard);
-  SparkMaxPIDController m_pidController = m_motor.getPIDController();
+  PIDController m_pidController = new PIDController(P, I, D);
 
   /** Creates a new ClawSubsystem. */
-  public ClawSubsystem() {
+  public ClawSubsystem(PowerDistribution pdp) {
     m_motor.restoreFactoryDefaults();
-    m_pidController.setP(P);
-    m_pidController.setI(I);
-    m_pidController.setD(D);
-    m_pidController.setOutputRange(-MAX_VOLTAGE, MAX_VOLTAGE);
+    m_motor.setIdleMode(IdleMode.kBrake);
     m_encoder.setPosition(0);
+    m_pdp = pdp;
 
     // Camera on claw
     var cam = CameraServer.startAutomaticCapture();
@@ -44,12 +49,28 @@ public class ClawSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_pidController.setReference(m_rotations, ControlType.kPosition);
+    double output;
+    if(m_pdp.getCurrent(CLAW_CHANNEL) > 0.25) {
+      stopped = true;
+    }
+
+    if(!stopped) {
+    output = m_pidController.calculate(m_encoder.getPosition(), m_rotations);
+    output = MathUtil.clamp(output, -MAX_VOLTAGE, MAX_VOLTAGE);
+    } else {
+      output = 0;
+    }
+    m_motor.set(output);
+
     SmartDashboard.putNumber("claw encoder", m_encoder.getPosition());
     SmartDashboard.putNumber("setpoint", m_rotations);
   }
 
-   
+  public void stopStopping() {
+    stopped = false;
+    m_rotations = m_encoder.getPosition();
+  }
+
   public void setRotations(double rotations) {
     m_rotations = rotations;
   }
@@ -91,5 +112,9 @@ public class ClawSubsystem extends SubsystemBase {
 
     if (preHue < 0) {preHue += 6;}
     return preHue * 60;
+  }
+
+  public CommandBase getStopStoppingCmd() {
+    return runOnce(this::stopStopping);
   }
 }

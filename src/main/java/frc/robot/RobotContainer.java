@@ -22,7 +22,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID; 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.astar.Edge;
 import frc.robot.astar.Node;
 import frc.robot.astar.Obstacle;
@@ -51,13 +53,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
+
 public class RobotContainer {
+    PowerDistribution m_pdp = new PowerDistribution(1, ModuleType.kRev);
+
   // The robot's subsystems and commands are defined here...
+
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem(m_gyro);
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, m_driveSubsystem);
-  private final ClawSubsystem m_clawSubsystem = new ClawSubsystem();
+  private final ClawSubsystem m_clawSubsystem = new ClawSubsystem(m_pdp);
  
   private final Joystick m_joystick = new Joystick(0);
   private final CommandXboxController controller = new CommandXboxController(1);
@@ -131,10 +137,13 @@ public class RobotContainer {
     // Claw triggers
     new JoystickButton(m_joystick, 2)
         .onTrue(new InstantCommand(m_clawSubsystem::colorCheck)); // To close the claw (with color sensor) 
+        
     new JoystickButton(m_joystick, 1).negate()
         .and(new JoystickButton(m_joystick, 3))
         .and(new JoystickButton(m_joystick, 4))
         .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT))); 
+
+    new Trigger(() -> m_joystick.getPOV() == 180).onTrue(m_clawSubsystem.getStopStoppingCmd());
 
     // Arm triggers
     new JoystickButton(m_joystick, 11)

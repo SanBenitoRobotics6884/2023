@@ -225,6 +225,7 @@ public final class RobotConstants {
         public static final double CLOSED_SETPOINT = -18; // needs adjustment
         public static final double OPEN_RATE = 0.05;
         public static final double CLOSE_RATE = -0.05;
+        public static final int CLAW_CHANNEL = 3; // Need to find actual PDP channel
     }
   
     public static final class Arm {
