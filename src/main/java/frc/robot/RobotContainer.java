@@ -19,7 +19,7 @@ import com.pathplanner.lib.commands.PPRamseteCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import frc.robot.util.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.GenericHID; 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -127,6 +127,7 @@ public class RobotContainer {
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
         Rotation2d.fromDegrees(180)), obstacles, AStarMap));
     controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
+    controller.b().whileTrue(new RunCommand(m_driveSubsystem::autoBalance, m_driveSubsystem));
     
     // Claw triggers
     new JoystickButton(m_joystick, 2)

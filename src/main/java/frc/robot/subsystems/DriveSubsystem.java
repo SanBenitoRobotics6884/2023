@@ -17,14 +17,17 @@ import com.revrobotics.SparkMaxAlternateEncoder.Type;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.ADIS16448_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.ADIS16470_IMU;
+import static frc.robot.util.ADIS16470_IMU.IMUAxis.*;
+
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -32,6 +35,8 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax m_FRMotor;
   private CANSparkMax m_BRMotor;
   private CANSparkMax m_BLMotor;
+  private int m_state;
+  private int m_debounceCount;
 
   private MotorControllerGroup m_rControllerGroup;
   private MotorControllerGroup m_lControllerGroup;
@@ -43,11 +48,14 @@ public class DriveSubsystem extends SubsystemBase {
  // WPI_Pigeon2 m_gyro;
  
 
-  ADIS16470_IMU m_gyro;
+ADIS16470_IMU m_gyro;
+
   
 
   ChassisSpeeds chassisSpeeds;
   public DriveSubsystem(ADIS16470_IMU gyro) {
+    m_state = 0;
+    m_debounceCount = 0;
     m_FLMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
     m_FRMotor = new CANSparkMax(FR_ID, MotorType.kBrushless);
     m_BRMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
@@ -92,7 +100,6 @@ public class DriveSubsystem extends SubsystemBase {
     
   
     m_gyro = gyro;
-    m_gyro.reset();
     
   // m_gyro = new WPI_Pigeon2(PIGEON_ID);
     /* 
@@ -115,6 +122,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("right Velocity", getRightVelocity());
     SmartDashboard.putNumber("left Velocity", getLeftVelocity());
     SmartDashboard.putNumber(" Velocity", getVelocity());
+    SmartDashboard.putNumber("pitch", this.getPitch());
   }
 
   public void drive(double forward, double rotation){
@@ -135,11 +143,16 @@ public class DriveSubsystem extends SubsystemBase {
   
   public Rotation2d getRotation2D(){
    // return m_gyro.getRotation2d();
-   return Rotation2d.fromDegrees(m_gyro.getAngle());
+   return Rotation2d.fromDegrees(m_gyro.getAngle(kZ));
   }
   //Should be CCW Positive
   public Double getAngle(){
-    return m_gyro.getAngle();
+    return m_gyro.getAngle(kZ);
+    
+  }
+
+  public Double getPitch(){
+    return m_gyro.getAngle(kX);
   }
   
   public double getLeftDistance(){
@@ -169,7 +182,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getRateAsRadians(){
-   return m_gyro.getRate() * Math.PI/180;
+   return m_gyro.getRate(kZ) * Math.PI/180;
   }
 
   public double getVelocity(){
@@ -185,13 +198,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetGyro(){
-    m_gyro.reset();
+    m_gyro.setGyroAngleZ(0);
   }
   public void calibrateGyro(){
     if(DriverStation.isDisabled()){
       m_gyro.calibrate();
     }
   }
+
+
 
 
   public void turnToTarget(double yaw, double setpoint){
@@ -216,7 +231,67 @@ public class DriveSubsystem extends SubsystemBase {
      double GRAVITY_VECTOR = m_gyro.getRawAccelZ();
      AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR * Math.sin(0),KA * GRAVITY_VECTOR * Math.sin(m_gyro.getPitch()));
      */
+    m_BLMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
+    m_BRMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
+    m_FLMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
+    m_FRMotor.setVoltage(KA*9.81*Math.sin(this.getPitch()));
+    
   }
+  public double autoBalanceRoutine() {
+    switch (m_state) {
+        // drive forwards to approach station, exit when tilt is detected
+        case 0:
+            if (this.getPitch() > ON_DEGREE) {
+                m_debounceCount++;
+            }
+            if (m_debounceCount > this.secondsToTicks(BALANCE_DEBOUNCE_TIME)) {
+                m_state = 1;
+                m_debounceCount = 0;
+                return BALANCE_SPEED_LOW;
+            }
+            return BALANCE_SPEED_HIGH;
+        // driving up charge station, drive slower, stopping when level
+        case 1:
+            if (this.getPitch() < BALANCED_DEGREE) {
+                m_debounceCount++;
+            }
+            if (m_debounceCount > secondsToTicks(BALANCE_DEBOUNCE_TIME)) {
+                m_state = 2;
+                m_debounceCount = 0;
+                return 0;
+            }
+            return BALANCE_SPEED_LOW;
+        // on charge station, stop motors and wait for end of auto
+        case 2:
+            if (Math.abs(this.getPitch()) <= BALANCED_DEGREE / 2) {
+                m_debounceCount++;
+            }
+            if (m_debounceCount > secondsToTicks(BALANCE_DEBOUNCE_TIME)) {
+                m_state = 4;
+                m_debounceCount = 0;
+                return 0;
+            }
+            if (this.getPitch() >= BALANCED_DEGREE) {
+                return 0.1;
+            } else if (this.getPitch() <= -BALANCED_DEGREE) {
+                return -0.1;
+            }
+        case 3:
+            return 0;
+    }
+    return 0;
+}
+ public void autoBalance(){
+  double speed = this.autoBalanceRoutine();
+  m_BLMotor.set(speed);
+  m_BRMotor.set(speed);
+  m_FLMotor.set(speed);
+  m_FRMotor.set(speed);
+ }
+public int secondsToTicks(double time) {
+  return (int) (time * 50);
+}
+
 
   public void setBrakeMode(){
     m_BLMotor.setIdleMode(IdleMode.kBrake);

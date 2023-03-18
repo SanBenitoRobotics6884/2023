@@ -82,6 +82,13 @@ public final class RobotConstants {
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
         public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
+        //Auto Balance Constants
+        public static final double BALANCE_SPEED_HIGH = 0.4;
+        public static final double BALANCE_SPEED_LOW = 0.2;
+        public static final double ON_DEGREE= 13.0;
+        public static final double BALANCED_DEGREE= 6.0;
+        public static final double BALANCE_DEBOUNCE_TIME = .2;
+
 
         public static final double AUTO_BALANCE_P = 0.0;
         public static final double AUTO_BALANCE_I = 0.0;
