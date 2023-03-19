@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.constants.RobotConstants.Pivot.*;
 
 public class PivotSubsystem extends SubsystemBase {
-  /** Creates a new PivotSubsystem. */
   private CANSparkMax m_masterMotor = new CANSparkMax(MASTER_MOTOR_ID, MotorType.kBrushless);
   private CANSparkMax m_slaveMotor = new CANSparkMax(SLAVE_MOTOR_ID, MotorType.kBrushless);
 
@@ -25,6 +24,7 @@ public class PivotSubsystem extends SubsystemBase {
   private WPI_CANCoder m_encoder;
   private double m_setpoint = 0;
 
+  /** Creates a new PivotSubsystem. */
   public PivotSubsystem() {
     m_masterMotor.restoreFactoryDefaults(); // setting up motors
     m_slaveMotor.restoreFactoryDefaults();
@@ -33,11 +33,12 @@ public class PivotSubsystem extends SubsystemBase {
     m_slaveMotor.setInverted(true);
     m_slaveMotor.follow(m_masterMotor);
     
-    CANCoderConfiguration config = new CANCoderConfiguration(); // encoders
+    // This CANCoder measures the rotation of the arm before a 9:1 gear ratio. So when it measures
+    // 9 rotations, that is 1 full rotation of the arm.
+    CANCoderConfiguration config = new CANCoderConfiguration();
     m_encoder = new WPI_CANCoder(PIVOT_CANCODER_ID);
     config.unitString = ("rotations");
     config.sensorTimeBase = SensorTimeBase.PerSecond;
-    
     config.sensorDirection = false;
     config.magnetOffsetDegrees = CANCODER_OFFSET_DEGREES;
     m_encoder.configAllSettings(config);
@@ -53,14 +54,17 @@ public class PivotSubsystem extends SubsystemBase {
       -MAX_VOLTAGE, MAX_VOLTAGE));
   }
 
+  /** @returns The measured value of the rotation of the arm from the CANCoder */
   public double getPosition() {
     return m_encoder.getPosition();
   }
 
+  /** @returns The desired rotation of the arm */
   public double getSetpoint() {
     return m_setpoint;
   }
 
+  /** Sets the desired rotation of the arm */
   public void setSetpoint(double value){
     m_setpoint = value;
   }
@@ -69,14 +73,17 @@ public class PivotSubsystem extends SubsystemBase {
     System.out.println(-m_encoder.getAbsolutePosition());
   }
 
+  /** @returns A command that brings the arm all the way down */
   public CommandBase getDownCommand() {
     return runOnce(() -> setSetpoint(HYBRID_SETPOINT));
   }
 
+  /** @returns A command that rotates the arm to pick up game pieces */
   public CommandBase getPickUpCommand() {
     return runOnce(() -> setSetpoint(MID_SETPOINT));
   }
 
+  /** @returns A command that rotates the arm to score game pieces */
   public CommandBase getPlaceCommand() {
     return runOnce(() -> setSetpoint(HIGH_SETPOINT));
   }
