@@ -8,17 +8,21 @@ import static frc.robot.constants.RobotConstants.Claw.*;
 import static frc.robot.constants.RobotConstants.Drive.*;
 import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.GenericHID;
+import frc.robot.util.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.GenericHID; 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.astar.Edge;
@@ -30,7 +34,6 @@ import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
 import frc.robot.commands.PivotCommand;
 import frc.robot.constants.FieldConstants;
-import frc.robot.constants.RobotConstants.Arm;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExtendSubsystem;
@@ -42,7 +45,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -84,16 +86,24 @@ public class RobotContainer {
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
-  private final PathPlannerTrajectory trajectory;
+  private final List< PathPlannerTrajectory > trajectory;
+  SequentialCommandGroup auto;
+  HashMap<String, Command> eventMap;
+  RunCommand autoBalance = new RunCommand(
+    m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
     m_extendSubsystem.setDefaultCommand(m_extendCommand);
+    eventMap = new HashMap<>();
+    eventMap.put("autobalance", autoBalance);
+    m_gyro.calibrate();
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
 
-    trajectory = PathPlanner.loadPath("Simple", CONSTRAINTS);
+    trajectory = PathPlanner.loadPathGroup("Test2", CONSTRAINTS, CONSTRAINTS);
+     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap);
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
@@ -127,6 +137,7 @@ public class RobotContainer {
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
         Rotation2d.fromDegrees(180)), obstacles, AStarMap));
     controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
+    controller.b().whileTrue(autoBalance);
     
     // Claw triggers
     new JoystickButton(m_joystick, 2)
@@ -136,24 +147,25 @@ public class RobotContainer {
         .and(new JoystickButton(m_joystick, 4))
         .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT))); 
 
-    // Arm triggers
+    // Extend setpoint triggers
     new JoystickButton(m_joystick, 11)
-         .onTrue(new InstantCommand(() -> m_extendSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
+         .onTrue(m_extendSubsystem.getRetractCommand()); 
 
     new JoystickButton(m_joystick, 9)
-        .onTrue(new InstantCommand(() -> m_extendSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
+        .onTrue(m_extendSubsystem.getMidCommand());
 
     new JoystickButton(m_joystick, 7)
-        .onTrue(new InstantCommand(() -> m_extendSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
+        .onTrue(m_extendSubsystem.getExtendCommand());
 
+    // Pivot setpoint triggers
     new JoystickButton(m_joystick, 12)
-        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setPivotSetpoint(Arm.Pivot.HYBRID_SETPOINT)));
+        .onTrue(m_pivotSubsystem.getDownCommand());
     
     new JoystickButton(m_joystick, 10)
-        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setPivotSetpoint(Arm.Pivot.MID_SETPOINT)));
+        .onTrue(m_pivotSubsystem.getPickUpCommand());
     
     new JoystickButton(m_joystick, 8)
-        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
+        .onTrue(m_pivotSubsystem.getPlaceCommand());
   }
 
   /**
@@ -163,7 +175,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new SequentialCommandGroup(
+    /*return new SequentialCommandGroup(
         new PPRamseteCommand(
             trajectory, 
             poseEstimatorSubsystem::getPose2d, 
@@ -177,5 +189,7 @@ public class RobotContainer {
             false, 
             m_driveSubsystem),
         new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
+        */
+        return auto;
   }
 }

@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import static frc.robot.constants.RobotConstants.Arm.*;
+import static frc.robot.constants.RobotConstants.Pivot.*;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -32,9 +32,9 @@ public class PivotCommand extends CommandBase {
   @Override
   public void execute() {
     double value = m_value.getAsDouble();
-    double pivot = m_pivotSubsystem.getPivotSetpoint() + Pivot.Y_SCALE * value;
-    if (Pivot.BACK_HARD_LIMIT <= pivot && pivot <= Pivot.FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
-      m_pivotSubsystem.setPivotSetpoint(pivot);
+    double pivot = m_pivotSubsystem.getSetpoint() + Y_SCALE * value;
+    if (BACK_HARD_LIMIT <= pivot && pivot <= FRONT_HARD_LIMIT && Math.abs(value) > 0.1) { 
+      m_pivotSubsystem.setSetpoint(pivot);
     }
   }
 
