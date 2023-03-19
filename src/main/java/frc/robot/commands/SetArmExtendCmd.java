@@ -7,7 +7,9 @@ package frc.robot.commands;
 import static frc.robot.constants.RobotConstants.Arm.Extend.*;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.ArmSubsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.subsystems.ExtendSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 
 /**
  * This subclasses an InstantCommand for consistency because SetArmPivotCmd has to subclass an
@@ -15,31 +17,32 @@ import frc.robot.subsystems.ArmSubsystem;
  * wait a time we determined before. 
  */
 public class SetArmExtendCmd extends InstantCommand {
-  private ArmSubsystem m_armSubsystem;
+  private ExtendSubsystem m_extendSubsystem;
   private double m_setpoint;
 
-  public SetArmExtendCmd(ArmSubsystem armSubsystem, double setpoint) {
-    m_armSubsystem = armSubsystem;
+  public SetArmExtendCmd(PivotSubsystem pivotSubsystem, double setpoint) {
+    m_extendSubsystem = extendSubsystem;
     m_setpoint = setpoint;
+    ExtendSubsystem extendSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(armSubsystem);
+    addRequirements(extendSubsystem);
   }
 
-  public static SetArmExtendCmd createHybridCmd(ArmSubsystem armSubsystem) {
-    return new SetArmExtendCmd(armSubsystem, HYBRID_SETPOINT);
+  public static SetArmExtendCmd createHybridCmd(ExtendSubsystem extendSubsystem) {
+    return new SetArmExtendCmd(extendSubsystem, HYBRID_SETPOINT);
   }
 
-  public static SetArmExtendCmd createMidCmd(ArmSubsystem armSubsystem) {
-    return new SetArmExtendCmd(armSubsystem, MID_SETPOINT);
+  public static SetArmExtendCmd createMidCmd(ExtendSubsystem extendSubsystem) {
+    return new SetArmExtendCmd(extendSubsystem, MID_SETPOINT);
   }
 
-  public static SetArmExtendCmd createHighCmd(ArmSubsystem armSubsystem) {
-    return new SetArmExtendCmd(armSubsystem, HIGH_SETPOINT);
+  public static SetArmExtendCmd createHighCmd(ExtendSubsystem extendSubsystem) {
+    return new SetArmExtendCmd(extendSubsystem, HIGH_SETPOINT);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_armSubsystem.setExtendSetpoint(m_setpoint);
+    m_extendSubsystem.setExtendSetpoint(m_setpoint);
   }
 }

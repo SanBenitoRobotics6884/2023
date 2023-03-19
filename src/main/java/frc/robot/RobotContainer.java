@@ -28,12 +28,13 @@ import frc.robot.astar.VisGraph;
 import frc.robot.commands.AStar;
 import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
+import frc.robot.commands.PivotCommand;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.RobotConstants.Arm;
 import frc.robot.subsystems.ClawSubsystem;
-import frc.robot.commands.ArmCommand;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ExtendSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -52,15 +53,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+  private final ExtendSubsystem m_extendSubsystem = new ExtendSubsystem();
+  private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem(m_gyro);
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, m_driveSubsystem);
   private final ClawSubsystem m_clawSubsystem = new ClawSubsystem();
  
   private final Joystick m_joystick = new Joystick(0);
   private final CommandXboxController controller = new CommandXboxController(1);
-  
-  private final Command m_armCommand = new ArmCommand(m_armSubsystem,
+  private final Command m_extendCommand = new PivotCommand(m_pivotSubsystem,
+  () -> m_joystick.getY());
+  private final Command m_pivotCommand = new PivotCommand(m_pivotSubsystem,
       () -> m_joystick.getY());
   private final ClawCmmd m_clawCommand = new ClawCmmd(
     m_clawSubsystem,
@@ -85,7 +88,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_armSubsystem.setDefaultCommand(m_armCommand);
+    m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
+    m_extendSubsystem.setDefaultCommand(m_extendCommand);
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
 
@@ -134,22 +138,22 @@ public class RobotContainer {
 
     // Arm triggers
     new JoystickButton(m_joystick, 11)
-         .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
+         .onTrue(new InstantCommand(() -> m_pivotSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
 
     new JoystickButton(m_joystick, 9)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
 
     new JoystickButton(m_joystick, 7)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
 
     new JoystickButton(m_joystick, 12)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HYBRID_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setPivotSetpoint(Arm.Pivot.HYBRID_SETPOINT)));
     
     new JoystickButton(m_joystick, 10)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.MID_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setPivotSetpoint(Arm.Pivot.MID_SETPOINT)));
     
     new JoystickButton(m_joystick, 8)
-        .onTrue(new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT)));
   }
 
   /**

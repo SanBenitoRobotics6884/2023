@@ -7,7 +7,7 @@ package frc.robot.commands;
 import static frc.robot.constants.RobotConstants.Arm.Pivot.*;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 
 /**
  * Until we add a feedforward for gravity (which will require us to be able to know the exact
@@ -17,31 +17,31 @@ import frc.robot.subsystems.ArmSubsystem;
  * of the arm and the setpoint are within a certain error. (And we can remove the WaitCommand)
  */
 public class SetArmPivotCmd extends InstantCommand {
-  private ArmSubsystem m_armSubsystem;
+  private PivotSubsystem m_pivotSubsystem;
   private double m_setpoint;
 
-  public SetArmPivotCmd(ArmSubsystem armSubsystem, double setpoint) {
-    m_armSubsystem = armSubsystem;
+  public SetArmPivotCmd(PivotSubsystem pivotSubsystem, double setpoint) {
+    m_pivotSubsystem = pivotSubsystem;
     m_setpoint = setpoint;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(armSubsystem);
+    addRequirements(pivotSubsystem);
   }
 
-  public static SetArmExtendCmd createHybridCmd(ArmSubsystem armSubsystem) {
-    return new SetArmExtendCmd(armSubsystem, HYBRID_SETPOINT);
+  public static SetArmExtendCmd createHybridCmd(PivotSubsystem pivotSubsystem) {
+    return new SetArmPivotCmd(pivotSubsystem, HYBRID_SETPOINT);
   }
 
-  public static SetArmExtendCmd createMidCmd(ArmSubsystem armSubsystem) {
-    return new SetArmExtendCmd(armSubsystem, MID_SETPOINT);
+  public static SetArmExtendCmd createMidCmd(PivotSubsystem pivotSubsystem) {
+    return new SetArmPivotCmd(pivotSubsystem, MID_SETPOINT);
   }
 
-  public static SetArmExtendCmd createHighCmd(ArmSubsystem armSubsystem) {
-    return new SetArmExtendCmd(armSubsystem, HIGH_SETPOINT);
+  public static SetArmExtendCmd createHighCmd(PivotSubsystem pivotSubsystem) {
+    return new SetArmPivotCmdSubsystem(pivotSubsystem, HIGH_SETPOINT);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_armSubsystem.setPivotSetpoint(m_setpoint);
+    m_pivotSubsystem.setPivotSetpoint(m_setpoint);
   }
 }
