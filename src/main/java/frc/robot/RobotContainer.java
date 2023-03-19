@@ -138,13 +138,13 @@ public class RobotContainer {
 
     // Arm triggers
     new JoystickButton(m_joystick, 11)
-         .onTrue(new InstantCommand(() -> m_pivotSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
+         .onTrue(new InstantCommand(() -> m_extendSubsystem.setExtendSetpoint(Arm.Extend.HYBRID_SETPOINT))); 
 
     new JoystickButton(m_joystick, 9)
-        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_extendSubsystem.setExtendSetpoint(Arm.Extend.MID_SETPOINT)));
 
     new JoystickButton(m_joystick, 7)
-        .onTrue(new InstantCommand(() -> m_pivotSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
+        .onTrue(new InstantCommand(() -> m_extendSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT)));
 
     new JoystickButton(m_joystick, 12)
         .onTrue(new InstantCommand(() -> m_pivotSubsystem.setPivotSetpoint(Arm.Pivot.HYBRID_SETPOINT)));
