@@ -56,7 +56,8 @@ public final class RobotConstants {
         public static final double WHEEL_RADIUS = 3.0;
       
         public static final double POSITION_CONVERSION = 
-            Units.inchesToMeters(2 * Math.PI * WHEEL_RADIUS / GEAR_RATIO);
+        Units.inchesToMeters(Units.inchesToMeters(1 / ( GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(WHEEL_RADIUS)*5) * 10));;
+          //  Units.inchesToMeters(2 * Math.PI * WHEEL_RADIUS);
         public static final double VELOCITY_CONVERSION = (POSITION_CONVERSION/60);
 
         public static final double DRIVE_DISTANCE_P = 2;
@@ -96,7 +97,7 @@ public final class RobotConstants {
         public static final double ON_DEGREE= 13.0;
         public static final double BALANCED_DEGREE= 6.0;
         public static final double BALANCE_DEBOUNCE_TIME = .2;
-        public static final double BALANCE_LIMITER = 35;
+        public static final double BALANCE_LIMITER = 40;
 
 
 
@@ -134,8 +135,8 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = .5; 
-        public static final double MAX_ACCELERATION = .5; 
+        public static final double MAX_VELOCTIY = 1; 
+        public static final double MAX_ACCELERATION = 1; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =

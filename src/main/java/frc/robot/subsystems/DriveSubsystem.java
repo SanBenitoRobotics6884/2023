@@ -96,7 +96,7 @@ ADIS16470_IMU m_gyro;
     m_leftEncoder = new Encoder(BR_ID, BL_ID, false);
     */
 
-     m_rightEncoder.setReverseDirection(true);
+     m_rightEncoder.setReverseDirection(false);
      m_leftEncoder.setReverseDirection(false);
 
 
@@ -319,23 +319,24 @@ public int secondsToTicks(double time) {
     
   }
   
-  public  SequentialCommandGroup followAutoCommand(DriveSubsystem m_driveSubsystem,
+  public  SequentialCommandGroup followAutoCommand(DriveSubsystem m_driveSubsystem, 
       PoseEstimatorSubsystem poseEstimatorSubsystem,
-      List<PathPlannerTrajectory> trajectory, HashMap<String, Command>m_hashMap ){
+      List<PathPlannerTrajectory> trajectory, HashMap<String, Command>m_hashMap, ArmSubsystem m_armSubystem ){
         poseEstimatorSubsystem.ResetPose2d(trajectory.get(0).getInitialPose());
       
       
-        RamseteAutoBuilder autoBuilder =
-         new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
+        RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
+         RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, m_hashMap, m_driveSubsystem, m_armSubystem);
+         /*new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
           KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
-           m_hashMap, m_driveSubsystem);
+           m_hashMap, m_driveSubsystem);*/
        
 
         Command auto = autoBuilder.followPathGroupWithEvents(trajectory);
 
-        return new SequentialCommandGroup(auto
-        ,
-          new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
+        return new SequentialCommandGroup(auto,
+
+          new RunCommand(m_driveSubsystem::chargeStationAlign, m_driveSubsystem));
     }
     
   
