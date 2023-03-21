@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -40,9 +42,11 @@ import frc.robot.subsystems.ExtendSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -91,19 +95,24 @@ public class RobotContainer {
   HashMap<String, Command> eventMap;
   RunCommand autoBalance = new RunCommand(
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
+  InstantCommand HighPivot = new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT));
+  InstantCommand HighExtend =  new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
     m_extendSubsystem.setDefaultCommand(m_extendCommand);
     eventMap = new HashMap<>();
-    eventMap.put("autobalance", autoBalance);
+    eventMap.put("autobalance", new RunCommand(
+      m_driveSubsystem::chargeStationAlign, m_driveSubsystem));
+    eventMap.put("highPivot", HighPivot.alongWith(new WaitCommand(1.5)).andThen(HighExtend).alongWith(new WaitCommand(1.5)) );
     m_gyro.calibrate();
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
+   
 
-    trajectory = PathPlanner.loadPathGroup("Test2", CONSTRAINTS, CONSTRAINTS);
-     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap);
+    trajectory = PathPlanner.loadPathGroup("T", CONSTRAINTS, CONSTRAINTS);
+     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap, m_armSubsystem);
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
@@ -165,7 +174,7 @@ public class RobotContainer {
         .onTrue(m_pivotSubsystem.getPickUpCommand());
     
     new JoystickButton(m_joystick, 8)
-        .onTrue(m_pivotSubsystem.getPlaceCommand());
+        .onTrue(HighPivot);
   }
 
   /**
@@ -190,6 +199,24 @@ public class RobotContainer {
             m_driveSubsystem),
         new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
         */
-        return auto;
+        return makeAutoBuilderCommand("A", CONSTRAINTS);
   }
+  private CommandBase makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
+    // return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, pathName,
+    //     constraints,
+    //     true, eventMap);
+    var path = PathPlanner.loadPath(pathName, constraints);
+    
+    poseEstimatorSubsystem.AddTrajectory(path);
+    // controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem,
+    // poseEstimatorSystem, alliancePath);
+    RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
+         RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, eventMap, m_driveSubsystem );
+         /*new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
+          KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
+           m_hashMap, m_driveSubsystem);*/
+       
+
+    return autoBuilder.fullAuto(path);
+}
 }

@@ -10,8 +10,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAlternateEncoder.Type;
@@ -21,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADIS16448_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -50,8 +54,9 @@ public class DriveSubsystem extends SubsystemBase {
   private MotorControllerGroup m_lControllerGroup;
   private DifferentialDrive m_drive;
 
-  RelativeEncoder m_rightEncoder;
-  RelativeEncoder m_leftEncoder;
+  
+  Encoder m_rightEncoder;
+  Encoder m_leftEncoder;
   //make sure to output degrees as negative!!!!!!!!!
  // WPI_Pigeon2 m_gyro;
  
@@ -83,28 +88,24 @@ ADIS16470_IMU m_gyro;
 
     m_drive = new DifferentialDrive(m_rControllerGroup, m_lControllerGroup);
     
-    m_rightEncoder = m_FRMotor.getEncoder();
-    m_leftEncoder = m_FLMotor.getEncoder();
-
-    /**
-    m_rightEncoder = m_FRMotor.getAlternateEncoder(
-        Type.kQuadrature, 8192);
-    m_leftEncoder = m_FLMotor.getAlternateEncoder(
-        Type.kQuadrature, 8192);
+    m_rightEncoder = new Encoder(RIGHT_CHANNEL_A, RIGHT_CHANNEL_B);
+    m_leftEncoder = new Encoder(LEFT_CHANNEL_A, LEFT_CHANNEL_B);
+    
+    /*
+    m_rightEncoder = new Encoder(BR_ID, BL_ID, false);
+    m_leftEncoder = new Encoder(BR_ID, BL_ID, false);
     */
 
-    // m_rightEncoder.setInverted(true);
-    // m_leftEncoder.setInverted(false);
+     m_rightEncoder.setReverseDirection(false);
+     m_leftEncoder.setReverseDirection(false);
 
 
-    m_rightEncoder.setPositionConversionFactor(POSITION_CONVERSION);
-    m_leftEncoder.setPositionConversionFactor(POSITION_CONVERSION);
+    m_rightEncoder.setDistancePerPulse(POSITION_CONVERSION);
+    m_leftEncoder.setDistancePerPulse(POSITION_CONVERSION);
     
-    m_rightEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
-    m_leftEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION);
 
-    m_leftEncoder.setPosition(0);
-    m_rightEncoder.setPosition(0);
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
     
   
     m_gyro = gyro;
@@ -122,8 +123,8 @@ ADIS16470_IMU m_gyro;
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_rightEncoder.getPosition();
-    m_leftEncoder.getPosition();
+    m_rightEncoder.getDistance();
+    m_leftEncoder.getDistance();
     SmartDashboard.putNumber("left Encoders",getLeftDistance());
     SmartDashboard.putNumber("right Encoders", getRightDistance());
     SmartDashboard.putNumber("gyroangle", getAngle());
@@ -147,8 +148,8 @@ ADIS16470_IMU m_gyro;
   
 
   public void resetEncoders(){
-    m_rightEncoder.setPosition(0);
-    m_leftEncoder.setPosition(0);
+    m_rightEncoder.reset();
+    m_leftEncoder.reset();
   }
   
   public Rotation2d getRotation2D(){
@@ -166,18 +167,18 @@ ADIS16470_IMU m_gyro;
   }
   
   public double getLeftDistance(){
-    return m_leftEncoder.getPosition();
+    return m_leftEncoder.getDistance();
   }
 
   public double getRightDistance(){
-    return -m_rightEncoder.getPosition();
+    return m_rightEncoder.getDistance();
   }
 
   public double getLeftVelocity(){
-    return m_leftEncoder.getVelocity();
+    return m_leftEncoder.getRate();
   }
   public double getRightVelocity(){
-    return -m_rightEncoder.getVelocity();
+    return m_rightEncoder.getRate();
   }
 
   public void tankDrive(Double rightVoltage, Double leftVoltage){
@@ -318,23 +319,24 @@ public int secondsToTicks(double time) {
     
   }
   
-  public  SequentialCommandGroup followAutoCommand(DriveSubsystem m_driveSubsystem,
+  public  SequentialCommandGroup followAutoCommand(DriveSubsystem m_driveSubsystem, 
       PoseEstimatorSubsystem poseEstimatorSubsystem,
-      List<PathPlannerTrajectory> trajectory, HashMap<String, Command>m_hashMap ){
+      List<PathPlannerTrajectory> trajectory, HashMap<String, Command>m_hashMap, ArmSubsystem m_armSubystem ){
         poseEstimatorSubsystem.ResetPose2d(trajectory.get(0).getInitialPose());
       
       
-        RamseteAutoBuilder autoBuilder =
-         new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
+        RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
+         RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, m_hashMap, m_driveSubsystem, m_armSubystem);
+         /*new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
           KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
-           m_hashMap, m_driveSubsystem);
+           m_hashMap, m_driveSubsystem);*/
        
 
         Command auto = autoBuilder.followPathGroupWithEvents(trajectory);
 
-        return new SequentialCommandGroup(auto
-        ,
-          new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
+        return new SequentialCommandGroup(auto,
+
+          new RunCommand(m_driveSubsystem::chargeStationAlign, m_driveSubsystem));
     }
     
   
