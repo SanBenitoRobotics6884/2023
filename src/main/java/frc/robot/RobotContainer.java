@@ -91,8 +91,7 @@ public class RobotContainer {
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
-  private final List< PathPlannerTrajectory > trajectory;
-  SequentialCommandGroup auto;
+ 
   HashMap<String, Command> eventMap;
   RunCommand autoBalance = new RunCommand(
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
@@ -103,16 +102,16 @@ public class RobotContainer {
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
     m_extendSubsystem.setDefaultCommand(m_extendCommand);
     eventMap = new HashMap<>();
-    eventMap.put("autobalance", new RunCommand(
-      m_driveSubsystem::chargeStationAlign, m_driveSubsystem));
+    eventMap.put("autobalance", autoBalance);
     eventMap.put("highScore", m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand())  );
+   
     m_gyro.calibrate();
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
    
 
-    trajectory = PathPlanner.loadPathGroup("T", CONSTRAINTS, CONSTRAINTS);
-     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap);
+   
+    
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
@@ -127,25 +126,24 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+  
   private void configureButtonBindings() {
     // Chassis triggers
     controller.leftTrigger()
         .whileTrue(m_snailDriveCommand);
+
     controller.x().whileTrue(new AStar(
         m_driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
         Rotation2d.fromDegrees(180)), obstacles, AStarMap));
+
     controller.y().whileTrue(new AStar(
         m_driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
         Rotation2d.fromDegrees(180)), obstacles, AStarMap));
+
     controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
+
     controller.b().whileTrue(autoBalance);
     
     // Claw triggers
@@ -183,40 +181,22 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    /*return new SequentialCommandGroup(
-        new PPRamseteCommand(
-            trajectory, 
-            poseEstimatorSubsystem::getPose2d, 
-            RAMSETE_CONTROLLER, 
-            FEED_FOWARD, 
-            KINEMATICS, 
-            m_driveSubsystem::getWheelSpeeds, 
-            LEFT_DRIVE_CONTROLLER, 
-            RIGHT_DRIVE_CONTROLLER, 
-            m_driveSubsystem::tankDrive, 
-            false, 
-            m_driveSubsystem),
-        new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
-        */
-        return makeAutoBuilderCommand("A", CONSTRAINTS);
+        
+    return makeAutoBuilderCommand("A", CONSTRAINTS);
   }
+ 
+ 
   private CommandBase makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
-    // return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, pathName,
-    //     constraints,
-    //     true, eventMap);
+   
     var path = PathPlanner.loadPath(pathName, constraints);
     
     poseEstimatorSubsystem.AddTrajectory(path);
-    // controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem,
-    // poseEstimatorSystem, alliancePath);
+   
     RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
          RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, eventMap, m_driveSubsystem );
          /*new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
           KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
            m_hashMap, m_driveSubsystem);*/
-       
-
     return autoBuilder.fullAuto(path);
 }
 }

@@ -47,28 +47,14 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax m_FRMotor;
   private CANSparkMax m_BRMotor;
   private CANSparkMax m_BLMotor;
-  private int m_state;
-  private int m_debounceCount;
-
   private MotorControllerGroup m_rControllerGroup;
   private MotorControllerGroup m_lControllerGroup;
   private DifferentialDrive m_drive;
-
-  
-  Encoder m_rightEncoder;
-  Encoder m_leftEncoder;
-  //make sure to output degrees as negative!!!!!!!!!
- // WPI_Pigeon2 m_gyro;
- 
-
-ADIS16470_IMU m_gyro;
-
-  
-
-  ChassisSpeeds chassisSpeeds;
+  private Encoder m_rightEncoder;
+  private Encoder m_leftEncoder;
+  private ADIS16470_IMU m_gyro;
   public DriveSubsystem(ADIS16470_IMU gyro) {
-    m_state = 0;
-    m_debounceCount = 0;
+ 
     m_FLMotor = new CANSparkMax(FL_ID, MotorType.kBrushless);
     m_FRMotor = new CANSparkMax(FR_ID, MotorType.kBrushless);
     m_BRMotor = new CANSparkMax(BR_ID, MotorType.kBrushless);
@@ -90,11 +76,6 @@ ADIS16470_IMU m_gyro;
     
     m_rightEncoder = new Encoder(RIGHT_CHANNEL_A, RIGHT_CHANNEL_B);
     m_leftEncoder = new Encoder(LEFT_CHANNEL_A, LEFT_CHANNEL_B);
-    
-    /*
-    m_rightEncoder = new Encoder(BR_ID, BL_ID, false);
-    m_leftEncoder = new Encoder(BR_ID, BL_ID, false);
-    */
 
      m_rightEncoder.setReverseDirection(false);
      m_leftEncoder.setReverseDirection(false);
@@ -110,14 +91,6 @@ ADIS16470_IMU m_gyro;
   
     m_gyro = gyro;
     
-  // m_gyro = new WPI_Pigeon2(PIGEON_ID);
-    /* 
-     Pigeon2Configuration config = new Pigeon2Configuration();
-    config.MountPosePitch= MOUNT_PITCH;
-    config.MountPoseRoll= MOUNT_ROLL;
-    config.MountPoseYaw = MOUNT_YAW;
-  */
-   // m_gyro.configAllSettings(config); 
   }
 
   @Override
@@ -159,7 +132,6 @@ ADIS16470_IMU m_gyro;
   //Should be CCW Positive
   public Double getAngle(){
     return -m_gyro.getAngle(kZ);
-    
   }
 
   public Double getPitch(){
@@ -211,14 +183,12 @@ ADIS16470_IMU m_gyro;
   public void resetGyro(){
     m_gyro.setGyroAngleZ(0);
   }
+
   public void calibrateGyro(){
     if(DriverStation.isDisabled()){
       m_gyro.calibrate();
     }
   }
-
-
-
 
   public void turnToTarget(double yaw, double setpoint){
     if(yaw >= 5){
@@ -230,79 +200,12 @@ ADIS16470_IMU m_gyro;
   }
 
   public void chargeStationAlign(){
-  /* 
-     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR[2] * Math.sin(0),KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
-     //might have to negative this
-     m_BLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
-     m_BRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
-     m_FRMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
-     m_FLMotor.setVoltage(KA * GRAVITY_VECTOR[2] * Math.sin(m_gyro.getPitch()));
-     */
-    /*
-     double GRAVITY_VECTOR = m_gyro.getRawAccelZ();
-     AUTO_BALANCE_CONTROLLER.calculate(KA * GRAVITY_VECTOR * Math.sin(0),KA * GRAVITY_VECTOR * Math.sin(m_gyro.getPitch()));
-     */
     m_BLMotor.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
     m_BRMotor.setVoltage(-KA*9.81*this.getPitch()/BALANCE_LIMITER);
     m_FLMotor.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
     m_FRMotor.setVoltage(-KA*9.81*this.getPitch()/BALANCE_LIMITER);
     
   }
-  public double autoBalanceRoutine() {
-    switch (m_state) {
-        // drive forwards to approach station, exit when tilt is detected
-        case 0:
-            if (this.getPitch() > ON_DEGREE) {
-                m_debounceCount++;
-            }
-            if (m_debounceCount > this.secondsToTicks(BALANCE_DEBOUNCE_TIME)) {
-                m_state = 1;
-                m_debounceCount = 0;
-                return BALANCE_SPEED_LOW;
-            }
-            return BALANCE_SPEED_HIGH;
-        // driving up charge station, drive slower, stopping when level
-        case 1:
-            if (this.getPitch() < BALANCED_DEGREE) {
-                m_debounceCount++;
-            }
-            if (m_debounceCount > secondsToTicks(BALANCE_DEBOUNCE_TIME)) {
-                m_state = 2;
-                m_debounceCount = 0;
-                return 0;
-            }
-            return BALANCE_SPEED_LOW;
-        // on charge station, stop motors and wait for end of auto
-        case 2:
-            if (Math.abs(this.getPitch()) <= BALANCED_DEGREE / 2) {
-                m_debounceCount++;
-            }
-            if (m_debounceCount > secondsToTicks(BALANCE_DEBOUNCE_TIME)) {
-                m_state = 4;
-                m_debounceCount = 0;
-                return 0;
-            }
-            if (this.getPitch() >= BALANCED_DEGREE) {
-                return 0.1;
-            } else if (this.getPitch() <= -BALANCED_DEGREE) {
-                return -0.1;
-            }
-        case 3:
-            return 0;
-    }
-    return 0;
-}
- public void autoBalance(){
-  double speed = this.autoBalanceRoutine();
-  m_BLMotor.set(speed);
-  m_BRMotor.set(-speed);
-  m_FLMotor.set(speed);
-  m_FRMotor.set(-speed);
- }
-public int secondsToTicks(double time) {
-  return (int) (time * 50);
-}
-
 
   public void setBrakeMode(){
     m_BLMotor.setIdleMode(IdleMode.kBrake);
@@ -318,30 +221,9 @@ public int secondsToTicks(double time) {
     m_FLMotor.setIdleMode(IdleMode.kCoast);   
     
   }
-  
-  public  SequentialCommandGroup followAutoCommand(DriveSubsystem m_driveSubsystem, 
-      PoseEstimatorSubsystem poseEstimatorSubsystem,
-      List<PathPlannerTrajectory> trajectory, HashMap<String, Command>m_hashMap){
-        poseEstimatorSubsystem.ResetPose2d(trajectory.get(0).getInitialPose());
-      
-      
-        RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
-         RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, m_hashMap, m_driveSubsystem);
-         /*new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
-          KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
-           m_hashMap, m_driveSubsystem);*/
-       
 
-        Command auto = autoBuilder.followPathGroupWithEvents(trajectory);
 
-        return new SequentialCommandGroup(auto,
-
-          new RunCommand(m_driveSubsystem::chargeStationAlign, m_driveSubsystem));
-    }
-    
-  
-  public static PPRamseteCommand followTrajCommand(DriveSubsystem driveSubsystem,
-  PoseEstimatorSubsystem poseEstimatorSubsystem,
+  public static PPRamseteCommand followTrajCommand(DriveSubsystem driveSubsystem, PoseEstimatorSubsystem poseEstimatorSubsystem,
   PathPlannerTrajectory trajectory ){
     
 return new PPRamseteCommand(
@@ -353,8 +235,6 @@ return new PPRamseteCommand(
     false);
 }
   
-  
-
 
   @Override
   public void simulationPeriodic() {
