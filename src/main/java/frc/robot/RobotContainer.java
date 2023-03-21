@@ -8,25 +8,15 @@ import static frc.robot.constants.RobotConstants.Claw.*;
 import static frc.robot.constants.RobotConstants.Drive.*;
 import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.RamseteAutoBuilder;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
-import com.pathplanner.lib.commands.PPRamseteCommand;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.util.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.GenericHID; 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.astar.Edge;
 import frc.robot.astar.Node;
 import frc.robot.astar.Obstacle;
@@ -36,7 +26,6 @@ import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
 import frc.robot.commands.PivotCommand;
 import frc.robot.constants.FieldConstants;
-import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExtendSubsystem;
@@ -46,17 +35,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
