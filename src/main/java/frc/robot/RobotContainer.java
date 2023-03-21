@@ -36,6 +36,7 @@ import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
 import frc.robot.commands.PivotCommand;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExtendSubsystem;
@@ -95,8 +96,7 @@ public class RobotContainer {
   HashMap<String, Command> eventMap;
   RunCommand autoBalance = new RunCommand(
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
-  InstantCommand HighPivot = new InstantCommand(() -> m_armSubsystem.setPivotSetpoint(Arm.Pivot.HIGH_SETPOINT));
-  InstantCommand HighExtend =  new InstantCommand(() -> m_armSubsystem.setExtendSetpoint(Arm.Extend.HIGH_SETPOINT));
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -105,14 +105,14 @@ public class RobotContainer {
     eventMap = new HashMap<>();
     eventMap.put("autobalance", new RunCommand(
       m_driveSubsystem::chargeStationAlign, m_driveSubsystem));
-    eventMap.put("highPivot", HighPivot.alongWith(new WaitCommand(1.5)).andThen(HighExtend).alongWith(new WaitCommand(1.5)) );
+    eventMap.put("highScore", m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand())  );
     m_gyro.calibrate();
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
    
 
     trajectory = PathPlanner.loadPathGroup("T", CONSTRAINTS, CONSTRAINTS);
-     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap, m_armSubsystem);
+     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap);
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
@@ -174,7 +174,7 @@ public class RobotContainer {
         .onTrue(m_pivotSubsystem.getPickUpCommand());
     
     new JoystickButton(m_joystick, 8)
-        .onTrue(HighPivot);
+        .onTrue(m_pivotSubsystem.getPlaceCommand());
   }
 
   /**
