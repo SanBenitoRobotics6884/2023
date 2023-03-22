@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FeedbackSubsystem extends SubsystemBase {
-  ArmSubsystem m_armSubsystem;
+  PivotSubsystem m_pivotSubsystem;
+  ExtendSubsystem m_extendSubsystem;
   ClawSubsystem m_clawSubsystem;
   VisionSubsystem m_visionSubsystem;
   ADIS16470_IMU m_gyro;
@@ -29,13 +30,15 @@ public class FeedbackSubsystem extends SubsystemBase {
 
   /** Creates a new FeedbackSubsystem. */
   public FeedbackSubsystem(
-      ArmSubsystem armSubsystem,
+      PivotSubsystem pivotSubsystem,
+      ExtendSubsystem extendSubsystem,
       ClawSubsystem clawSubsystem,
       VisionSubsystem visionSubsystem,
       ADIS16470_IMU gyro,
       XboxController controller,
       PowerDistribution pdh) {
-    m_armSubsystem = armSubsystem;
+    m_pivotSubsystem = pivotSubsystem;
+    m_extendSubsystem = extendSubsystem;
     m_clawSubsystem = clawSubsystem;
     m_visionSubsystem = visionSubsystem;
     m_gyro = gyro;
@@ -76,8 +79,8 @@ public class FeedbackSubsystem extends SubsystemBase {
     }
     
     if (IS_TESTING) {
-      SmartDashboard.putNumber("Arm Angle Measurement", m_armSubsystem.getPivotPosition());
-      SmartDashboard.putNumber("Arm Extension Measurement", m_armSubsystem.getExtendPosition());
+      SmartDashboard.putNumber("Arm Angle Measurement", m_pivotSubsystem.getPosition());
+      SmartDashboard.putNumber("Arm Extension Measurement", m_extendSubsystem.getPosition());
       SmartDashboard.putNumber("Net Acceleration", m_netAcceleration);
       SmartDashboard.putNumber("Gyro Yaw", m_gyro.getAngle());
       SmartDashboard.putNumber("Gyro accZ", m_gyro.getAccelZ());

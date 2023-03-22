@@ -8,12 +8,16 @@ import frc.robot.subsystems.DriveSubsystem;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import static frc.robot.constants.RobotConstants.Drive.*;
 
 /** An example command that uses an example subsystem. */
 public class DriveCmmd extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveSubsystem m_subsystem;
+  private final SlewRateLimiter m_forwLimiter;
+  private final SlewRateLimiter m_rotLimiter;
   private final DoubleSupplier m_forwSupplier;
   private final DoubleSupplier m_rotSupplier;
   private final Boolean m_snailMode;
@@ -25,6 +29,8 @@ public class DriveCmmd extends CommandBase {
    */
   public DriveCmmd(DriveSubsystem subsystem, DoubleSupplier forward, DoubleSupplier rotation, Boolean inSnailMode) {
     m_subsystem = subsystem;
+    m_forwLimiter = new SlewRateLimiter(FORWARD_RATE_LIMIT);
+    m_rotLimiter = new SlewRateLimiter(ROTATION_RATE_LIMIT);
     m_forwSupplier = forward;
     m_rotSupplier = rotation;
     m_snailMode = inSnailMode;
@@ -39,10 +45,12 @@ public class DriveCmmd extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double forw = m_forwLimiter.calculate(m_forwSupplier.getAsDouble());
+    double rot = m_rotLimiter.calculate(m_rotSupplier.getAsDouble());
     if(m_snailMode){
-      m_subsystem.snailDrive(m_forwSupplier.getAsDouble(), m_rotSupplier.getAsDouble());
+      m_subsystem.snailDrive(forw, rot);
     } else {
-      m_subsystem.drive(m_forwSupplier.getAsDouble(), m_rotSupplier.getAsDouble());
+      m_subsystem.drive(forw, rot);
     }
   }
 

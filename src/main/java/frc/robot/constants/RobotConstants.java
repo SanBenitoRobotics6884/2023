@@ -11,6 +11,8 @@ import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
 
+
+
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
@@ -42,19 +44,27 @@ public final class RobotConstants {
         public static final int BL_ID = 4;
 
         public static final double NORMAL_MAX_FORWARD = 0.7;
-        public static final double NORMAL_MAX_TURN = 0.3;
+        public static final double NORMAL_MAX_TURN = 0.55;
         public static final double SNAIL_MAX_FORWARD = 0.4;
         public static final double SNAIL_MAX_TURN = 0.2;
+
+        public static final double FORWARD_RATE_LIMIT = 2;
+        public static final double ROTATION_RATE_LIMIT = 5;
 
         public static final int ENCODER_REVOLUTION= 8192;
         public static final double GEAR_RATIO = 10.71;
         public static final double WHEEL_RADIUS = 3.0;
       
         public static final double POSITION_CONVERSION = 
-        (Units.inchesToMeters(1 / (GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(WHEEL_RADIUS)) * 10));
+            Units.inchesToMeters(2 * Math.PI * WHEEL_RADIUS / GEAR_RATIO);
         public static final double VELOCITY_CONVERSION = (POSITION_CONVERSION/60);
 
-       
+        public static final double DRIVE_DISTANCE_P = 2;
+        public static final double DRIVE_DISTANCE_I = 0;
+        public static final double DRIVE_DISTANCE_D = 0;
+        public static final double DRIVE_DISTANCE_MAX_VOLTAGE = 0.5;
+        public static final double DRIVE_DISTANCE_LIMITER = 1.5;
+        public static final double DRIVE_DISTANCE_TOLERANCE = 0.1;
 
         public static final double TURN_TO_TARGET_KP = 1.2;
         public static final double TURN_TO_TARGET_KI = 0.0;
@@ -69,11 +79,21 @@ public final class RobotConstants {
         public static final double MOUNT_ROLL = 0.0 ;
         public static final double GRAVITY_VECTOR[] = new double[3];
 
-        public static final double DRIVE_KP = 0.088307;
+        public static final double DRIVE_KP = 1.9197;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
-        public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  
+        public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD); 
+        
+        //Auto Balance Constants
+        public static final double BALANCE_SPEED_HIGH = 0.3;
+        public static final double BALANCE_SPEED_LOW = 0.1;
+        public static final double ON_DEGREE= 13.0;
+        public static final double BALANCED_DEGREE= 6.0;
+        public static final double BALANCE_DEBOUNCE_TIME = .2;
+        public static final double BALANCE_LIMITER = 35;
+
+
 
         public static final double AUTO_BALANCE_P = 0.0;
         public static final double AUTO_BALANCE_I = 0.0;
@@ -85,21 +105,21 @@ public final class RobotConstants {
         public static final double TELE_FOWARD_D = 0.0;
         public static final PIDController TELE_FOWARD_CONTROLLER = new PIDController(TELE_FOWARD_P, TELE_FOWARD_I, TELE_FOWARD_D);
 */
-        public static final double TELE_ROTATION_P = 0.7;
+        public static final double TELE_ROTATION_P = 0.1;
         public static final double TELE_ROTATION_I = 0.0;
         public static final double TELE_ROTATION_D = 0.0;
         public static final PIDController TELE_ROTATION_CONTROLLER = new PIDController(TELE_ROTATION_P, TELE_ROTATION_I, TELE_ROTATION_D);
         
-        public static final double KA = 0.11778;
-        public static final double KS = 0.056226;
-        public static final double KV = 2.8715;
+        public static final double KA = 0.28421;
+        public static final double KS = 0.13931;
+        public static final double KV = 2.8248;
         public static final double RAMSETE_ZETA = 0.7;
         public static final double RAMSETE_B = 2.0;
 
          
         public static final RamseteController RAMSETE_CONTROLLER = new RamseteController(RAMSETE_B, RAMSETE_ZETA);
      
-        public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV);
+        public static final SimpleMotorFeedforward FEED_FOWARD = new SimpleMotorFeedforward(KS, KV, KA);
         //23 inches when using center of the wheels, 21 inches when going from end to end
         public static final double TRACK_WIDTH = Units.inchesToMeters(23);
         public static final DifferentialDriveKinematics KINEMATICS = 
@@ -109,8 +129,8 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = 1.0; 
-        public static final double MAX_ACCELERATION = 1.0; 
+        public static final double MAX_VELOCTIY = .5; 
+        public static final double MAX_ACCELERATION = .5; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =
@@ -218,70 +238,66 @@ public final class RobotConstants {
         public static final double OPEN_RATE = 0.05;
         public static final double CLOSE_RATE = -0.05;
     }
-  
-    public static final class Arm {
 
-        public static final class Pivot {
-            public static final double P = 0.5;
-            public static final double I = 0;
-            public static final double D = 0;
-            public static final double CANCODER_COEFFICIENT = 1.0 / 4096; // Rotations
-            public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
+    public static final class Pivot {
+        public static final double P = 0.5;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double CANCODER_COEFFICIENT = 1.0 / 4096; // Rotations
+        public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
 
-            public static final double GEAR_RATIO = 9;
-            public static final double MAX_VOLTAGE = 0.15;
-            public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
-            public static final double MAX_ACCELERATION = 0;
+        public static final double GEAR_RATIO = 9;
+        public static final double MAX_VOLTAGE = 0.15;
+        public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
+        public static final double MAX_ACCELERATION = 0;
 
-            public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
-            public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
-            public static final double HIGH_SETPOINT = GEAR_RATIO * 60.0 / 360;
-            
-            public static final double Y_SCALE = 0.025;
-
-            // Rotations of the shaft that the CANCoder is attached to
-            public static final double BACK_HARD_LIMIT = 0; // Limits where the setpoint can go on the joystick
-            public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 90.0 / 360; // NEED ANGLE
-
-            public static final int PIVOT_CANCODER_ID = 0;
-            public static final int MASTER_MOTOR_ID = 5; 
-            public static final int SLAVE_MOTOR_ID = 6;
-
-            public static final int SWITCH_PORT = 1;
-
-           
+        public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
+        public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
+        public static final double HIGH_SETPOINT = GEAR_RATIO * 60.0 / 360;
         
-        }
+        public static final double Y_SCALE = 0.025;
 
-        public static final class Extend {
-            public static final double P = 0.2;
-            public static final double I = 0;
-            public static final double D = 0;
-            public static final double SETPOINT_TOLERANCE = 4;
-            public static final double START_EXTENDING = 1;
-            
+        // Rotations of the shaft that the CANCoder is attached to
+        public static final double BACK_HARD_LIMIT = 0; // Limits where the setpoint can go on the joystick
+        public static final double FRONT_HARD_LIMIT = GEAR_RATIO * 90.0 / 360; // NEED ANGLE
 
-            public static final double HYBRID_SETPOINT = 0;
-            public static final double MID_SETPOINT = 25;
-            public static final double HIGH_SETPOINT = 43;
+        public static final int PIVOT_CANCODER_ID = 0;
+        public static final int MASTER_MOTOR_ID = 5; 
+        public static final int SLAVE_MOTOR_ID = 6;
 
-            public static final double Y_SCALE = 0.06;
+        public static final int SWITCH_PORT = 1;
 
-            public static final int EXTEND_MOTOR_ID = 7; 
+        
+    
+    }
 
-            public static final double GEAR_RATIO = 7;
-            // All voltage values are percent output
-            public static final double BACK_VOLTAGE = 0.1; // Should be positive (has negative sign in code)
-            public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
-            public static final double MAX_VOLTAGE_EXTEND = 0.2;
-            public static final double MAX_VOLTAGE_RETRACT = 0.25;
+    public static final class Extend {
+        public static final double P = 0.2;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double SETPOINT_TOLERANCE = 4;
+        public static final double START_EXTENDING = 1;
+        
+        public static final double HYBRID_SETPOINT = 0;
+        public static final double MID_SETPOINT = 25;
+        public static final double HIGH_SETPOINT = 43;
 
-            public static final int SERVO_PORT = 9;
-            public static final double SERVO_DELAY = 1;
-            public static final double RATCHET_ENGAGED = 115. / 180;
-            public static final double RATCHET_DISENGAGED = 93. / 180;
-            public static final double RATCHET_DELAY = 1;
-        }
+        public static final double Y_SCALE = 0.06;
+
+        public static final int EXTEND_MOTOR_ID = 7; 
+
+        public static final double GEAR_RATIO = 7;
+        // All voltage values are percent output
+        public static final double BACK_VOLTAGE = 0.1; // Should be positive (has negative sign in code)
+        public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
+        public static final double MAX_VOLTAGE_EXTEND = 0.5; // Value after comp; before it was 0.2
+        public static final double MAX_VOLTAGE_RETRACT = 0.4; // Value after comp; before it was 0.28
+
+        public static final int SERVO_PORT = 9;
+        public static final double SERVO_DELAY = 1;
+        public static final double RATCHET_ENGAGED = 115. / 180;
+        public static final double RATCHET_DISENGAGED = 93. / 180;
+        public static final double RATCHET_DELAY = 1;
     }
     
     public static final class Feedback {
