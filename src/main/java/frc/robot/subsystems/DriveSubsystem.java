@@ -180,6 +180,33 @@ ADIS16470_IMU m_gyro;
     return -m_rightEncoder.getVelocity();
   }
 
+  public double getFLMotorTemperature() {
+    return (m_FLMotor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
+
+  public double getFRMotorTemperature() {
+    return (m_FRMotor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
+
+  public double getBLMotorTemperature() {
+    return (m_BLMotor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
+  
+  public double getBRMotorTemperature() {
+    return (m_BRMotor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
+
+  public String isDangerTemp(double motorTemp) {
+    String isDanger;
+
+    if (motorTemp > MAX_TEMP) {
+      isDanger = "DANGER";
+    } else {
+      isDanger = "Safe";
+    }
+    return isDanger;
+  }
+
   public void tankDrive(Double rightVoltage, Double leftVoltage){
     m_rControllerGroup.setVoltage(-rightVoltage);
     m_lControllerGroup.setVoltage(-leftVoltage);

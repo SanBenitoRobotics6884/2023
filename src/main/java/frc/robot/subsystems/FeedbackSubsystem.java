@@ -19,6 +19,7 @@ public class FeedbackSubsystem extends SubsystemBase {
   PivotSubsystem m_pivotSubsystem;
   ExtendSubsystem m_extendSubsystem;
   ClawSubsystem m_clawSubsystem;
+  DriveSubsystem m_driveSubsystem;
   VisionSubsystem m_visionSubsystem;
   ADIS16470_IMU m_gyro;
   XboxController m_controller;
@@ -33,6 +34,7 @@ public class FeedbackSubsystem extends SubsystemBase {
       PivotSubsystem pivotSubsystem,
       ExtendSubsystem extendSubsystem,
       ClawSubsystem clawSubsystem,
+      DriveSubsystem driveSubsystem,
       VisionSubsystem visionSubsystem,
       ADIS16470_IMU gyro,
       XboxController controller,
@@ -40,6 +42,7 @@ public class FeedbackSubsystem extends SubsystemBase {
     m_pivotSubsystem = pivotSubsystem;
     m_extendSubsystem = extendSubsystem;
     m_clawSubsystem = clawSubsystem;
+    m_driveSubsystem = driveSubsystem;
     m_visionSubsystem = visionSubsystem;
     m_gyro = gyro;
     m_controller = controller;
@@ -78,7 +81,6 @@ public class FeedbackSubsystem extends SubsystemBase {
       m_controller.setRumble(RumbleType.kRightRumble, 0);
     }
     
-    if (IS_TESTING) {
       SmartDashboard.putNumber("Arm Angle Measurement", m_pivotSubsystem.getPosition());
       SmartDashboard.putNumber("Arm Extension Measurement", m_extendSubsystem.getPosition());
       SmartDashboard.putNumber("Net Acceleration", m_netAcceleration);
@@ -89,7 +91,26 @@ public class FeedbackSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Current To Acceleration Ratio", m_currentToAccelerationRatio);
       SmartDashboard.putNumber("Claw Camera FPS", m_clawCam.getActualFPS());
       SmartDashboard.putBoolean("Claw Camera Connected", m_clawCam.isConnected());
-    }  
+      // Get motor temperatures 
+
+      SmartDashboard.putString("Claw Motor Temperature", m_clawSubsystem.getMotorTemp() + "°F, " + 
+      m_clawSubsystem.isDangerTemp());
+      SmartDashboard.putString("Pivot Master Motor Temperature", m_pivotSubsystem.getMMotorTemperature() + "°F, " + 
+      m_pivotSubsystem.isDangerTemp(m_pivotSubsystem.getMMotorTemperature()));
+      SmartDashboard.putString("Pivot Slave Motor Temperature", m_pivotSubsystem.getSMotorTemperature() + "°F, " + 
+      m_pivotSubsystem.isDangerTemp(m_pivotSubsystem.getSMotorTemperature()));
+      SmartDashboard.putString("Extension Motor Temperature", m_extendSubsystem.getMotorTemperature() + "°F, " + 
+      m_extendSubsystem.isDangerTemp());
+      SmartDashboard.putString("Front Left Motor Temperature", m_driveSubsystem.getFLMotorTemperature() + "°F, " + 
+      m_driveSubsystem.isDangerTemp(m_driveSubsystem.getFLMotorTemperature()));
+      SmartDashboard.putString("Front Left Motor Temperature", m_driveSubsystem.getFRMotorTemperature() + "°F, " + 
+      m_driveSubsystem.isDangerTemp(m_driveSubsystem.getFRMotorTemperature()));
+      SmartDashboard.putString("Front Left Motor Temperature", m_driveSubsystem.getBLMotorTemperature() + "°F, " + 
+      m_driveSubsystem.isDangerTemp(m_driveSubsystem.getBLMotorTemperature()));
+      SmartDashboard.putString("Front Left Motor Temperature", m_driveSubsystem.getBRMotorTemperature() + "°F, " + 
+      m_driveSubsystem.isDangerTemp(m_driveSubsystem.getBRMotorTemperature()));
+
+      // Get gyro values (already done in driveSubsystem, move later)
   }
 
   private boolean isHittingObstacle() {
@@ -98,5 +119,10 @@ public class FeedbackSubsystem extends SubsystemBase {
 
   private boolean isOverAccelerationThreshold() {
     return m_netAcceleration > ACCELERATION_RUMBLE_THRESHOLD;
+  }
+
+  public double celciusToFahrenheit(double celcius) {
+    double fahrenheit = (celcius * 9.0 / 5.0) + 32;
+    return fahrenheit;
   }
 }

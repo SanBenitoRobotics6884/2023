@@ -69,6 +69,25 @@ public class PivotSubsystem extends SubsystemBase {
     m_setpoint = value;
   }
 
+  public double getMMotorTemperature() {
+    return (m_masterMotor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
+
+  public double getSMotorTemperature() {
+    return (m_slaveMotor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
+
+  public String isDangerTemp(double motorTemp) {
+    String isDanger;
+
+    if (motorTemp > MAX_TEMP) {
+      isDanger = "DANGER";
+    } else {
+      isDanger = "Safe";
+    }
+    return isDanger;
+  }
+
   public void printCANCoderOffset() {
     System.out.println(-m_encoder.getAbsolutePosition());
   }

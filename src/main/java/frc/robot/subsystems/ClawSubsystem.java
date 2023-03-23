@@ -97,4 +97,19 @@ public class ClawSubsystem extends SubsystemBase {
     if (preHue < 0) {preHue += 6;}
     return preHue * 60;
   }
+
+  public double getMotorTemp() {
+    return (m_motor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
+
+  public String isDangerTemp() {
+    String isDanger;
+
+    if (getMotorTemp() > MAX_TEMP) {
+      isDanger = "DANGER";
+    } else {
+      isDanger = "Safe";
+    }
+    return isDanger;
+  }
 }

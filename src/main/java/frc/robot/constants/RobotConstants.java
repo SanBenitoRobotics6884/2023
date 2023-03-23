@@ -43,6 +43,8 @@ public final class RobotConstants {
         public static final int BR_ID = 3;
         public static final int BL_ID = 4;
 
+        public static final double MAX_TEMP = 200;
+
         public static final double NORMAL_MAX_FORWARD = 0.7;
         public static final double NORMAL_MAX_TURN = 0.55;
         public static final double SNAIL_MAX_FORWARD = 0.4;
@@ -225,6 +227,7 @@ public final class RobotConstants {
         public static final double I = 0;
         public static final double D = 0.25; // Might or might not use
         public static final double MAX_VOLTAGE = 0.25; // Might need more testing
+        public static final double MAX_TEMP = 200;
         public static final double CONE_MIN_HUE = 70;
         public static final double CONE_MAX_HUE = 95;
         public static final double CUBE_MIN_HUE = 140;
@@ -250,6 +253,7 @@ public final class RobotConstants {
         public static final double MAX_VOLTAGE = 0.15;
         public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
         public static final double MAX_ACCELERATION = 0;
+        public static final double MAX_TEMP = 200;
 
         public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
         public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
@@ -292,6 +296,7 @@ public final class RobotConstants {
         public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
         public static final double MAX_VOLTAGE_EXTEND = 0.5; // Value after comp; before it was 0.2
         public static final double MAX_VOLTAGE_RETRACT = 0.4; // Value after comp; before it was 0.28
+        public static final double MAX_TEMP = 200;
 
         public static final int SERVO_PORT = 9;
         public static final double SERVO_DELAY = 1;

@@ -104,7 +104,22 @@ public class ExtendSubsystem extends SubsystemBase {
   public void setSetpoint(double value) {
     m_setpoint = value;
   }
+
+  public double getMotorTemperature() {
+    return (m_motor.getMotorTemperature() * 9.0 / 5.0) + 32;
+  }
   
+  public String isDangerTemp() {
+    String isDanger;
+
+    if (getMotorTemperature() > MAX_TEMP) {
+      isDanger = "DANGER";
+    } else {
+      isDanger = "Safe";
+    }
+    return isDanger;
+  }
+
   /** @returns A command that sets the desired position to be retracted */
   public Command getRetractCommand() {
     return runOnce(() -> setSetpoint(HYBRID_SETPOINT));
