@@ -50,8 +50,6 @@ public class RobotContainer {
  
   private final Joystick m_joystick = new Joystick(0);
   private final CommandXboxController controller = new CommandXboxController(1);
-  private final Command m_extendCommand = new PivotCommand(m_pivotSubsystem,
-  () -> m_joystick.getY());
   private final Command m_pivotCommand = new PivotCommand(m_pivotSubsystem,
       () -> m_joystick.getY());
   private final ClawCmmd m_clawCommand = new ClawCmmd(
@@ -82,7 +80,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
-    m_extendSubsystem.setDefaultCommand(m_extendCommand);
     eventMap = new HashMap<>();
     eventMap.put("autobalance", autoBalance);
     eventMap.put("highScore", m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand())  );
