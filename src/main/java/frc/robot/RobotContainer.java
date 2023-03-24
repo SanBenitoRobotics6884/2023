@@ -82,7 +82,8 @@ public class RobotContainer {
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
     eventMap = new HashMap<>();
     eventMap.put("autobalance", autoBalance);
-    eventMap.put("highScore", m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand())  );
+    eventMap.put("highScore", m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
+    eventMap.put("highRetract",m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getPickUpCommand()));
    
     m_gyro.calibrate();
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
