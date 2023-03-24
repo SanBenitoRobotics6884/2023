@@ -133,9 +133,9 @@ public class DriveSubsystem extends SubsystemBase {
     return m_rightEncoder.getRate();
   }
 
-  public void tankDrive(Double rightVoltage, Double leftVoltage){
-    m_rControllerGroup.setVoltage(-rightVoltage);
-    m_lControllerGroup.setVoltage(-leftVoltage);
+  public void tankDrive(Double leftVoltage, Double rightVoltage){
+    m_rControllerGroup.setVoltage(rightVoltage);
+    m_lControllerGroup.setVoltage(leftVoltage);
     m_drive.feed();
   }
 
@@ -180,11 +180,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void chargeStationAlign(){
-    m_BLMotor.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
-    m_BRMotor.setVoltage(-KA*9.81*this.getPitch()/BALANCE_LIMITER);
-    m_FLMotor.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
-    m_FRMotor.setVoltage(-KA*9.81*this.getPitch()/BALANCE_LIMITER);
-    
+   m_rControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
+   m_lControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
   }
 
   public void setBrakeMode(){
