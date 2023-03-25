@@ -56,7 +56,8 @@ public final class RobotConstants {
         public static final double WHEEL_RADIUS = 3.0;
       
         public static final double POSITION_CONVERSION = 
-            Units.inchesToMeters(2 * Math.PI * WHEEL_RADIUS / GEAR_RATIO);
+        Units.inchesToMeters(Units.inchesToMeters(1 / ( GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(WHEEL_RADIUS)*5) * 10));;
+          //  Units.inchesToMeters(2 * Math.PI * WHEEL_RADIUS);
         public static final double VELOCITY_CONVERSION = (POSITION_CONVERSION/60);
 
         public static final double DRIVE_DISTANCE_P = 2;
@@ -79,6 +80,11 @@ public final class RobotConstants {
         public static final double MOUNT_ROLL = 0.0 ;
         public static final double GRAVITY_VECTOR[] = new double[3];
 
+        public static final int RIGHT_CHANNEL_A = 2;
+        public static final int RIGHT_CHANNEL_B = 3;
+        public static final int LEFT_CHANNEL_A = 9;
+        public static final int LEFT_CHANNEL_B = 8;
+
         public static final double DRIVE_KP = 1.9197;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;  
@@ -91,7 +97,7 @@ public final class RobotConstants {
         public static final double ON_DEGREE= 13.0;
         public static final double BALANCED_DEGREE= 6.0;
         public static final double BALANCE_DEBOUNCE_TIME = .2;
-        public static final double BALANCE_LIMITER = 35;
+        public static final double BALANCE_LIMITER = 40;
 
 
 
@@ -232,7 +238,7 @@ public final class RobotConstants {
 
         public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
         public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
-        public static final double HIGH_SETPOINT = GEAR_RATIO * 60.0 / 360;
+        public static final double HIGH_SETPOINT = GEAR_RATIO * 65.0 / 360;
         
         public static final double Y_SCALE = 0.025;
 
@@ -274,7 +280,7 @@ public final class RobotConstants {
         public static final double MAX_VOLTAGE_RETRACT = 0.4; // Value after comp; before it was 0.28
 
         public static final int SERVO_PORT = 9;
-        public static final double SERVO_DELAY = 1;
+        public static final double SERVO_DELAY = 0.7;
         public static final double RATCHET_ENGAGED = 115. / 180;
         public static final double RATCHET_DISENGAGED = 93. / 180;
         public static final double RATCHET_DELAY = 1;

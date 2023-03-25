@@ -9,16 +9,17 @@ import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
 import java.util.HashMap;
 import java.util.List;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 import frc.robot.util.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.GenericHID; 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.astar.Edge;
 import frc.robot.astar.Node;
 import frc.robot.astar.Obstacle;
@@ -33,18 +34,14 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
@@ -72,22 +69,48 @@ public class RobotContainer {
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
-  private final List< PathPlannerTrajectory > trajectory;
-  SequentialCommandGroup auto;
+
+  private SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+ 
   HashMap<String, Command> eventMap;
   RunCommand autoBalance = new RunCommand(
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
+    SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
+    SequentialCommandGroup highRetract = new SequentialCommandGroup(m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getDownCommand()));
+    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen
+    (new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()).andThen
+    (new WaitCommand(4)).andThen(m_extendSubsystem.getRetractCommand()).andThen
+    (new WaitCommand(2)).andThen(m_pivotSubsystem.getDownCommand()));
+    SequentialCommandGroup m_highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().withTimeout(1),
+     m_extendSubsystem.getExtendCommand().withTimeout(4), m_extendSubsystem.getRetractCommand().withTimeout(2),
+     m_pivotSubsystem.getDownCommand());
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
     eventMap = new HashMap<>();
     eventMap.put("autobalance", autoBalance);
+    eventMap.put("highScore", m_highScore);
+    m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
+    m_autoChooser.setDefaultOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
+    m_autoChooser.addOption("right Charge", makeAutoBuilderCommand("Right Auto Charge", CONSTRAINTS));
+    m_autoChooser.addOption("middle Charge", makeAutoBuilderCommand("Mid Auto", CONSTRAINTS));
+    m_autoChooser.addOption("right Taxi", makeAutoBuilderCommand("Right Auto ", CONSTRAINTS));
+    m_autoChooser.addOption("left Taxi", makeAutoBuilderCommand("Left Auto ", CONSTRAINTS));
+    m_autoChooser.addOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
+    m_autoChooser.addOption("left Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
+    
+
+    SmartDashboard.putData(m_autoChooser);
+    SmartDashboard.putData(new RunCommand(m_driveSubsystem::calibrateGyro, m_driveSubsystem));
+    
+   
     m_gyro.calibrate();
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
+   
 
-    trajectory = PathPlanner.loadPathGroup("Test2", CONSTRAINTS, CONSTRAINTS);
-     auto = m_driveSubsystem.followAutoCommand(m_driveSubsystem, poseEstimatorSubsystem, trajectory, eventMap);
+   
+    
     AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
     AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
@@ -102,25 +125,27 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+  
   private void configureButtonBindings() {
     // Chassis triggers
     controller.leftTrigger()
         .whileTrue(m_snailDriveCommand);
+
     controller.x().whileTrue(new AStar(
         m_driveSubsystem, poseEstimatorSubsystem,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
-        Rotation2d.fromDegrees(180)), obstacles, AStarMap));
+        new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 1.03), 
+        Rotation2d.fromDegrees(0)), obstacles, AStarMap));
+
     controller.y().whileTrue(new AStar(
         m_driveSubsystem, poseEstimatorSubsystem,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
-        Rotation2d.fromDegrees(180)), obstacles, AStarMap));
-    controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
+        new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 2.73), 
+        Rotation2d.fromDegrees(0)), obstacles, AStarMap));
+
+    controller.a().onTrue(new AStar(
+      m_driveSubsystem, poseEstimatorSubsystem,
+      new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 4.42), 
+      Rotation2d.fromDegrees(0)), obstacles, AStarMap));
+
     controller.b().whileTrue(autoBalance);
 
     // Extend setpoint triggers
@@ -147,6 +172,7 @@ public class RobotContainer {
     new JoystickButton(m_joystick, 3).onTrue(m_intakeSubsystem.getExhaleCommand());
     new JoystickButton(m_joystick, 4).onTrue(m_intakeSubsystem.getInhaleCommand());
     new JoystickButton(m_joystick, 2).onTrue(m_intakeSubsystem.getStopCommand());
+
   }
 
   /**
@@ -155,22 +181,23 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    /*return new SequentialCommandGroup(
-        new PPRamseteCommand(
-            trajectory, 
-            poseEstimatorSubsystem::getPose2d, 
-            RAMSETE_CONTROLLER, 
-            FEED_FOWARD, 
-            KINEMATICS, 
-            m_driveSubsystem::getWheelSpeeds, 
-            LEFT_DRIVE_CONTROLLER, 
-            RIGHT_DRIVE_CONTROLLER, 
-            m_driveSubsystem::tankDrive, 
-            false, 
-            m_driveSubsystem),
-        new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
-        */
-        return auto;
+        
+    return makeAutoBuilderCommand("A", CONSTRAINTS);
   }
+ 
+ 
+  private CommandBase makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
+   
+    var path = PathPlanner.loadPath(pathName, constraints);
+    
+    poseEstimatorSubsystem.AddTrajectory(path);
+    poseEstimatorSubsystem.ResetPose2d(path.getInitialPose());
+   
+    /*RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
+         RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, eventMap, m_driveSubsystem );*/
+         RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
+          KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
+           eventMap,true, m_driveSubsystem);
+    return autoBuilder.fullAuto(path);
+}
 }
