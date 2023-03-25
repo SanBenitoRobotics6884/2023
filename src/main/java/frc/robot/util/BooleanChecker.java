@@ -11,7 +11,7 @@ public class BooleanChecker {
     }
 
     public boolean check() {
-        Boolean value = m_booleanSupplier.getAsBoolean();
+        boolean value = m_booleanSupplier.getAsBoolean();
         if (value && !m_prevBoolean) {
             m_prevBoolean = value;
             return true;

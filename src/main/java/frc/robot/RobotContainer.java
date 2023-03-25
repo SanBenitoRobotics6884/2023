@@ -32,6 +32,7 @@ import frc.robot.astar.VisGraph;
 import frc.robot.commands.AStar;
 import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
+import frc.robot.commands.LEDCmmd;
 import frc.robot.commands.PivotCommand;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.ClawSubsystem;
@@ -66,6 +67,7 @@ public class RobotContainer {
  
   private final Joystick m_joystick = new Joystick(0);
   private final CommandXboxController controller = new CommandXboxController(1);
+  private final Command m_LEDCommand = new LEDCmmd(m_ledSubsystem);
   private final Command m_pivotCommand = new PivotCommand(m_pivotSubsystem,
       () -> m_joystick.getY());
   private final ClawCmmd m_clawCommand = new ClawCmmd(
@@ -200,6 +202,6 @@ new JoystickButton(m_joystick, 5).and(new JoystickButton(m_joystick, 6))
             m_driveSubsystem),
         new RunCommand(m_driveSubsystem::stopMotors, m_driveSubsystem));
         */
-        return auto;
+        return auto.alongWith(m_LEDCommand);
   }
 }

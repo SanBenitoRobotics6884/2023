@@ -18,6 +18,8 @@ public class LEDSubsystem extends SubsystemBase {
   private enum LEDColor {
     PURPLE,
     YELLOW,
+    RED,
+    DARK_RED,
     OFF;
   }
 
@@ -38,11 +40,19 @@ public class LEDSubsystem extends SubsystemBase {
         case YELLOW:
           m_ledBuffer.setLED(i, YELLOW);
           break;
+        case RED:
+          m_ledBuffer.setLED(i, RED);
+        case DARK_RED:
+          m_ledBuffer.setLED(i, DARK_RED);
         case OFF:
           m_ledBuffer.setLED(i, OFF);
       }
     }
     m_led.setData(m_ledBuffer);
+  }
+
+  public double getLength() {
+    return m_ledBuffer.getLength();
   }
 
   public void putPurple() {
@@ -51,6 +61,14 @@ public class LEDSubsystem extends SubsystemBase {
 
   public void putYellow() {
     m_color = LEDColor.YELLOW;
+  }
+  
+  public void putRed() {
+    m_color = LEDColor.RED;
+  }
+
+  public void putDarkRed() {
+    m_color = LEDColor.DARK_RED;
   }
 
   public void putOff() {
