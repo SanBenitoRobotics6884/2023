@@ -259,7 +259,7 @@ public final class RobotConstants {
 
         public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
         public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
-        public static final double HIGH_SETPOINT = GEAR_RATIO * 60.0 / 360;
+        public static final double HIGH_SETPOINT = GEAR_RATIO * 65.0 / 360;
         
         public static final double Y_SCALE = 0.025;
 
@@ -301,7 +301,7 @@ public final class RobotConstants {
         public static final double MAX_VOLTAGE_RETRACT = 0.4; // Value after comp; before it was 0.28
 
         public static final int SERVO_PORT = 9;
-        public static final double SERVO_DELAY = 1;
+        public static final double SERVO_DELAY = 0.7;
         public static final double RATCHET_ENGAGED = 115. / 180;
         public static final double RATCHET_DISENGAGED = 93. / 180;
         public static final double RATCHET_DELAY = 1;

@@ -39,6 +39,7 @@ public class PivotSubsystem extends SubsystemBase {
     m_encoder = new WPI_CANCoder(PIVOT_CANCODER_ID);
     config.unitString = ("rotations");
     config.sensorTimeBase = SensorTimeBase.PerSecond;
+    config.sensorCoefficient = CANCODER_COEFFICIENT;
     config.sensorDirection = false;
     config.magnetOffsetDegrees = CANCODER_OFFSET_DEGREES;
     m_encoder.configAllSettings(config);

@@ -12,9 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 import frc.robot.util.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.astar.Edge;
@@ -35,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -75,6 +78,12 @@ public class RobotContainer {
   HashMap<String, Command> eventMap;
   RunCommand autoBalance = new RunCommand(
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
+    SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
+    SequentialCommandGroup highRetract = new SequentialCommandGroup(m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getDownCommand()));
+    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen
+    (new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()).andThen
+    (new WaitCommand(4)).andThen(m_extendSubsystem.getRetractCommand()).andThen
+    (new WaitCommand(2)).andThen(m_pivotSubsystem.getDownCommand()));
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -82,8 +91,8 @@ public class RobotContainer {
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
     eventMap = new HashMap<>();
     eventMap.put("autobalance", autoBalance);
-    eventMap.put("highScore", m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
-    eventMap.put("highRetract",m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getPickUpCommand()));
+    eventMap.put("highScore", highScore);
+    eventMap.put("highRetract",highRetract);
    
     m_gyro.calibrate();
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
@@ -125,6 +134,7 @@ public class RobotContainer {
     controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
 
     controller.b().whileTrue(autoBalance);
+    controller.y().whileTrue(new RunCommand(m_driveSubsystem::testDrive, m_driveSubsystem));
     
     // Claw triggers
     new JoystickButton(m_joystick, 2)
@@ -152,7 +162,8 @@ public class RobotContainer {
         .onTrue(m_pivotSubsystem.getPickUpCommand());
     
     new JoystickButton(m_joystick, 8)
-        .onTrue(m_pivotSubsystem.getPlaceCommand());
+        .onTrue(m_pivotSubsystem.getPlaceCommand()
+        );
   }
 
   /**
@@ -162,7 +173,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
         
-    return makeAutoBuilderCommand("A", CONSTRAINTS);
+    return makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS);
   }
  
  
@@ -171,12 +182,13 @@ public class RobotContainer {
     var path = PathPlanner.loadPath(pathName, constraints);
     
     poseEstimatorSubsystem.AddTrajectory(path);
+    poseEstimatorSubsystem.ResetPose2d(path.getInitialPose());
    
-    RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
-         RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, eventMap, m_driveSubsystem );
-         /*new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
+    /*RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d,
+         RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, eventMap, m_driveSubsystem );*/
+         RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
           KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
-           m_hashMap, m_driveSubsystem);*/
+           eventMap, m_driveSubsystem);
     return autoBuilder.fullAuto(path);
 }
 }

@@ -16,22 +16,20 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "highPivot"
-        ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "after",
+        "names": [],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
         "waitTime": 5.0
       }
     },
     {
       "anchorPoint": {
-        "x": 5.5768513664686905,
-        "y": 0.8456865849901922
+        "x": 5.28548035819476,
+        "y": 0.8741130248217955
       },
       "prevControl": {
-        "x": 4.5768513664686905,
-        "y": 0.8456865849901922
+        "x": 6.8844675987224315,
+        "y": 0.8954328546954986
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -47,5 +45,8 @@
       }
     }
   ],
+  "maxVelocity": null,
+  "maxAcceleration": null,
+  "isReversed": false,
   "markers": []
 }

@@ -12,6 +12,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.constants.RobotConstants.Extend.*;
@@ -88,6 +89,10 @@ public class ExtendSubsystem extends SubsystemBase {
     } else {
       m_servo.set(RATCHET_DISENGAGED);
     }
+
+    SmartDashboard.putNumber("extend output", output);
+    SmartDashboard.putNumber("extend setpoint", getSetpoint());
+    SmartDashboard.putNumber("extend position", getPosition());
   }
 
   /** @returns How far arm has extended from encoder */

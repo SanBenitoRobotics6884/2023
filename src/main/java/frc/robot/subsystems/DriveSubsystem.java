@@ -48,11 +48,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_BRMotor.restoreFactoryDefaults(); 
     m_BLMotor.restoreFactoryDefaults();
 
-    m_rControllerGroup.setInverted(false);
-    m_lControllerGroup.setInverted(true);
+    m_rControllerGroup.setInverted(true);
+    m_lControllerGroup.setInverted(false);
    
 
-    m_drive = new DifferentialDrive(m_rControllerGroup, m_lControllerGroup);
+    m_drive = new DifferentialDrive(m_lControllerGroup, m_rControllerGroup);
     
     m_rightEncoder = new Encoder(RIGHT_CHANNEL_A, RIGHT_CHANNEL_B);
     m_leftEncoder = new Encoder(LEFT_CHANNEL_A, LEFT_CHANNEL_B);
@@ -91,11 +91,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void drive(double forward, double rotation){
     //maybe add gyro assist?
-    m_drive.arcadeDrive(forward * NORMAL_MAX_FORWARD, rotation * NORMAL_MAX_TURN);
+    m_drive.arcadeDrive(-forward * NORMAL_MAX_FORWARD, rotation * NORMAL_MAX_TURN);
   }
   
   public void snailDrive(double forward, double rotation){
-    m_drive.arcadeDrive(forward * SNAIL_MAX_FORWARD, rotation * SNAIL_MAX_TURN);
+    m_drive.arcadeDrive(-forward * SNAIL_MAX_FORWARD, rotation * SNAIL_MAX_TURN);
 
   }
   
@@ -137,6 +137,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_rControllerGroup.setVoltage(rightVoltage);
     m_lControllerGroup.setVoltage(leftVoltage);
     m_drive.feed();
+  }
+  public void testDrive(){
+    m_rControllerGroup.setVoltage(1);
+    m_lControllerGroup.setVoltage(1);
   }
 
   public void stopMotors(){
