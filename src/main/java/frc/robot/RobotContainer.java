@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import frc.robot.util.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.astar.Edge;
 import frc.robot.astar.Node;
 import frc.robot.astar.Obstacle;
@@ -74,6 +76,8 @@ public class RobotContainer {
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
+
+  private SendableChooser<Command> m_autoChooser = new SendableChooser<>();
  
   HashMap<String, Command> eventMap;
   RunCommand autoBalance = new RunCommand(
@@ -84,15 +88,29 @@ public class RobotContainer {
     (new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()).andThen
     (new WaitCommand(4)).andThen(m_extendSubsystem.getRetractCommand()).andThen
     (new WaitCommand(2)).andThen(m_pivotSubsystem.getDownCommand()));
+    SequentialCommandGroup m_highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().withTimeout(1),
+     m_extendSubsystem.getExtendCommand().withTimeout(4), m_extendSubsystem.getRetractCommand().withTimeout(2),
+     m_pivotSubsystem.getDownCommand());
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
     eventMap = new HashMap<>();
     eventMap.put("autobalance", autoBalance);
-    eventMap.put("highScore", highScore);
-    eventMap.put("highRetract",highRetract);
+    eventMap.put("highScore", m_highScore);
+    m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
+    m_autoChooser.setDefaultOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
+    m_autoChooser.addOption("right Charge", makeAutoBuilderCommand("Right Auto Charge", CONSTRAINTS));
+    m_autoChooser.addOption("middle Charge", makeAutoBuilderCommand("Mid Auto", CONSTRAINTS));
+    m_autoChooser.addOption("right Taxi", makeAutoBuilderCommand("Right Auto ", CONSTRAINTS));
+    m_autoChooser.addOption("left Taxi", makeAutoBuilderCommand("Left Auto ", CONSTRAINTS));
+    m_autoChooser.addOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
+    m_autoChooser.addOption("left Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
+    
+
+    SmartDashboard.putData(m_autoChooser);
+    SmartDashboard.putData(new RunCommand(m_driveSubsystem::calibrateGyro, m_driveSubsystem));
+    
    
     m_gyro.calibrate();
     m_clawSubsystem.setDefaultCommand(m_clawCommand);
@@ -123,18 +141,21 @@ public class RobotContainer {
 
     controller.x().whileTrue(new AStar(
         m_driveSubsystem, poseEstimatorSubsystem,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
-        Rotation2d.fromDegrees(180)), obstacles, AStarMap));
+        new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 1.03), 
+        Rotation2d.fromDegrees(0)), obstacles, AStarMap));
 
     controller.y().whileTrue(new AStar(
         m_driveSubsystem, poseEstimatorSubsystem,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), 
-        Rotation2d.fromDegrees(180)), obstacles, AStarMap));
+        new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 2.73), 
+        Rotation2d.fromDegrees(0)), obstacles, AStarMap));
 
-    controller.a().onTrue(new InstantCommand(m_driveSubsystem::resetEncoders));
+    controller.a().onTrue(new AStar(
+      m_driveSubsystem, poseEstimatorSubsystem,
+      new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 4.42), 
+      Rotation2d.fromDegrees(0)), obstacles, AStarMap));
 
     controller.b().whileTrue(autoBalance);
-    controller.y().whileTrue(new RunCommand(m_driveSubsystem::testDrive, m_driveSubsystem));
+
     
     // Claw triggers
     new JoystickButton(m_joystick, 2)
@@ -173,7 +194,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
         
-    return makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS);
+    return makeAutoBuilderCommand("A", CONSTRAINTS);
   }
  
  
@@ -188,7 +209,7 @@ public class RobotContainer {
          RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, eventMap, m_driveSubsystem );*/
          RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
           KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
-           eventMap, m_driveSubsystem);
+           eventMap,true, m_driveSubsystem);
     return autoBuilder.fullAuto(path);
 }
 }
