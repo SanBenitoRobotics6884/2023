@@ -77,7 +77,7 @@ public class RobotContainer {
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
 
-  private SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+
  
   HashMap<String, Command> eventMap;
   RunCommand autoBalance = new RunCommand(
@@ -99,16 +99,8 @@ public class RobotContainer {
     eventMap.put("autobalance", autoBalance);
     eventMap.put("highScore", m_highScore);
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
-    m_autoChooser.setDefaultOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
-    m_autoChooser.addOption("right Charge", makeAutoBuilderCommand("Right Auto Charge", CONSTRAINTS));
-    m_autoChooser.addOption("middle Charge", makeAutoBuilderCommand("Mid Auto", CONSTRAINTS));
-    m_autoChooser.addOption("right Taxi", makeAutoBuilderCommand("Right Auto ", CONSTRAINTS));
-    m_autoChooser.addOption("left Taxi", makeAutoBuilderCommand("Left Auto ", CONSTRAINTS));
-    m_autoChooser.addOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
-    m_autoChooser.addOption("left Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
-    
 
-    SmartDashboard.putData(m_autoChooser);
+  
     SmartDashboard.putData(new RunCommand(m_driveSubsystem::calibrateGyro, m_driveSubsystem));
     
    
