@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static frc.robot.constants.RobotConstants.Claw.*;
 import static frc.robot.constants.RobotConstants.Drive.*;
 import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
@@ -26,13 +25,12 @@ import frc.robot.astar.Node;
 import frc.robot.astar.Obstacle;
 import frc.robot.astar.VisGraph;
 import frc.robot.commands.AStar;
-import frc.robot.commands.ClawCmmd;
 import frc.robot.commands.DriveCmmd;
 import frc.robot.commands.PivotCommand;
 import frc.robot.constants.FieldConstants;
-import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExtendSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,17 +49,12 @@ public class RobotContainer {
   private final PivotSubsystem m_pivotSubsystem = new PivotSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem(m_gyro);
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, m_driveSubsystem);
-  private final ClawSubsystem m_clawSubsystem = new ClawSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
  
   private final Joystick m_joystick = new Joystick(0);
   private final CommandXboxController controller = new CommandXboxController(1);
   private final Command m_pivotCommand = new PivotCommand(m_pivotSubsystem,
       () -> m_joystick.getY());
-  private final ClawCmmd m_clawCommand = new ClawCmmd(
-    m_clawSubsystem,
-    () -> m_joystick.getTrigger(),
-    () -> m_joystick.getRawButton(3),
-    () -> m_joystick.getRawButton(4));
   private final DriveCmmd m_normalDriveCommand = new DriveCmmd(
       m_driveSubsystem,
       () -> controller.getLeftY(),
@@ -76,7 +69,6 @@ public class RobotContainer {
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   private final List<Obstacle> obstacles = FieldConstants.obstacles;
   private final VisGraph AStarMap = new VisGraph();
-
 
  
   HashMap<String, Command> eventMap;
@@ -100,12 +92,12 @@ public class RobotContainer {
     eventMap.put("highScore", m_highScore);
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
 
-  
+    
+
     SmartDashboard.putData(new RunCommand(m_driveSubsystem::calibrateGyro, m_driveSubsystem));
     
    
     m_gyro.calibrate();
-    m_clawSubsystem.setDefaultCommand(m_clawCommand);
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
    
 
@@ -148,15 +140,6 @@ public class RobotContainer {
 
     controller.b().whileTrue(autoBalance);
 
-    
-    // Claw triggers
-    new JoystickButton(m_joystick, 2)
-        .onTrue(new InstantCommand(m_clawSubsystem::colorCheck)); // To close the claw (with color sensor) 
-    new JoystickButton(m_joystick, 1).negate()
-        .and(new JoystickButton(m_joystick, 3))
-        .and(new JoystickButton(m_joystick, 4))
-        .onTrue(new InstantCommand(() -> m_clawSubsystem.setRotations(OPEN_SETPOINT))); 
-
     // Extend setpoint triggers
     new JoystickButton(m_joystick, 11)
          .onTrue(m_extendSubsystem.getRetractCommand()); 
@@ -175,8 +158,13 @@ public class RobotContainer {
         .onTrue(m_pivotSubsystem.getPickUpCommand());
     
     new JoystickButton(m_joystick, 8)
-        .onTrue(m_pivotSubsystem.getPlaceCommand()
-        );
+        .onTrue(m_pivotSubsystem.getPlaceCommand());
+
+    // Intake triggers
+    new JoystickButton(m_joystick, 3).onTrue(m_intakeSubsystem.getExhaleCommand());
+    new JoystickButton(m_joystick, 4).onTrue(m_intakeSubsystem.getInhaleCommand());
+    new JoystickButton(m_joystick, 2).onTrue(m_intakeSubsystem.getStopCommand());
+
   }
 
   /**
