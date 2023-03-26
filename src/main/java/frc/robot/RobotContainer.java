@@ -35,6 +35,7 @@ import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -72,6 +73,7 @@ public class RobotContainer {
 
  
   HashMap<String, Command> eventMap;
+  SendableChooser<Command> autoChooser;
   RunCommand autoBalance = new RunCommand(
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
     SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
@@ -87,14 +89,26 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    eventMap = new HashMap<>();
+    eventMap = new HashMap<>(); 
     eventMap.put("autobalance", autoBalance);
     eventMap.put("highScore", m_highScore);
+    autoChooser = new SendableChooser<>();
+    autoChooser.addOption("Left Auto Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
+    autoChooser.addOption("Left Auto Taxi", makeAutoBuilderCommand("Left Auto", CONSTRAINTS));
+    autoChooser.addOption("Middle", makeAutoBuilderCommand("Mid Auto", CONSTRAINTS));
+    autoChooser.addOption("Right Auto Charge", makeAutoBuilderCommand("Right Auto Charge", CONSTRAINTS));
+    autoChooser.addOption("Right Auto Taxi", makeAutoBuilderCommand("Right Auto", CONSTRAINTS));
+    autoChooser.addOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
+    autoChooser.setDefaultOption("None", Commands.none());
+    SmartDashboard.putData(autoChooser);
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
+    
+    
+    
 
     
 
-    SmartDashboard.putData(new RunCommand(m_driveSubsystem::calibrateGyro, m_driveSubsystem));
+    SmartDashboard.putData("calibrate gyro", new RunCommand(m_driveSubsystem::calibrateGyro, m_driveSubsystem));
     
    
     m_gyro.calibrate();
@@ -174,13 +188,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
         
-    return makeAutoBuilderCommand("A", CONSTRAINTS);
+    return autoChooser.getSelected();
   }
  
  
   private CommandBase makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
    
-    var path = PathPlanner.loadPath(pathName, constraints);
+    var path = PathPlanner.loadPath(pathName, constraints, true);
     
     poseEstimatorSubsystem.AddTrajectory(path);
     poseEstimatorSubsystem.ResetPose2d(path.getInitialPose());
