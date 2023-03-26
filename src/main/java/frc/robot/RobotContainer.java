@@ -78,10 +78,8 @@ public class RobotContainer {
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
     SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
     SequentialCommandGroup highRetract = new SequentialCommandGroup(m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getDownCommand()));
-    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen
-    (new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()).andThen
-    (new WaitCommand(4)).andThen(m_extendSubsystem.getRetractCommand()).andThen
-    (new WaitCommand(2)).andThen(m_pivotSubsystem.getDownCommand()));
+    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().alongWith
+    (m_intakeSubsystem.getInhaleCommand()));
     SequentialCommandGroup m_highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().withTimeout(1),
      m_extendSubsystem.getExtendCommand().withTimeout(4), m_extendSubsystem.getRetractCommand().withTimeout(2),
      m_pivotSubsystem.getDownCommand());
@@ -91,7 +89,7 @@ public class RobotContainer {
   public RobotContainer() {
     eventMap = new HashMap<>(); 
     eventMap.put("autobalance", autoBalance);
-    eventMap.put("highScore", m_highScore);
+    eventMap.put("highScore", highScore);
     autoChooser = new SendableChooser<>();
     autoChooser.addOption("Left Auto Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
     autoChooser.addOption("Left Auto Taxi", makeAutoBuilderCommand("Left Auto", CONSTRAINTS));
@@ -152,7 +150,7 @@ public class RobotContainer {
       new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 4.42), 
       Rotation2d.fromDegrees(0)), obstacles, AStarMap));
 
-    controller.b().whileTrue(autoBalance);
+    controller.b().onTrue(highScore);
 
     // Extend setpoint triggers
     new JoystickButton(m_joystick, 11)
