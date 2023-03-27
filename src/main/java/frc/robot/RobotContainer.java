@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
@@ -53,6 +54,7 @@ public class RobotContainer {
  
   private final Joystick m_joystick = new Joystick(0);
   private final CommandXboxController controller = new CommandXboxController(1);
+  private final Trigger m_couldExtendTrigger = new Trigger(m_pivotSubsystem::couldExtend );
   private final Command m_pivotCommand = new PivotCommand(m_pivotSubsystem,
       () -> m_joystick.getY());
   private final DriveCmmd m_normalDriveCommand = new DriveCmmd(
@@ -145,9 +147,11 @@ public class RobotContainer {
          .onTrue(m_extendSubsystem.getRetractCommand()); 
 
     new JoystickButton(m_joystick, 9)
+        .and(m_couldExtendTrigger)
         .onTrue(m_extendSubsystem.getMidCommand());
 
     new JoystickButton(m_joystick, 7)
+        .and(m_couldExtendTrigger)
         .onTrue(m_extendSubsystem.getExtendCommand());
 
     // Pivot setpoint triggers

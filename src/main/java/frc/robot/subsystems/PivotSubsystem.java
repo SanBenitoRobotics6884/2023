@@ -54,13 +54,16 @@ public class PivotSubsystem extends SubsystemBase {
     m_masterMotor.set(MathUtil.clamp(m_pid.calculate(m_encoder.getPosition()),
       -MAX_VOLTAGE, MAX_VOLTAGE));
   }
-
-  /** @returns The measured value of the rotation of the arm from the CANCoder */
+  /** @return retrieving if the position is more than STOP_EXTEND   */
+  public boolean couldExtend() {
+    return (getPosition() > STOP_EXTEND);
+  }
+  /** @return The measured value of the rotation of the arm from the CANCoder */
   public double getPosition() {
     return m_encoder.getPosition();
   }
 
-  /** @returns The desired rotation of the arm */
+  /** @return The desired rotation of the arm */
   public double getSetpoint() {
     return m_setpoint;
   }
