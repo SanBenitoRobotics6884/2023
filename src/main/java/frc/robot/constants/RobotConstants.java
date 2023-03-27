@@ -57,7 +57,8 @@ public final class RobotConstants {
         public static final double WHEEL_RADIUS = 3.0;
       
         public static final double POSITION_CONVERSION = 
-            Units.inchesToMeters(2 * Math.PI * WHEEL_RADIUS / GEAR_RATIO);
+        Units.inchesToMeters(Units.inchesToMeters(1 / ( GEAR_RATIO * 2 * Math.PI * Units.inchesToMeters(WHEEL_RADIUS)*5) * 10));;
+          //  Units.inchesToMeters(2 * Math.PI * WHEEL_RADIUS);
         public static final double VELOCITY_CONVERSION = (POSITION_CONVERSION/60);
 
         public static final double DRIVE_DISTANCE_P = 2;
@@ -80,6 +81,11 @@ public final class RobotConstants {
         public static final double MOUNT_ROLL = 0.0 ;
         public static final double GRAVITY_VECTOR[] = new double[3];
 
+        public static final int RIGHT_CHANNEL_A = 2;
+        public static final int RIGHT_CHANNEL_B = 3;
+        public static final int LEFT_CHANNEL_A = 9;
+        public static final int LEFT_CHANNEL_B = 8;
+
         public static final double DRIVE_KP = 1.9197;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;  
@@ -92,7 +98,7 @@ public final class RobotConstants {
         public static final double ON_DEGREE= 13.0;
         public static final double BALANCED_DEGREE= 6.0;
         public static final double BALANCE_DEBOUNCE_TIME = .2;
-        public static final double BALANCE_LIMITER = 35;
+        public static final double BALANCE_LIMITER = 40;
 
 
 
@@ -213,27 +219,6 @@ public final class RobotConstants {
         public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d());
         public static final Transform3d BOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
     }
-  
-    public static class Claw {
-        public static final int MOTOR_ID = 8;
-
-        public static final double P = 0.25;
-        public static final double I = 0;
-        public static final double D = 0.25; // Might or might not use
-        public static final double MAX_VOLTAGE = 0.25; // Might need more testing
-        public static final double CONE_MIN_HUE = 70;
-        public static final double CONE_MAX_HUE = 95;
-        public static final double CUBE_MIN_HUE = 140;
-        public static final double CUBE_MAX_HUE = 230;
-
-        public static final double GEAR_RATIO = 25;
-        public static final double CONE_SETPOINT = -10; // needs adjustment
-        public static final double CUBE_SETPOINT = -7.2;
-        public static final double OPEN_SETPOINT = 0; 
-        public static final double CLOSED_SETPOINT = -18; // needs adjustment
-        public static final double OPEN_RATE = 0.05;
-        public static final double CLOSE_RATE = -0.05;
-    }
 
     public static final class Pivot {
         public static final double P = 0.5;
@@ -249,7 +234,7 @@ public final class RobotConstants {
 
         public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
         public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
-        public static final double HIGH_SETPOINT = GEAR_RATIO * 60.0 / 360;
+        public static final double HIGH_SETPOINT = GEAR_RATIO * 65.0 / 360;
         
         public static final double Y_SCALE = 0.025;
 
@@ -290,12 +275,12 @@ public final class RobotConstants {
         public static final double MAX_VOLTAGE_EXTEND = 0.5; // Value after comp; before it was 0.2
         public static final double MAX_VOLTAGE_RETRACT = 0.4; // Value after comp; before it was 0.28
 
-            public static final int SERVO_PORT = 9;
-            public static final double SERVO_DELAY = 1;
-            public static final double RATCHET_ENGAGED = 115. / 180;
-            public static final double RATCHET_DISENGAGED = 93. / 180;
-            public static final double RATCHET_DELAY = 1;
-        }
+        public static final int SERVO_PORT = 9;
+        public static final double SERVO_DELAY = 1;
+        public static final double RATCHET_ENGAGED = 115. / 180;
+        public static final double RATCHET_DISENGAGED = 93. / 180;
+        public static final double RATCHET_DELAY = 1;
+    }
 
     public static final class LED {
         public static final int LED_PORT = 1; // Needs changing
@@ -305,5 +290,15 @@ public final class RobotConstants {
         public static final Color RED = new Color(255, 0, 0);
         public static final Color DARK_RED = new Color(189, 9, 9);
         public static final Color OFF = new Color(0, 0, 0);
+
+    }
+    public static final class Intake {
+        public static final int MOTOR_ID = 8;
+
+        public static final double INHALE_VOLTAGE = 0.2;
+        public static final double EXHALE_VOLTAGE = -0.2;
+
+        public static final double INHALE_TIME = 0.5;
+        public static final double EXHALE_TIME = 0.8;
     }
 }
