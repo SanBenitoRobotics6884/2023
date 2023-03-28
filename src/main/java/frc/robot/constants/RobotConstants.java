@@ -252,6 +252,8 @@ public final class RobotConstants {
 
         public static final int SWITCH_PORT = 1;
 
+        public static final double STOP_EXTEND = GEAR_RATIO * 20/360; // below this value the robot cannot extend
+
         
     
     }
