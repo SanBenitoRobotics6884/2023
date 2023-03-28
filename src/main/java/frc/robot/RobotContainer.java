@@ -78,11 +78,15 @@ public class RobotContainer {
     m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
     SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
     SequentialCommandGroup highRetract = new SequentialCommandGroup(m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getDownCommand()));
+   
     SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().alongWith
-    (m_intakeSubsystem.getInhaleCommand()));
-    SequentialCommandGroup m_highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().withTimeout(1),
-     m_extendSubsystem.getExtendCommand().withTimeout(4), m_extendSubsystem.getRetractCommand().withTimeout(2),
-     m_pivotSubsystem.getDownCommand());
+    (m_intakeSubsystem.getInhaleCommand()), new WaitCommand(1),
+    m_extendSubsystem.getExtendCommand(), new WaitCommand(4),m_intakeSubsystem.getExhaleCommand(),
+     m_extendSubsystem.getRetractCommand(), new WaitCommand(2) , m_pivotSubsystem.getDownCommand() );
+    
+     SequentialCommandGroup lowScore = new SequentialCommandGroup(m_pivotSubsystem.getPickUpCommand(),
+     new WaitCommand(2), m_pivotSubsystem.getDownCommand());
+     
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -90,6 +94,7 @@ public class RobotContainer {
     eventMap = new HashMap<>(); 
     eventMap.put("autobalance", autoBalance);
     eventMap.put("highScore", highScore);
+    eventMap.put("lowScore", lowScore);
     autoChooser = new SendableChooser<>();
     autoChooser.addOption("Left Auto Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
     autoChooser.addOption("Left Auto Taxi", makeAutoBuilderCommand("Left Auto", CONSTRAINTS));
@@ -145,10 +150,11 @@ public class RobotContainer {
         new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 2.73), 
         Rotation2d.fromDegrees(0)), obstacles, AStarMap));
 
-    controller.a().onTrue(new AStar(
+    /*controller.a().onTrue(new AStar(
       m_driveSubsystem, poseEstimatorSubsystem,
       new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 4.42), 
-      Rotation2d.fromDegrees(0)), obstacles, AStarMap));
+      Rotation2d.fromDegrees(0)), obstacles, AStarMap));*/
+      controller.a().onTrue(lowScore);
 
     controller.b().onTrue(highScore);
 
