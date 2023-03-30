@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.9453736779813997,
-        "y": 4.420311393814278
+        "x": 1.9595868978972013,
+        "y": 2.728938223833895
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9973680089162196,
-        "y": 4.420311393814278
+        "x": 3.0115812288320214,
+        "y": 2.728938223833895
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -26,64 +26,12 @@
     },
     {
       "anchorPoint": {
-        "x": 5.050962229584035,
-        "y": 4.8751344311199265
+        "x": 6.031674403774341,
+        "y": 2.8781770329498113
       },
       "prevControl": {
-        "x": 4.482433432951973,
-        "y": 5.18782526926756
-      },
-      "nextControl": {
-        "x": 5.55703156787537,
-        "y": 4.596796295059692
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 6.102740503353347,
-        "y": 1.8974648587595055
-      },
-      "prevControl": {
-        "x": 6.017461183858537,
-        "y": 2.913710082739314
-      },
-      "nextControl": {
-        "x": 6.017461183858537,
-        "y": 2.913710082739314
-      },
-      "holonomicAngle": 0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [
-          "autobalance"
-        ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 4.013397175730523,
-        "y": 2.608125854549583
-      },
-      "prevControl": {
-        "x": 5.130582481121465,
-        "y": 2.608125854549583
+        "x": 5.13847219331709,
+        "y": 2.8781770329498113
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -92,9 +40,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "autobalance"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0

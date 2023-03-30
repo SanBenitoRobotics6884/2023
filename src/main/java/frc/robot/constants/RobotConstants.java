@@ -43,7 +43,7 @@ public final class RobotConstants {
         public static final int BR_ID = 3;
         public static final int BL_ID = 4;
 
-        public static final double NORMAL_MAX_FORWARD = 0.7;
+        public static final double NORMAL_MAX_FORWARD = 0.9;
         public static final double NORMAL_MAX_TURN = 0.55;
         public static final double SNAIL_MAX_FORWARD = 0.4;
         public static final double SNAIL_MAX_TURN = 0.2;
@@ -238,7 +238,7 @@ public final class RobotConstants {
 
         public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
         public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
-        public static final double HIGH_SETPOINT = GEAR_RATIO * 65.0 / 360;
+        public static final double HIGH_SETPOINT = GEAR_RATIO * 80.0 / 360;
         
         public static final double Y_SCALE = 0.025;
 

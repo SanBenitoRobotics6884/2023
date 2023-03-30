@@ -169,7 +169,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void calibrateGyro(){
-    m_gyro.resetAllAngles();
+    if(DriverStation.isDisabled())
       m_gyro.calibrate();
     
   }

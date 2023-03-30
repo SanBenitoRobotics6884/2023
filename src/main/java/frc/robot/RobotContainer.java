@@ -25,6 +25,7 @@ import frc.robot.astar.Node;
 import frc.robot.astar.Obstacle;
 import frc.robot.astar.VisGraph;
 import frc.robot.commands.AStar;
+import frc.robot.commands.CalibrateGyro;
 import frc.robot.commands.DriveCmmd;
 import frc.robot.commands.PivotCommand;
 import frc.robot.constants.FieldConstants;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem(m_gyro);
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(CAMERA_ONE, m_driveSubsystem);
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final Command m_calibrateGyro = new CalibrateGyro(m_driveSubsystem);
  
   private final Joystick m_joystick = new Joystick(0);
   private final CommandXboxController controller = new CommandXboxController(1);
@@ -79,19 +81,21 @@ public class RobotContainer {
     SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
     SequentialCommandGroup highRetract = new SequentialCommandGroup(m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getDownCommand()));
    
-    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().alongWith
+    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand(), new WaitCommand(.1),
     (m_intakeSubsystem.getInhaleCommand()), new WaitCommand(1),
-    m_extendSubsystem.getExtendCommand(), new WaitCommand(4),m_intakeSubsystem.getExhaleCommand(),
+    m_extendSubsystem.getExtendCommand(), new WaitCommand(2.5),m_intakeSubsystem.getExhaleCommand(), new WaitCommand(.25),
      m_extendSubsystem.getRetractCommand(), new WaitCommand(2) , m_pivotSubsystem.getDownCommand() );
     
      SequentialCommandGroup lowScore = new SequentialCommandGroup(m_pivotSubsystem.getPickUpCommand(),
      new WaitCommand(2), m_pivotSubsystem.getDownCommand());
+
      
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     eventMap = new HashMap<>(); 
+    
     eventMap.put("autobalance", autoBalance);
     eventMap.put("highScore", highScore);
     eventMap.put("lowScore", lowScore);
@@ -105,14 +109,6 @@ public class RobotContainer {
     autoChooser.setDefaultOption("None", Commands.none());
     SmartDashboard.putData(autoChooser);
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
-    
-    
-    
-
-    
-
-    SmartDashboard.putData("calibrate gyro", new RunCommand(m_driveSubsystem::calibrateGyro, m_driveSubsystem));
-    
    
     m_gyro.calibrate();
     m_driveSubsystem.setDefaultCommand(m_normalDriveCommand);
@@ -145,16 +141,17 @@ public class RobotContainer {
         new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 1.03), 
         Rotation2d.fromDegrees(0)), obstacles, AStarMap));
 
-    controller.y().whileTrue(new AStar(
+    /*controller.y().whileTrue(new AStar(
         m_driveSubsystem, poseEstimatorSubsystem,
         new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 2.73), 
-        Rotation2d.fromDegrees(0)), obstacles, AStarMap));
+        Rotation2d.fromDegrees(0)), obstacles, AStarMap));*/
 
     /*controller.a().onTrue(new AStar(
       m_driveSubsystem, poseEstimatorSubsystem,
       new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 4.42), 
       Rotation2d.fromDegrees(0)), obstacles, AStarMap));*/
-      controller.a().onTrue(lowScore);
+      controller.y().whileTrue(m_calibrateGyro);
+      //controller.a().onTrue(lowScore);
 
     controller.b().onTrue(highScore);
 

@@ -16,7 +16,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "highScore"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -78,8 +80,8 @@
         "y": 2.885283642907712
       },
       "prevControl": {
-        "x": 4.672310140285417,
-        "y": 2.9670096574235707
+        "x": 4.646063099481115,
+        "y": 2.885283642907712
       },
       "nextControl": null,
       "holonomicAngle": 0,
