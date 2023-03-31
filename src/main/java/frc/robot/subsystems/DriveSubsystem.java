@@ -48,6 +48,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_BRMotor.restoreFactoryDefaults(); 
     m_BLMotor.restoreFactoryDefaults();
 
+    m_BLMotor.setIdleMode(IdleMode.kBrake);
+    m_BRMotor.setIdleMode(IdleMode.kBrake);
+    m_FRMotor.setIdleMode(IdleMode.kBrake);
+    m_FLMotor.setIdleMode(IdleMode.kBrake);  
+
     m_rControllerGroup.setInverted(true);
     m_lControllerGroup.setInverted(false);
    

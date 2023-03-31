@@ -151,7 +151,7 @@ public class RobotContainer {
       new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 4.42), 
       Rotation2d.fromDegrees(0)), obstacles, AStarMap));*/
       controller.y().whileTrue(m_calibrateGyro);
-      //controller.a().onTrue(lowScore);
+      controller.a().onTrue(autoBalance);
 
     controller.b().onTrue(highScore);
 

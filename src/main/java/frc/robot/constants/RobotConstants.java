@@ -97,7 +97,7 @@ public final class RobotConstants {
         public static final double ON_DEGREE= 13.0;
         public static final double BALANCED_DEGREE= 6.0;
         public static final double BALANCE_DEBOUNCE_TIME = .2;
-        public static final double BALANCE_LIMITER = 40;
+        public static final double BALANCE_LIMITER = 35;
 
 
 
@@ -135,8 +135,8 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = 1.5; 
-        public static final double MAX_ACCELERATION = 1.5; 
+        public static final double MAX_VELOCTIY = 2.0; 
+        public static final double MAX_ACCELERATION = 2.0; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =
