@@ -9,6 +9,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +38,14 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     m_motor.restoreFactoryDefaults();
     m_motor.setIdleMode(IdleMode.kBrake);
+    
+    UsbCamera m_intakeCamera = CameraServer.startAutomaticCapture(0);
+    m_intakeCamera.setResolution(320, 240);
+    m_intakeCamera.setFPS(15);
+
+    UsbCamera m_topCamera = CameraServer.startAutomaticCapture(1);
+    m_topCamera.setResolution(320, 240);
+    m_topCamera.setFPS(15);
   }
 
   @Override

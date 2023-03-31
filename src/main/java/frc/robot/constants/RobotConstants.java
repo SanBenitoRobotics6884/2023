@@ -97,7 +97,7 @@ public final class RobotConstants {
         public static final double ON_DEGREE= 13.0;
         public static final double BALANCED_DEGREE= 6.0;
         public static final double BALANCE_DEBOUNCE_TIME = .2;
-        public static final double BALANCE_LIMITER = 35;
+        public static final double BALANCE_LIMITER = 40;
 
 
 
