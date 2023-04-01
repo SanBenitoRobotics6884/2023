@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -119,7 +120,7 @@ public class DriveSubsystem extends SubsystemBase {
     return -m_gyro.getAngle(kZ);
   }
 
-  public Double getPitch(){
+  public double getPitch(){
     return m_gyro.getAngle(kX);
   }
   
@@ -189,8 +190,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void chargeStationAlign(){
-   m_rControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
-   m_lControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
+   m_rControllerGroup.setVoltage(KA*9.81*Units.degreesToRadians(getPitch()));
+   m_rControllerGroup.setVoltage(KA*9.81*Units.degreesToRadians(getPitch()));
   }
 
   public void setBrakeMode(){
