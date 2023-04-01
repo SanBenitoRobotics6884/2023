@@ -102,11 +102,11 @@ public class RobotContainer {
     autoChooser = new SendableChooser<>();
     autoChooser.addOption("Left Auto Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
     autoChooser.addOption("Left Auto Taxi", makeAutoBuilderCommand("Left Auto", CONSTRAINTS));
-    autoChooser.addOption("Middle", makeAutoBuilderCommand("Mid Auto", CONSTRAINTS));
+    autoChooser.addOption("Middle Charge", makeAutoBuilderCommand("Mid Auto", CONSTRAINTS));
     autoChooser.addOption("Right Auto Charge", makeAutoBuilderCommand("Right Auto Charge", CONSTRAINTS));
     autoChooser.addOption("Right Auto Taxi", makeAutoBuilderCommand("Right Auto", CONSTRAINTS));
-    autoChooser.addOption("Test", makeAutoBuilderCommand("Test", CONSTRAINTS));
-    autoChooser.setDefaultOption("None", Commands.none());
+    autoChooser.addOption("Mid Charge taxi", makeAutoBuilderCommand("Test", CONSTRAINTS));
+    autoChooser.setDefaultOption("highScore", highScore.alongWith(new WaitCommand(15)));
     SmartDashboard.putData(autoChooser);
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
    
