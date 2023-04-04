@@ -6,6 +6,9 @@ import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -189,8 +192,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void chargeStationAlign(){
-   m_rControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
-   m_lControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
+   double m_balanceOut = MathUtil.clamp(AUTO_BALANCE_CONTROLLER.calculate(this.getPitch(), 0), -BALANCE_MAX_OUTPUT, BALANCE_MAX_OUTPUT);
+   m_drive.arcadeDrive(m_balanceOut, 0);
   }
 
   public void setBrakeMode(){
