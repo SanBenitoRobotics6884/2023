@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -95,6 +96,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("pitch", this.getPitch());
     SmartDashboard.putNumber("chargeVoltage", KA*9.81*this.getPitch()/BALANCE_LIMITER);
     SmartDashboard.putNumber("Rate", this.getRateAsRadians());
+    SmartDashboard.putNumber("Auto Pid",  -MathUtil.clamp(AUTO_BALANCE_CONTROLLER.calculate(this.getPitch(), 0), -BALANCE_MAX_OUTPUT, BALANCE_MAX_OUTPUT));
   }
 
   public void drive(double forward, double rotation){
@@ -192,8 +194,20 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void chargeStationAlign(){
-   double m_balanceOut = MathUtil.clamp(AUTO_BALANCE_CONTROLLER.calculate(this.getPitch(), 0), -BALANCE_MAX_OUTPUT, BALANCE_MAX_OUTPUT);
+   double m_balanceOut = -MathUtil.clamp(AUTO_BALANCE_CONTROLLER.calculate(this.getPitch(), 0), -BALANCE_MAX_OUTPUT, BALANCE_MAX_OUTPUT);
    m_drive.arcadeDrive(m_balanceOut, 0);
+  }
+
+  public void chargeStationAlignOld() {
+    m_drive.arcadeDrive(
+        9.81 * KA * getPitch() / BALANCE_LIMITER,
+        0);
+  }
+
+  public void chargeStationAlignSine() {
+    m_drive.arcadeDrive(
+        9.81 * KA * Math.sin(Units.degreesToRadians(getPitch())),
+        0);
   }
 
   public void setBrakeMode(){

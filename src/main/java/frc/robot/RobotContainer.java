@@ -9,6 +9,9 @@ import static frc.robot.constants.RobotConstants.FiducialTracking.*;
 
 import java.util.HashMap;
 import java.util.List;
+
+import javax.sound.midi.MidiEvent;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.PIDConstants;
@@ -81,13 +84,31 @@ public class RobotContainer {
     SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
     SequentialCommandGroup highRetract = new SequentialCommandGroup(m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getDownCommand()));
    
-    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand(), new WaitCommand(.1),
-    (m_intakeSubsystem.getInhaleCommand()), new WaitCommand(1),
-    m_extendSubsystem.getExtendCommand(), new WaitCommand(2.5),m_intakeSubsystem.getExhaleCommand(), new WaitCommand(.25),
-     m_extendSubsystem.getRetractCommand(), new WaitCommand(2) , m_pivotSubsystem.getDownCommand() );
+    SequentialCommandGroup highScore = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand(),
+    (m_intakeSubsystem.getInhaleCommand()), m_extendSubsystem.getExtendCommand(), new WaitCommand(.5), m_intakeSubsystem.getStopCommand(),
+     new WaitCommand(.9),m_intakeSubsystem.getExhaleCommand(), new WaitCommand(.4), m_intakeSubsystem.getStopCommand(),
+     m_extendSubsystem.getRetractCommand(), new WaitCommand(.8) , m_pivotSubsystem.getDownCommand());
+     SequentialCommandGroup midScore = new SequentialCommandGroup(
+     m_pivotSubsystem.getPlaceCommand(), m_intakeSubsystem.getInhaleCommand(), Commands.waitSeconds(.75),
+     m_intakeSubsystem.getExhaleCommand(), new WaitCommand(.75), m_intakeSubsystem.getStopCommand(),
+      m_pivotSubsystem.getDownCommand());
     
      SequentialCommandGroup lowScore = new SequentialCommandGroup(m_pivotSubsystem.getPickUpCommand(),
      new WaitCommand(2), m_pivotSubsystem.getDownCommand());
+
+     SequentialCommandGroup pickUp = new SequentialCommandGroup(
+      m_pivotSubsystem.getPickUpCommand(),
+      Commands.waitSeconds(0.6),
+      m_extendSubsystem.getMidCommand(),
+      Commands.waitSeconds(0.8),
+      m_intakeSubsystem.getInhaleCommand(),
+      Commands.waitSeconds(1.5),
+      m_intakeSubsystem.getStopCommand(),
+      m_pivotSubsystem.getRaiseFromPickUpCommand(),
+      Commands.waitSeconds(.2),
+      m_extendSubsystem.getRetractCommand(),
+      Commands.waitSeconds(.5),
+      m_pivotSubsystem.getPickUpCommand());
 
      
   
@@ -97,8 +118,10 @@ public class RobotContainer {
     eventMap = new HashMap<>(); 
     
     eventMap.put("autobalance", autoBalance);
+    eventMap.put("midScore", midScore);
     eventMap.put("highScore", highScore);
     eventMap.put("lowScore", lowScore);
+    eventMap.put("pickUp", pickUp);
     autoChooser = new SendableChooser<>();
     autoChooser.addOption("Left Auto Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
     autoChooser.addOption("Left Auto Taxi", makeAutoBuilderCommand("Left Auto", CONSTRAINTS));
@@ -151,9 +174,12 @@ public class RobotContainer {
       new PathConstraints(2, 1.5), new Node(new Translation2d(1.95, 4.42), 
       Rotation2d.fromDegrees(0)), obstacles, AStarMap));*/
       controller.y().whileTrue(m_calibrateGyro);
-      controller.a().onTrue(autoBalance);
+      controller.a().whileTrue(autoBalance);
 
-    controller.b().onTrue(highScore);
+    controller.b().onTrue( new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand(),
+    (m_intakeSubsystem.getInhaleCommand()), m_extendSubsystem.getExtendCommand(), new WaitCommand(.5), m_intakeSubsystem.getStopCommand(),
+     new WaitCommand(.9),m_intakeSubsystem.getExhaleCommand(), new WaitCommand(.4), m_intakeSubsystem.getStopCommand(),
+     m_extendSubsystem.getRetractCommand(), new WaitCommand(.8) , m_pivotSubsystem.getDownCommand()));
 
     // Extend setpoint triggers
     new JoystickButton(m_joystick, 11)
@@ -176,9 +202,15 @@ public class RobotContainer {
         .onTrue(m_pivotSubsystem.getPlaceCommand());
 
     // Intake triggers
-    new JoystickButton(m_joystick, 3).onTrue(m_intakeSubsystem.getExhaleCommand());
-    new JoystickButton(m_joystick, 4).onTrue(m_intakeSubsystem.getInhaleCommand());
-    new JoystickButton(m_joystick, 2).onTrue(m_intakeSubsystem.getStopCommand());
+    new JoystickButton(m_joystick, 3)
+        .onTrue(m_intakeSubsystem.getExhaleCommand())
+        .onFalse(m_intakeSubsystem.getStopCommand());
+    new JoystickButton(m_joystick, 4)
+        .onTrue(m_intakeSubsystem.getInhaleCommand())
+        .onFalse(m_intakeSubsystem.getStopCommand());
+
+    new JoystickButton(m_joystick, 2)
+        .onTrue(m_intakeSubsystem.getStopCommand());
 
   }
 

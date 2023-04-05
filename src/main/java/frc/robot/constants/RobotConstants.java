@@ -92,7 +92,7 @@ public final class RobotConstants {
         public static final PIDController LEFT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD); 
         
         //Auto Balance Constants
-        public static final double BALANCE_MAX_OUTPUT = .3;
+        public static final double BALANCE_MAX_OUTPUT = .4;
         public static final double ON_DEGREE= 13.0;
         public static final double BALANCED_DEGREE= 6.0;
         public static final double BALANCE_DEBOUNCE_TIME = .2;
@@ -100,7 +100,7 @@ public final class RobotConstants {
 
 
 
-        public static final double AUTO_BALANCE_P = 0.0055;
+        public static final double AUTO_BALANCE_P = 0.02;
         public static final double AUTO_BALANCE_I = 0.00008;
         public static final double AUTO_BALANCE_D = 0.0007;
         public static final PIDController AUTO_BALANCE_CONTROLLER = new PIDController(AUTO_BALANCE_P, AUTO_BALANCE_I, AUTO_BALANCE_D);
@@ -134,8 +134,8 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = 1.3; 
-        public static final double MAX_ACCELERATION = 1.3; 
+        public static final double MAX_VELOCTIY = 2; 
+        public static final double MAX_ACCELERATION = 1.15; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 
         public static final TrajectoryConfig TRAJECTORY_CONFIG =
@@ -231,13 +231,15 @@ public final class RobotConstants {
         public static final double CANCODER_OFFSET_DEGREES = 0; // Needs significant testing if it is even usable
 
         public static final double GEAR_RATIO = 9;
-        public static final double MAX_VOLTAGE = 0.15;
+        public static final double MAX_UP_VOLTAGE = 0.4; // Before 4-5 was 0.15
+        public static final double MAX_DOWN_VOLTAGE = 0.25; // Before 4-5 was 0.15;
         public static final double MAX_VELOCITY = 0; // For profiled pid (needs testing)
         public static final double MAX_ACCELERATION = 0;
 
-        public static final double HYBRID_SETPOINT = GEAR_RATIO * 0; // NEED SETPOINTS
-        public static final double MID_SETPOINT = GEAR_RATIO * 30.0 / 360;
-        public static final double HIGH_SETPOINT = GEAR_RATIO * 80.0 / 360;
+        public static final double HYBRID_SETPOINT = GEAR_RATIO * 0;
+        public static final double RAISED_MID_SETPOINT = GEAR_RATIO * 45.0 / 360; // Raise to here before retract when doing mid
+        public static final double MID_SETPOINT = GEAR_RATIO * 28.3 / 360; //30
+        public static final double HIGH_SETPOINT = GEAR_RATIO * 82.5 / 360;//80
         
         public static final double Y_SCALE = 0.025;
 
@@ -256,7 +258,7 @@ public final class RobotConstants {
     }
 
     public static final class Extend {
-        public static final double P = 0.2;
+        public static final double P = 0.25; // Before 4-5 this was 0.2
         public static final double I = 0;
         public static final double D = 0;
         public static final double SETPOINT_TOLERANCE = 4;
@@ -275,11 +277,11 @@ public final class RobotConstants {
         // All voltage values are percent output
         public static final double BACK_VOLTAGE = 0.1; // Should be positive (has negative sign in code)
         public static final double BACK_TIME = 0.1; // Should be between 0 and SERVO_DELAY
-        public static final double MAX_VOLTAGE_EXTEND = 0.5; // Value after comp; before it was 0.2
-        public static final double MAX_VOLTAGE_RETRACT = 0.4; // Value after comp; before it was 0.28
+        public static final double MAX_VOLTAGE_EXTEND = 0.7; // Before 4-5 this was 0.5
+        public static final double MAX_VOLTAGE_RETRACT = 0.5; // Before 4-5 this was 0.4
 
         public static final int SERVO_PORT = 9;
-        public static final double SERVO_DELAY = 0.7;
+        public static final double SERVO_DELAY = 0.45; // Before 4-5 it was 0.7
         public static final double RATCHET_ENGAGED = 115. / 180;
         public static final double RATCHET_DISENGAGED = 93. / 180;
         public static final double RATCHET_DELAY = 1;
@@ -287,10 +289,11 @@ public final class RobotConstants {
     public static final class Intake {
         public static final int MOTOR_ID = 8;
 
-        public static final double INHALE_VOLTAGE = 0.2;
+        public static final double INHALE_VOLTAGE = 0.25; // Before 4-5 was 0.2
         public static final double EXHALE_VOLTAGE = -0.2;
 
-        public static final double INHALE_TIME = 0.5;
+        // NOT USED ANYMORE 4-5
+        public static final double INHALE_TIME = 0.6; // Before 4-5 was 0.5
         public static final double EXHALE_TIME = 0.8;
     }
 }

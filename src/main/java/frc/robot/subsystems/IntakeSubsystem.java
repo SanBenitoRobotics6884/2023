@@ -50,10 +50,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (Timer.getFPGATimestamp() > m_timestamp) {
-      m_status = IntakeStatus.STOPPED;
-    }
-
     double output;
     switch (m_status) {
       case INHALING:
@@ -72,12 +68,10 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void startIntaking() {
-    m_timestamp = Timer.getFPGATimestamp() + INHALE_TIME;
     m_status = IntakeStatus.INHALING;
   }
 
   public void startExhaling() {
-    m_timestamp = Timer.getFPGATimestamp() + EXHALE_TIME;
     m_status = IntakeStatus.EXHALING;
   }
 

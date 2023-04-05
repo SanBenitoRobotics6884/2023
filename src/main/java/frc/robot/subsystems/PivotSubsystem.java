@@ -52,7 +52,7 @@ public class PivotSubsystem extends SubsystemBase {
     // Give the pivot motor voltage
     m_pid.setSetpoint(m_setpoint);
     m_masterMotor.set(MathUtil.clamp(m_pid.calculate(m_encoder.getPosition()),
-      -MAX_VOLTAGE, MAX_VOLTAGE));
+      -MAX_DOWN_VOLTAGE, MAX_UP_VOLTAGE));
   }
 
   /** @returns The measured value of the rotation of the arm from the CANCoder */
@@ -82,6 +82,10 @@ public class PivotSubsystem extends SubsystemBase {
   /** @returns A command that rotates the arm to pick up game pieces */
   public CommandBase getPickUpCommand() {
     return runOnce(() -> setSetpoint(MID_SETPOINT));
+  }
+
+  public CommandBase getRaiseFromPickUpCommand() {
+    return runOnce(() -> setSetpoint(RAISED_MID_SETPOINT));
   }
 
   /** @returns A command that rotates the arm to score game pieces */
