@@ -85,7 +85,7 @@ public final class RobotConstants {
         public static final int LEFT_CHANNEL_A = 9;
         public static final int LEFT_CHANNEL_B = 8;
 
-        public static final double DRIVE_KP = 1.9197;
+        public static final double DRIVE_KP = 0.2;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;  
         public static final PIDController RIGHT_DRIVE_CONTROLLER = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);  

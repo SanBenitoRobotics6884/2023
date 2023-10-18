@@ -76,7 +76,7 @@ public class RobotContainer {
   HashMap<String, Command> eventMap;
   SendableChooser<Command> autoChooser;
   RunCommand autoBalance = new RunCommand(
-    m_driveSubsystem::chargeStationAlign, m_driveSubsystem);
+    m_driveSubsystem::chargeStationAlignNewOld, m_driveSubsystem); // chargeStationAlign, chargeStationAlignNewOld
     SequentialCommandGroup highExtend = new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand().andThen(new WaitCommand(1)).andThen(m_extendSubsystem.getExtendCommand()));
     SequentialCommandGroup highRetract = new SequentialCommandGroup(m_extendSubsystem.getRetractCommand().andThen(new WaitCommand(1)).andThen(m_pivotSubsystem.getDownCommand()));
    
@@ -172,10 +172,12 @@ public class RobotContainer {
       controller.y().whileTrue(m_calibrateGyro);
       controller.a().whileTrue(autoBalance);
 
+    /**
     controller.b().onTrue( new SequentialCommandGroup(m_pivotSubsystem.getPlaceCommand(),
     (m_intakeSubsystem.getInhaleCommand()), m_extendSubsystem.getExtendCommand(), new WaitCommand(.5), m_intakeSubsystem.getStopCommand(),
      new WaitCommand(.9),m_intakeSubsystem.getExhaleCommand(), new WaitCommand(.4), m_intakeSubsystem.getStopCommand(),
      m_extendSubsystem.getRetractCommand(), new WaitCommand(.8) , m_pivotSubsystem.getDownCommand()));
+    */
 
     // Extend setpoint triggers
     new JoystickButton(m_joystick, 11)

@@ -66,7 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("output", output);
   }
 
-  public void startIntaking() {
+  public void startInhaling() {
     m_status = IntakeStatus.INHALING;
   }
 
@@ -79,7 +79,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command getInhaleCommand() {
-    return runOnce(this::startIntaking);
+    return runOnce(this::startInhaling);
   }
 
   public Command getExhaleCommand() {

@@ -209,6 +209,12 @@ public class DriveSubsystem extends SubsystemBase {
         0);
   }
 
+  public void chargeStationAlignNewOld() {
+    m_rControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
+    m_lControllerGroup.setVoltage(KA*9.81*this.getPitch()/BALANCE_LIMITER);
+    m_drive.feed();
+  }
+
   public void setBrakeMode(){
     m_BLMotor.setIdleMode(IdleMode.kBrake);
     m_BRMotor.setIdleMode(IdleMode.kBrake);
