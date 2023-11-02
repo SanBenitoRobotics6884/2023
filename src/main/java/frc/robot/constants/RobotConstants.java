@@ -134,7 +134,7 @@ public final class RobotConstants {
         new DifferentialDriveVoltageConstraint(FEED_FOWARD, KINEMATICS, 11.0);
         
 
-        public static final double MAX_VELOCTIY = 2; 
+        public static final double MAX_VELOCTIY = 0.8; // before 10/30 it was 2 
         public static final double MAX_ACCELERATION = 1.15; 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(MAX_VELOCTIY, MAX_ACCELERATION);
 

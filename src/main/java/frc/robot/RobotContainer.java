@@ -119,13 +119,17 @@ public class RobotContainer {
     eventMap.put("lowScore", lowScore);
     eventMap.put("pickUp", pickUp);
     autoChooser = new SendableChooser<>();
-    autoChooser.addOption("Left Auto Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
-    autoChooser.addOption("Left Auto Taxi", makeAutoBuilderCommand("Left Auto", CONSTRAINTS));
+    // autoChooser.addOption("Left Auto Charge", makeAutoBuilderCommand("Left Auto Charge", CONSTRAINTS));
+    // autoChooser.addOption("Left Auto Taxi", makeAutoBuilderCommand("Left Auto", CONSTRAINTS));
     autoChooser.addOption("Middle Charge", makeAutoBuilderCommand("Mid Auto", CONSTRAINTS));
-    autoChooser.addOption("Right Auto Charge", makeAutoBuilderCommand("Right Auto Charge", CONSTRAINTS));
-    autoChooser.addOption("Right Auto Taxi", makeAutoBuilderCommand("Right Auto", CONSTRAINTS));
-    autoChooser.addOption("Mid Charge taxi", makeAutoBuilderCommand("Test", CONSTRAINTS));
+    // autoChooser.addOption("Right Auto Charge", makeAutoBuilderCommand("Right Auto Charge", CONSTRAINTS));
+    // autoChooser.addOption("Right Auto Taxi", makeAutoBuilderCommand("Right Auto", CONSTRAINTS));
+    // autoChooser.addOption("Mid Charge taxi", makeAutoBuilderCommand("Test", CONSTRAINTS));
     autoChooser.setDefaultOption("highScore", highScore.alongWith(new WaitCommand(15)));
+    autoChooser.addOption("Left Taxi", makeAutoBuilderCommand("Left Taxi Simple", CONSTRAINTS));
+    autoChooser.addOption("Right Taxi", makeAutoBuilderCommand("Right Taxi Simple", CONSTRAINTS));
+    // autoChooser.addOption("Left Taxi and Turn", makeAutoBuilderCommand("Left Taxi Spicy", CONSTRAINTS));
+    // autoChooser.addOption("Right Taxi and Turn", makeAutoBuilderCommand("Right Taxi Spicy", CONSTRAINTS));
     SmartDashboard.putData(autoChooser);
     m_pivotSubsystem.setDefaultCommand(m_pivotCommand);
    
@@ -234,7 +238,7 @@ public class RobotContainer {
          RAMSETE_CONTROLLER, KINEMATICS,  m_driveSubsystem::tankDrive, eventMap, m_driveSubsystem );*/
          RamseteAutoBuilder autoBuilder = new RamseteAutoBuilder(poseEstimatorSubsystem::getPose2d, poseEstimatorSubsystem::ResetPose2d, RAMSETE_CONTROLLER,
           KINEMATICS, FEED_FOWARD, m_driveSubsystem::getWheelSpeeds, new PIDConstants(DRIVE_KP, DRIVE_KI, DRIVE_KD), m_driveSubsystem::tankDrive,
-           eventMap,true, m_driveSubsystem);
+           eventMap, true, m_driveSubsystem);
     return autoBuilder.fullAuto(path);
 }
 }
